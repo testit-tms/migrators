@@ -50,6 +50,9 @@ namespace Importer
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IAttributeService, AttributeService>();
                     services.AddSingleton<IParameterService, ParameterService>();
+                    services.AddSingleton<ISectionService, SectionService>();
+                    services.AddSingleton<ISharedStepService, SharedStepService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
                 });
         }
 
