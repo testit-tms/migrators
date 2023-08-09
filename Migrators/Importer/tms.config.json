@@ -1,0 +1,8 @@
+{
+  "resultPath" : "/Users/dmitry.gridnev/Documents/importer",
+  "tms" : {
+    "url" : "https://team-okp8.testit.software/",
+    "privateToken" : "cmZzWDkyTFBvNVVMcXhzN1Vy",
+    "certValidation" : true
+  }
+}

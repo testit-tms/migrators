@@ -22,15 +22,6 @@ public class SharedStep
     [JsonPropertyName("steps")]
     public Step[] Steps { get; set; }
 
-    [JsonPropertyName("preconditionSteps")]
-    public Step[] PreconditionSteps { get; set; }
-
-    [JsonPropertyName("postconditionSteps")]
-    public Step[] PostconditionSteps { get; set; }
-
-    [JsonPropertyName("duration")]
-    public int Duration { get; set; }
-
     [JsonPropertyName("attributes")]
     public CaseAttribute[] Attributes { get; set; }
 

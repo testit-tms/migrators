@@ -52,5 +52,5 @@ public class TestCase
 
     [JsonPropertyName("sectionId")]
     [JsonRequired]
-    public string SectionId { get; set; }
+    public Guid SectionId { get; set; }
 }
