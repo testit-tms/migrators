@@ -43,7 +43,7 @@ public class ParserService : IParserService
         if (!File.Exists(mainJsonPath))
         {
             _logger.LogError("Main json file not found: {Path}", mainJsonPath);
-            throw new ApplicationException("Main json file not found");
+            throw new FileNotFoundException("Main json file not found");
         }
 
         var mainJson = await File.ReadAllTextAsync(mainJsonPath);

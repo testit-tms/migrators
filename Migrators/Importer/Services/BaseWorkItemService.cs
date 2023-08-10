@@ -7,7 +7,7 @@ public abstract class BaseWorkItemService
 {
     private const string OptionsType = "options";
 
-    protected static CaseAttribute[] ConvertAttributes(CaseAttribute[] attributes,
+    protected static CaseAttribute[] ConvertAttributes(IEnumerable<CaseAttribute> attributes,
         Dictionary<Guid, TmsAttribute> tmsAttributes)
     {
         var list = new List<CaseAttribute>();
