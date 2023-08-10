@@ -73,6 +73,7 @@ public class Client : IClient
             var resp = await _projectsApi.CreateProjectAsync(new ProjectPostModel(name: name));
             _projectId = resp.Id;
 
+            _logger.LogDebug("Created project {@Project}", resp);
             _logger.LogInformation("Created project {Name} with id {Id}", name, resp.Id);
         }
         catch (Exception e)
@@ -88,21 +89,25 @@ public class Client : IClient
 
         try
         {
-            var resp = await _sectionsApi.CreateSectionAsync(
-                new SectionPostModel(name: section.Name, parentId: parentSectionId, projectId: _projectId)
+            var model = new SectionPostModel(name: section.Name, parentId: parentSectionId, projectId: _projectId)
+            {
+                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPutModel
                 {
-                    PostconditionSteps = section.PostconditionSteps.Select(s => new StepPutModel()
-                    {
-                        Action = s.Action,
-                        Expected = s.Expected
-                    }).ToList(),
-                    PreconditionSteps = section.PreconditionSteps.Select(s => new StepPutModel()
-                    {
-                        Action = s.Action,
-                        Expected = s.Expected
-                    }).ToList()
-                });
+                    Action = s.Action,
+                    Expected = s.Expected
+                }).ToList(),
+                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPutModel
+                {
+                    Action = s.Action,
+                    Expected = s.Expected
+                }).ToList()
+            };
 
+            _logger.LogDebug("Importing section {@Section}", model);
+
+            var resp = await _sectionsApi.CreateSectionAsync(model);
+
+            _logger.LogDebug("Imported section {@Section}", resp);
             _logger.LogInformation("Imported section {Name} with id {Id}", section.Name, resp.Id);
 
             return resp.Id;
@@ -120,24 +125,29 @@ public class Client : IClient
 
         try
         {
-            var art = await _customAttributes.ApiV2CustomAttributesGlobalPostAsync(
-                new GlobalCustomAttributePostModel(name: attribute.Name)
-                {
-                    Type = Enum.Parse<CustomAttributeTypesEnum>(attribute.Type.ToString()),
-                    IsRequired = attribute.IsRequired,
-                    IsEnabled = attribute.IsActive,
-                    Options = attribute.Options.Select(o => new CustomAttributeOptionPostModel(value: o)).ToList()
-                });
-
-            _logger.LogInformation("Imported attribute {Name} with id {Id}", attribute.Name, art.Id);
-            return new TmsAttribute()
+            var model = new GlobalCustomAttributePostModel(name: attribute.Name)
             {
-                Id = art.Id,
-                Name = art.Name,
-                Type = art.Type.ToString(),
-                IsRequired = art.IsRequired,
-                IsEnabled = art.IsEnabled,
-                Options = art.Options.Select(o => new TmsAttributeOptions()
+                Type = Enum.Parse<CustomAttributeTypesEnum>(attribute.Type.ToString()),
+                IsRequired = attribute.IsRequired,
+                IsEnabled = attribute.IsActive,
+                Options = attribute.Options.Select(o => new CustomAttributeOptionPostModel(value: o)).ToList()
+            };
+
+            _logger.LogDebug("Importing attribute {@Attribute}", model);
+
+            var resp = await _customAttributes.ApiV2CustomAttributesGlobalPostAsync(model);
+
+            _logger.LogDebug("Imported attribute {@Attribute}", resp);
+            _logger.LogInformation("Imported attribute {Name} with id {Id}", attribute.Name, resp.Id);
+
+            return new TmsAttribute
+            {
+                Id = resp.Id,
+                Name = resp.Name,
+                Type = resp.Type.ToString(),
+                IsRequired = resp.IsRequired,
+                IsEnabled = resp.IsEnabled,
+                Options = resp.Options.Select(o => new TmsAttributeOptions()
                 {
                     Id = o.Id,
                     Value = o.Value,
@@ -192,9 +202,11 @@ public class Client : IClient
                 Attachments = sharedStep.Attachments.Select(a => new AttachmentPutModel(Guid.Parse(a))).ToList()
             };
 
-            _logger.LogInformation("Importing shared step {Name} and {@Model}", sharedStep.Name, model);
+            _logger.LogDebug("Importing shared step {Name} and {@Model}", sharedStep.Name, model);
 
             var resp = await _workItemsApi.CreateWorkItemAsync(model);
+
+            _logger.LogDebug("Imported shared step {@SharedStep}", resp);
 
             _logger.LogInformation("Imported shared step {Name} with id {Id}", sharedStep.Name, resp.Id);
 
@@ -268,9 +280,11 @@ public class Client : IClient
                 Description = testCase.Description
             };
 
-            _logger.LogInformation("Importing test case {Name} and {@Model}", testCase.Name, model);
+            _logger.LogDebug("Importing test case {Name} and {@Model}", testCase.Name, model);
 
             var resp = await _workItemsApi.CreateWorkItemAsync(model);
+
+            _logger.LogDebug("Imported test case {@TestCase}", resp);
 
             _logger.LogInformation("Imported test case {Name} with id {Id}", testCase.Name, resp.Id);
         }
@@ -289,6 +303,8 @@ public class Client : IClient
         {
             var section = await _projectsApi.GetSectionsByProjectIdAsync(_projectId.ToString());
 
+            _logger.LogDebug("Got root section {@Section}", section.First());
+
             return section.First().Id;
         }
         catch (Exception e)
@@ -306,6 +322,8 @@ public class Client : IClient
         {
             var attributes = await _customAttributesApi.ApiV2CustomAttributesSearchPostAsync(
                 customAttributeSearchQueryModel: new CustomAttributeSearchQueryModel(isGlobal: true, isDeleted: false));
+
+            _logger.LogDebug("Got project attributes {@Attributes}", attributes);
 
             return attributes.Select(a => new TmsAttribute
             {
@@ -345,6 +363,48 @@ public class Client : IClient
         }
     }
 
+    public async Task<TmsAttribute> UpdateAttribute(TmsAttribute attribute)
+    {
+        _logger.LogInformation("Updating attribute {Name}", attribute.Name);
+
+        try
+        {
+            var model = new GlobalCustomAttributeUpdateModel(name: attribute.Name)
+            {
+                IsEnabled = attribute.IsEnabled,
+                IsRequired = attribute.IsRequired,
+                Options = attribute.Options.Select(o => new CustomAttributeOptionModel()
+                {
+                    Id = o.Id,
+                    Value = o.Value,
+                    IsDefault = o.IsDefault
+                }).ToList()
+            };
+
+            _logger.LogDebug("Updating attribute {@Model}", model);
+
+            var resp = await _customAttributesApi.ApiV2CustomAttributesGlobalIdPutAsync(id: attribute.Id,
+                globalCustomAttributeUpdateModel: model);
+
+            _logger.LogDebug("Updated attribute {@Response}", resp);
+
+            attribute.Options = resp.Options.Select(o => new TmsAttributeOptions()
+            {
+                Id = o.Id,
+                Value = o.Value,
+                IsDefault = o.IsDefault
+            }).ToList();
+
+            return attribute;
+        }
+
+        catch (Exception e)
+        {
+            _logger.LogError("Could not update attribute {Name}: {Message}", attribute.Name, e.Message);
+            throw;
+        }
+    }
+
     public async Task<Guid> UploadAttachment(string fileName, Stream content)
     {
         _logger.LogDebug("Uploading attachment {Name}", fileName);
@@ -356,6 +416,8 @@ public class Client : IClient
                     filename: Path.GetFileName(fileName),
                     content: content,
                     contentType: MimeTypes.GetMimeType(fileName)));
+
+            _logger.LogDebug("Uploaded attachment {@Response}", response);
 
             return response.Id;
         }
@@ -372,10 +434,16 @@ public class Client : IClient
 
         try
         {
-            var resp = await _parametersApi.CreateParameterAsync(new ParameterPostModel(name: parameter.Name,
-                value: parameter.Value));
+            var model = new ParameterPostModel(name: parameter.Name,
+                value: parameter.Value);
 
-            return new TmsParameter()
+            _logger.LogDebug("Creating parameter {@Model}", model);
+
+            var resp = await _parametersApi.CreateParameterAsync(model);
+
+            _logger.LogDebug("Created parameter {@Response}", resp);
+
+            return new TmsParameter
             {
                 Id = resp.Id,
                 Value = resp.Value,
@@ -398,6 +466,8 @@ public class Client : IClient
         {
             var resp = await _parametersApi.ApiV2ParametersSearchPostAsync(
                 parameterFilterModel: new ParameterFilterModel(name: name, isDeleted: false));
+
+            _logger.LogDebug("Got parameter {@Response}", resp);
 
             return resp.Select(p =>
                     new TmsParameter()

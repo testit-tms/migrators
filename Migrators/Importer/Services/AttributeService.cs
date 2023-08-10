@@ -38,12 +38,30 @@ public class AttributeService : IAttributeService
             }
             else
             {
-                // todo: add update logic
                 if (projectAttribute.Type == attribute.Type.ToString())
                 {
                     _logger.LogInformation("Attribute {Name} already exists with id {Id}",
                         attribute.Name,
                         attribute.Id);
+
+                    if (string.Equals(projectAttribute.Type, "options", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var options = projectAttribute.Options.Select(o => o.Value).ToList();
+
+                        foreach (var option in attribute.Options)
+                        {
+                            if (!options.Contains(option))
+                            {
+                                projectAttribute.Options.Add(new TmsAttributeOptions
+                                {
+                                    Value = option,
+                                    IsDefault = false
+                                });
+                            }
+                        }
+
+                        projectAttribute = await _client.UpdateAttribute(projectAttribute);
+                    }
 
                     attributesMap.Add(attribute.Id, projectAttribute);
                 }

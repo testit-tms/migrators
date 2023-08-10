@@ -8,5 +8,5 @@ public class TmsAttribute
     public bool IsRequired { get; set; }
     public string Type { get; set; }
     public bool IsGlobal { get; set; }
-    public IEnumerable<TmsAttributeOptions> Options { get; set; }
+    public List<TmsAttributeOptions> Options { get; set; }
 }

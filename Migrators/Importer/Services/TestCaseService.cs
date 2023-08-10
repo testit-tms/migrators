@@ -6,9 +6,10 @@ using Models;
 
 namespace Importer.Services;
 
-class TestCaseService : ITestCaseService
+class TestCaseService : BaseWorkItemService, ITestCaseService
 {
     private readonly IParameterService _parameterService;
+    private readonly IAttachmentService _attachmentService;
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IParserService _parserService;
@@ -18,9 +19,10 @@ class TestCaseService : ITestCaseService
     private Dictionary<Guid, Guid> _sharedSteps;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IParserService parserService,
-        IParameterService parameterService)
+        IParameterService parameterService, IAttachmentService attachmentService)
     {
         _parameterService = parameterService;
+        _attachmentService = attachmentService;
         _logger = logger;
         _client = client;
         _parserService = parserService;
@@ -48,13 +50,7 @@ class TestCaseService : ITestCaseService
 
         _logger.LogDebug("Importing test case {Name} to section {Id}", testCase.Name, sectionId);
 
-        testCase.Attributes = (from attribute in testCase.Attributes
-            let atr = _attributesMap[attribute.Id]
-            let value = string.Equals(atr.Type, "options", StringComparison.InvariantCultureIgnoreCase)
-                ? Enumerable.FirstOrDefault<TmsAttributeOptions>(atr.Options, o => o.Value == attribute.Value)?.Id
-                    .ToString()
-                : attribute.Value
-            select new CaseAttribute() { Id = atr.Id, Value = value }).ToArray();
+        testCase.Attributes = ConvertAttributes(testCase.Attributes, _attributesMap);
 
         testCase.Steps.Where(s => s.SharedStepId != null)
             .ToList()
@@ -89,25 +85,11 @@ class TestCaseService : ITestCaseService
 
         tmsTestCase.TmsIterations = iterations;
 
-        tmsTestCase.Attachments = await GetAttachments(testCase.Id, testCase.Attachments);
+        tmsTestCase.Attachments = await _attachmentService.GetAttachments(testCase.Id, testCase.Attachments);
 
         await _client.ImportTestCase(sectionId, tmsTestCase);
 
         _logger.LogDebug("Imported test case {Name} to section {Id}", testCase.Name, sectionId);
-    }
-
-    private async Task<string[]> GetAttachments(Guid workItemId, IEnumerable<string> attachments)
-    {
-        List<string> ids = new();
-
-        foreach (var attachment in attachments)
-        {
-            var stream = await _parserService.GetAttachment(workItemId, attachment);
-            var id = await _client.UploadAttachment(attachment, stream);
-            ids.Add(id.ToString());
-        }
-
-        return ids.ToArray();
     }
 
     private string AddParameter(string line, IEnumerable<TmsParameter> parameters)

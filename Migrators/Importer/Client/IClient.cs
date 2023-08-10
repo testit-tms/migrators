@@ -14,6 +14,7 @@ public interface IClient
     Task<Guid> GetRootSectionId();
     Task<List<TmsAttribute>> GetProjectAttributes();
     Task AddAttributesToProject(IEnumerable<Guid> attributeIds);
+    Task<TmsAttribute> UpdateAttribute(TmsAttribute attribute);
 
     Task<Guid> UploadAttachment(string fileName, Stream content);
     Task<TmsParameter> CreateParameter(Parameter parameter);

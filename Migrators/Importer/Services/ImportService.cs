@@ -39,8 +39,6 @@ public class ImportService : IImportService
 
         var mainJsonResult = await _parserService.GetMainFile();
 
-        _logger.LogInformation("Creating project {Name}", mainJsonResult.ProjectName);
-
         await _client.CreateProject(mainJsonResult.ProjectName);
 
         var sections = await _sectionService.ImportSections(mainJsonResult.Sections);
