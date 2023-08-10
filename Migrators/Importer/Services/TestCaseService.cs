@@ -40,7 +40,14 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         foreach (var testCase in testCases)
         {
             var tc = await _parserService.GetTestCase(testCase);
-            await ImportTestCase(tc);
+            try
+            {
+                await ImportTestCase(tc);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Could not import test case {Name} with error {Message}", tc.Name, e.Message);
+            }
         }
     }
 
