@@ -2,6 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{6ABE461F-B644-40A5-A525-4F59ED1C177A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Importer", "Importer\Importer.csproj", "{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImporterTests", "ImporterTests\ImporterTests.csproj", "{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +19,13 @@ Global
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
