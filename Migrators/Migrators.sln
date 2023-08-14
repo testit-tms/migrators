@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Importer", "Importer\Import
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImporterTests", "ImporterTests\ImporterTests.csproj", "{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllureExporter", "AllureExporter\AllureExporter.csproj", "{BD50456A-86C5-463D-9621-5151C68C3A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,5 +29,9 @@ Global
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
