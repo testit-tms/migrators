@@ -41,7 +41,7 @@ public class Client : IClient
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Token", token);
     }
 
-    public async Task<int> GetProjectId()
+    public async Task<BaseEntity> GetProjectId()
     {
         _logger.LogInformation("Getting project id with name {Name}", _projectName);
 
@@ -59,7 +59,7 @@ public class Client : IClient
         var project = projects?.Content.FirstOrDefault(p =>
             string.Equals(p.Name, _projectName, StringComparison.InvariantCultureIgnoreCase));
 
-        if (project != null) return project.Id;
+        if (project != null) return project;
 
         _logger.LogError("Project not found");
 
@@ -183,5 +183,33 @@ public class Client : IClient
 
         var content = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<List<AllureLink>>(content);
+    }
+
+    public async Task<List<BaseEntity>> GetSuites(int projectId)
+    {
+        _logger.LogInformation("Getting suites for project with id {ProjectId}", projectId);
+
+        var response = await _httpClient.GetAsync($"api/rs/testcasetree/group?projectId={projectId}&treeId=2");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get suites for project with id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
+                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get suites for project with id {projectId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var suites = JsonSerializer.Deserialize<BaseEntities>(content);
+
+        return suites.Content.ToList();
+    }
+
+    public async Task<byte[]> DownloadAttachment(int attachmentId)
+    {
+        _logger.LogInformation("Downloading attachment with id {AttachmentId}", attachmentId);
+
+        return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
     }
 }

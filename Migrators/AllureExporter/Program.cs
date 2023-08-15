@@ -1,4 +1,5 @@
 ﻿using AllureExporter.Client;
+using AllureExporter.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -46,6 +47,7 @@ namespace AllureExporter
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
                     services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<IWriteService, WriteService>();
 
                 });
         }
