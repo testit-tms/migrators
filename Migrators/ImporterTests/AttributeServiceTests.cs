@@ -13,7 +13,7 @@ public class AttributeServiceTests
 {
     private ILogger<AttributeService> _logger;
     private IClient _client;
-    private Attribute[] _attributes;
+    private List<Attribute> _attributes;
     private Dictionary<Guid, TmsAttribute> _attributesMap;
     private List<TmsAttribute> _tmsAttributes;
 
@@ -22,7 +22,7 @@ public class AttributeServiceTests
     {
         _logger = Substitute.For<ILogger<AttributeService>>();
         _client = Substitute.For<IClient>();
-        _attributes = new Attribute[]
+        _attributes = new List<Attribute>
         {
             new()
             {
@@ -31,7 +31,7 @@ public class AttributeServiceTests
                 IsActive = true,
                 IsRequired = false,
                 Type = AttributeType.String,
-                Options = Array.Empty<string>()
+                Options = new List<string>()
             },
             new()
             {
@@ -40,7 +40,7 @@ public class AttributeServiceTests
                 IsActive = true,
                 IsRequired = false,
                 Type = AttributeType.Options,
-                Options = new[] { "Option1", "Option2" }
+                Options = new List<string> { "Option1", "Option2" }
             }
         };
         _tmsAttributes = new List<TmsAttribute>()

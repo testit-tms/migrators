@@ -2,5 +2,5 @@ namespace Importer.Services;
 
 public interface IAttachmentService
 {
-    Task<string[]> GetAttachments(Guid workItemId, IEnumerable<string> attachments);
+    Task<List<string>> GetAttachments(Guid workItemId, IEnumerable<string> attachments);
 }

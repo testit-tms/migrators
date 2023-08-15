@@ -13,11 +13,11 @@ public class Section
     public string Name { get; set; }
 
     [JsonPropertyName("preconditionSteps")]
-    public Step[] PreconditionSteps { get; set; }
+    public List<Step> PreconditionSteps { get; set; }
 
     [JsonPropertyName("postconditionSteps")]
-    public Step[] PostconditionSteps { get; set; }
+    public List<Step> PostconditionSteps { get; set; }
 
     [JsonPropertyName("sections")]
-    public Section[] Sections { get; set; }
+    public List<Section> Sections { get; set; }
 }

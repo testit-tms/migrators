@@ -23,16 +23,16 @@ public class ConvertService
     public async Task ConvertMainJson()
     {
         var project = await _client.GetProjectId();
-        var sections = await ConvertSection();
+        var section = await ConvertSection();
         var testCaseGuids = await ConvertTestCase();
 
         var mainJson = new Root
         {
             ProjectName = project.Name,
-            Sections = new[] { sections },
-            TestCases = testCaseGuids.ToArray(),
-            SharedSteps = Array.Empty<Guid>(),
-            Attributes = Array.Empty<Attribute>(),
+            Sections = new List<Section>() { section },
+            TestCases = testCaseGuids,
+            SharedSteps = new List<Guid>(),
+            Attributes = new List<Attribute>(),
         };
 
         await _writeService.WriteMainJson(mainJson);
@@ -51,9 +51,9 @@ public class ConvertService
             {
                 Id = Guid.NewGuid(),
                 Name = s.Name,
-                PreconditionSteps = Array.Empty<Step>(),
-                PostconditionSteps = Array.Empty<Step>(),
-                Sections = Array.Empty<Section>()
+                PreconditionSteps = new List<Step>(),
+                PostconditionSteps = new List<Step>(),
+                Sections = new List<Section>()
             };
             childSections.Add(childSection);
             _sectionIdMap.Add(s.Id, childSection.Id);
@@ -63,9 +63,9 @@ public class ConvertService
         {
             Id = Guid.NewGuid(),
             Name = "Allure",
-            PreconditionSteps = Array.Empty<Step>(),
-            PostconditionSteps = Array.Empty<Step>(),
-            Sections = childSections.ToArray()
+            PreconditionSteps = new List<Step>(),
+            PostconditionSteps = new List<Step>(),
+            Sections = childSections
         };
         _sectionIdMap.Add(0, section.Id);
 
@@ -100,7 +100,7 @@ public class ConvertService
         return testCaseGuids;
     }
 
-    private async Task<Step[]> ConvertSteps(int testCaseId, Guid testCaseGuid)
+    private async Task<List<Step>> ConvertSteps(int testCaseId, Guid testCaseGuid)
     {
         var steps = await _client.GetSteps(testCaseId);
 
@@ -111,7 +111,7 @@ public class ConvertService
             newSteps.Add(newStep);
         }
 
-        return newSteps.ToArray();
+        return newSteps;
     }
 
     private async Task<Step> ConvertStep(Guid testCaseId, AllureStep step)
@@ -128,13 +128,13 @@ public class ConvertService
             newSteps.Add(newChildStep);
         }
 
-        newStep.Steps = newSteps.ToArray();
+        newStep.Steps = newSteps;
         newStep.Attachments = await DownloadAttachments(testCaseId, step.Attachments);
 
         return newStep;
     }
 
-    private async Task<string[]> DownloadAttachments(Guid id, IEnumerable<AllureAttachment> attachments)
+    private async Task<List<string>> DownloadAttachments(Guid id, IEnumerable<AllureAttachment> attachments)
     {
         var names = new List<string>();
 
@@ -145,7 +145,7 @@ public class ConvertService
             names.Add(attachment.Name);
         }
 
-        return names.ToArray();
+        return names;
     }
 
     private async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId)
@@ -162,16 +162,17 @@ public class ConvertService
             Description = testCase.Description,
             State = StateType.NotReady,
             Priority = PriorityType.Medium,
-            PreconditionSteps = Array.Empty<Step>(),
-            PostconditionSteps = Array.Empty<Step>(),
-            Tags = testCase.Tags.Select(t => t.Name).ToArray(),
-            Iterations = Array.Empty<Iteration>(),
+            PreconditionSteps = new List<Step>(),
+            PostconditionSteps = new List<Step>(),
+            Tags = testCase.Tags.Select(t => t.Name).ToList(),
+            Iterations = new List<Iteration>(),
             SectionId = sectionId,
             Links = links.Select(l => new Link()
             {
                 Url = l.Url,
                 Title = l.Name,
-            }).ToArray()
+            }).ToList(),
+            Attributes = new List<CaseAttribute>()
         };
 
         allureTestCase.Attachments = await DownloadAttachments(allureTestCase.Id, attachments);

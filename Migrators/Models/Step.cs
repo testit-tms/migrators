@@ -15,8 +15,8 @@ public class Step
     public string Expected { get; set; }
 
     [JsonPropertyName("steps")]
-    public Step[] Steps { get; set; }
+    public List<Step> Steps { get; set; }
 
     [JsonPropertyName("attachments")]
-    public string[] Attachments { get; set; }
+    public List<string> Attachments { get; set; }
 }

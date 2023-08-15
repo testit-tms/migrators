@@ -16,7 +16,7 @@ public class AttachmentService : IAttachmentService
         _parserService = parserService;
     }
 
-    public async Task<string[]> GetAttachments(Guid workItemId, IEnumerable<string> attachments)
+    public async Task<List<string>> GetAttachments(Guid workItemId, IEnumerable<string> attachments)
     {
         _logger.LogInformation("Importing attachments for work item {Id}", workItemId);
 
@@ -26,10 +26,10 @@ public class AttachmentService : IAttachmentService
         {
             var stream = await _parserService.GetAttachment(workItemId, attachment);
             var id = await _client.UploadAttachment(attachment, stream);
-            
+
             ids.Add(id.ToString());
         }
 
-        return ids.ToArray();
+        return ids;
     }
 }

@@ -49,18 +49,24 @@ public class WriteService : IWriteService
         }
 
         var filePath = Path.Combine(fullPath, "testcase.json");
-        var content = JsonSerializer.Serialize(testCase);
+        // var content = JsonSerializer.Serialize<TestCase>(testCase);
+        //
+        // await using var writer = new BinaryWriter(File.OpenWrite(filePath));
+        // writer.Write(content);
 
-        await using var writer = new BinaryWriter(File.OpenWrite(filePath));
-        writer.Write(content);
+        await using var createStream = File.Create(filePath);
+        await JsonSerializer.SerializeAsync(createStream, testCase);
     }
 
     public async Task WriteMainJson(Root mainJson)
     {
         var filePath = Path.Combine(_path, "main.json");
-        var content = JsonSerializer.Serialize(mainJson);
+        // var content = JsonSerializer.Serialize<Root>(mainJson);
 
-        await using var writer = new BinaryWriter(File.OpenWrite(filePath));
-        writer.Write(content);
+        // await using var writer = new BinaryWriter(File.OpenWrite(filePath));
+        // writer.Write(content);
+
+        await using var createStream = File.Create(filePath);
+        await JsonSerializer.SerializeAsync(createStream, mainJson);
     }
 }

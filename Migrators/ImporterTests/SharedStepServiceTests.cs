@@ -16,10 +16,10 @@ public class SharedStepServiceTests
     private IAttachmentService _attachmentService;
     private Dictionary<Guid, TmsAttribute> _attributesMap;
     private Dictionary<Guid, Guid> _sectionsMap;
-    private Guid[] _sharedStepsIds;
+    private List<Guid> _sharedStepsIds;
     private Dictionary<Guid, Guid> _sharedStepsMap;
-    private SharedStep[] _sharedSteps;
-    private SharedStep[] _sharedStepsChanged;
+    private List<SharedStep> _sharedSteps;
+    private List<SharedStep> _sharedStepsChanged;
 
     [SetUp]
     public void Setup()
@@ -28,7 +28,7 @@ public class SharedStepServiceTests
         _parserService = Substitute.For<IParserService>();
         _client = Substitute.For<IClient>();
         _attachmentService = Substitute.For<IAttachmentService>();
-        _sharedStepsIds = new[]
+        _sharedStepsIds = new List<Guid>()
         {
             Guid.Parse("cacaec23-cf89-46f8-918e-bfae7003895e"),
             Guid.Parse("ad1b46bc-13c6-400f-af4d-8243c0aec4d2")
@@ -85,14 +85,14 @@ public class SharedStepServiceTests
             }
         };
 
-        _sharedSteps = new[]
+        _sharedSteps = new List<SharedStep>()
         {
             new SharedStep()
             {
                 Id = Guid.Parse("cacaec23-cf89-46f8-918e-bfae7003895e"),
                 Name = "TestSharedStep",
                 Description = "TestSharedStepDescription",
-                Steps = new Step[]
+                Steps = new List<Step>
                 {
                     new()
                     {
@@ -100,7 +100,7 @@ public class SharedStepServiceTests
                         Expected = "TestExpectedResult"
                     },
                 },
-                Attributes = new CaseAttribute[]
+                Attributes = new List<CaseAttribute>
                 {
                     new()
                     {
@@ -108,14 +108,14 @@ public class SharedStepServiceTests
                         Value = "TestValue"
                     }
                 },
-                Attachments = new[]
+                Attachments = new List<string>()
                 {
                     "TestAttachment"
                 },
                 Priority = PriorityType.Medium,
                 State = StateType.Ready,
                 SectionId = Guid.Parse("82fd2285-7a94-4d2e-8f3e-033225b38c88"),
-                Links = new[]
+                Links = new List<Link>()
                 {
                     new Link()
                     {
@@ -125,7 +125,7 @@ public class SharedStepServiceTests
                         Url = "https://ya.ru"
                     }
                 },
-                Tags = new[]
+                Tags = new List<string>()
                 {
                     "TestTag"
                 }
@@ -135,7 +135,7 @@ public class SharedStepServiceTests
                 Id = Guid.Parse("ad1b46bc-13c6-400f-af4d-8243c0aec4d2"),
                 Name = "TestSharedStep2",
                 Description = "TestSharedStepDescription2",
-                Steps = new Step[]
+                Steps = new List<Step>
                 {
                     new()
                     {
@@ -143,7 +143,7 @@ public class SharedStepServiceTests
                         Expected = "TestExpectedResult"
                     },
                 },
-                Attributes = new CaseAttribute[]
+                Attributes = new List<CaseAttribute>
                 {
                     new()
                     {
@@ -151,26 +151,26 @@ public class SharedStepServiceTests
                         Value = "TestValue"
                     }
                 },
-                Attachments = Array.Empty<string>(),
+                Attachments = new List<string>(),
                 Priority = PriorityType.Medium,
                 State = StateType.Ready,
                 SectionId = Guid.Parse("0993a214-1ff7-4350-bdaf-275f53781de9"),
-                Links = Array.Empty<Link>(),
-                Tags = new[]
+                Links = new List<Link>(),
+                Tags = new List<string>()
                 {
                     "TestTag"
                 }
             }
         };
 
-        _sharedStepsChanged = new[]
+        _sharedStepsChanged = new List<SharedStep>()
         {
             new SharedStep()
             {
                 Id = Guid.Parse("cacaec23-cf89-46f8-918e-bfae7003895e"),
                 Name = "TestSharedStep",
                 Description = "TestSharedStepDescription",
-                Steps = new Step[]
+                Steps = new List<Step>
                 {
                     new()
                     {
@@ -178,7 +178,7 @@ public class SharedStepServiceTests
                         Expected = "TestExpectedResult"
                     },
                 },
-                Attributes = new CaseAttribute[]
+                Attributes = new List<CaseAttribute>
                 {
                     new()
                     {
@@ -186,14 +186,14 @@ public class SharedStepServiceTests
                         Value = "TestValue"
                     }
                 },
-                Attachments = new[]
+                Attachments = new List<string>()
                 {
                     "64fd2285-7a94-5d2e-8f3e-033225b38c99"
                 },
                 Priority = PriorityType.Medium,
                 State = StateType.Ready,
                 SectionId = Guid.Parse("82fd2285-7a94-4d2e-8f3e-033225b38c88"),
-                Links = new[]
+                Links = new List<Link>()
                 {
                     new Link()
                     {
@@ -203,7 +203,7 @@ public class SharedStepServiceTests
                         Url = "https://ya.ru"
                     }
                 },
-                Tags = new[]
+                Tags = new List<string>()
                 {
                     "TestTag"
                 }
@@ -213,7 +213,7 @@ public class SharedStepServiceTests
                 Id = Guid.Parse("ad1b46bc-13c6-400f-af4d-8243c0aec4d2"),
                 Name = "TestSharedStep2",
                 Description = "TestSharedStepDescription2",
-                Steps = new Step[]
+                Steps = new List<Step>
                 {
                     new()
                     {
@@ -221,7 +221,7 @@ public class SharedStepServiceTests
                         Expected = "TestExpectedResult"
                     },
                 },
-                Attributes = new CaseAttribute[]
+                Attributes = new List<CaseAttribute>
                 {
                     new()
                     {
@@ -229,12 +229,12 @@ public class SharedStepServiceTests
                         Value = "TestValue"
                     }
                 },
-                Attachments = Array.Empty<string>(),
+                Attachments = new List<string>(),
                 Priority = PriorityType.Medium,
                 State = StateType.Ready,
                 SectionId = Guid.Parse("82fd2285-7a94-4d2e-8f3e-033225b38c88"),
-                Links = Array.Empty<Link>(),
-                Tags = new[]
+                Links = new List<Link>(),
+                Tags = new List<string>()
                 {
                     "TestTag"
                 }
