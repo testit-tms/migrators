@@ -12,6 +12,7 @@ public class ConvertService
     private readonly IClient _client;
     private readonly IWriteService _writeService;
     private readonly Dictionary<int, Guid> _sectionIdMap = new();
+    private readonly Guid _attributeId = Guid.NewGuid();
 
     public ConvertService(ILogger<ConvertService> logger, IClient client, IWriteService writeService)
     {
@@ -32,7 +33,24 @@ public class ConvertService
             Sections = new List<Section>() { section },
             TestCases = testCaseGuids,
             SharedSteps = new List<Guid>(),
-            Attributes = new List<Attribute>(),
+            Attributes = new List<Attribute>()
+            {
+                new Attribute()
+                {
+                    Id = _attributeId,
+                    Name = "AllureStatus",
+                    IsActive = true,
+                    IsRequired = true,
+                    Type = AttributeType.Options,
+                    Options = new List<string>()
+                    {
+                        "Draft",
+                        "Active",
+                        "Outdated",
+                        "Review"
+                    }
+                }
+            }
         };
 
         await _writeService.WriteMainJson(mainJson);
@@ -173,6 +191,13 @@ public class ConvertService
                 Title = l.Name,
             }).ToList(),
             Attributes = new List<CaseAttribute>()
+            {
+                new CaseAttribute()
+                {
+                    Id = _attributeId,
+                    Value = testCase.Status.Name
+                }
+            }
         };
 
         allureTestCase.Attachments = await DownloadAttachments(allureTestCase.Id, attachments);

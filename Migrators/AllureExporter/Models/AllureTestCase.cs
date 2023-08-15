@@ -12,6 +12,7 @@ public class AllureTestCase
     public string Description { get; set; }
     [JsonPropertyName("tags")]
     public Tags[] Tags { get; set; }
+
     [JsonPropertyName("status")]
     public Status Status { get; set; }
 }
