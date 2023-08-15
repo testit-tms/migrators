@@ -144,7 +144,9 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<AllureStep>>(content);
+        var steps = JsonSerializer.Deserialize<AllureSteps>(content);
+
+        return steps.Steps;
     }
 
     public async Task<List<AllureAttachment>> GetAttachments(int testCaseId)
@@ -163,7 +165,9 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<AllureAttachment>>(content);
+        var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content);
+
+        return attachments.Content;
     }
 
     public async Task<List<AllureLink>> GetLinks(int testCaseId)

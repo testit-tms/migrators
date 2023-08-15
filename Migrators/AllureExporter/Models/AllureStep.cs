@@ -16,3 +16,9 @@ public class AllureStep
     [JsonPropertyName("keyword")]
     public string Keyword { get; set; }
 }
+
+public class AllureSteps
+{
+    [JsonPropertyName("steps")]
+    public List<AllureStep> Steps { get; set; }
+}

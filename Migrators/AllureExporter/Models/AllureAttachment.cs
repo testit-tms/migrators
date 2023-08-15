@@ -11,3 +11,10 @@ public class AllureAttachment
     [JsonPropertyName("contentType")]
     public string ContentType { get; set; }
 }
+
+
+public class AllureAttachmentContent
+{
+    [JsonPropertyName("content")]
+    public List<AllureAttachment> Content { get; set; }
+}

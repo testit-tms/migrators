@@ -54,4 +54,13 @@ public class WriteService : IWriteService
         await using var writer = new BinaryWriter(File.OpenWrite(filePath));
         writer.Write(content);
     }
+
+    public async Task WriteMainJson(Root mainJson)
+    {
+        var filePath = Path.Combine(_path, "main.json");
+        var content = JsonSerializer.Serialize(mainJson);
+
+        await using var writer = new BinaryWriter(File.OpenWrite(filePath));
+        writer.Write(content);
+    }
 }

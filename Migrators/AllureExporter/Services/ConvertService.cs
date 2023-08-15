@@ -2,6 +2,7 @@ using AllureExporter.Client;
 using AllureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
+using Attribute = Models.Attribute;
 
 namespace AllureExporter.Services;
 
@@ -19,7 +20,25 @@ public class ConvertService
         _writeService = writeService;
     }
 
-    public async Task ConvertSection()
+    public async Task ConvertMainJson()
+    {
+        var project = await _client.GetProjectId();
+        var sections = await ConvertSection();
+        var testCaseGuids = await ConvertTestCase();
+
+        var mainJson = new Root
+        {
+            ProjectName = project.Name,
+            Sections = new[] { sections },
+            TestCases = testCaseGuids.ToArray(),
+            SharedSteps = Array.Empty<Guid>(),
+            Attributes = Array.Empty<Attribute>(),
+        };
+
+        await _writeService.WriteMainJson(mainJson);
+    }
+
+    public async Task<Section> ConvertSection()
     {
         var project = await _client.GetProjectId();
         var sections = await _client.GetSuites(project.Id);
@@ -49,6 +68,8 @@ public class ConvertService
             Sections = childSections.ToArray()
         };
         _sectionIdMap.Add(0, section.Id);
+
+        return section;
     }
 
     public async Task<List<Guid>> ConvertTestCase()

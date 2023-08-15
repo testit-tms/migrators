@@ -48,6 +48,7 @@ namespace AllureExporter
                     services.AddSingleton(SetupConfiguration());
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IWriteService, WriteService>();
+                    services.AddSingleton<ConvertService, ConvertService>();
 
                 });
         }

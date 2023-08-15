@@ -1,4 +1,5 @@
 using AllureExporter.Client;
+using AllureExporter.Services;
 using Microsoft.Extensions.Logging;
 
 namespace AllureExporter;
@@ -6,20 +7,19 @@ namespace AllureExporter;
 public class App
 {
     private readonly ILogger<App> _logger;
-    private readonly IClient _client;
+    private readonly ConvertService _convertService;
 
-    public App(ILogger<App> logger, IClient client)
+    public App(ILogger<App> logger,  ConvertService convertService)
     {
         _logger = logger;
-        _client = client;
+        _convertService = convertService;
     }
 
     public void Run(string[] args)
     {
         _logger.LogInformation("Starting application");
 
-        var id = _client.GetProjectId().Result;
-        _logger.LogInformation("Project id is {Id}", id);
+        _convertService.ConvertMainJson().Wait();
 
         _logger.LogInformation("Ending application");
     }
