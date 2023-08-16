@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
 
-namespace AllureExporter.Services;
+namespace JsonWriter;
 
 public class WriteService : IWriteService
 {
@@ -14,7 +14,7 @@ public class WriteService : IWriteService
     {
         _logger = logger;
 
-        var path = configuration.GetValue<string>("resultPath");
+        var path = configuration["resultPath"];
         if (string.IsNullOrEmpty(path))
         {
             throw new ArgumentException("Result path is not specified");
@@ -25,8 +25,6 @@ public class WriteService : IWriteService
 
     public async Task WriteAttachment(Guid id, byte[] content, string fileName)
     {
-        _logger.LogInformation("Writing attachment {FileName} for test case {Id}", fileName, id);
-
         var fullPath = Path.Combine(_path, id.ToString());
         if (!Directory.Exists(fullPath))
         {
@@ -34,25 +32,25 @@ public class WriteService : IWriteService
         }
 
         var filePath = Path.Combine(fullPath, fileName);
+
+        _logger.LogInformation("Writing attachment {FileName} for test case {Id}: {Path}",
+            fileName, id, filePath);
+
         await using var writer = new BinaryWriter(File.OpenWrite(filePath));
         writer.Write(content);
     }
 
     public async Task WriteTestCase(TestCase testCase)
     {
-        _logger.LogInformation("Writing test case {Id}", testCase.Id);
-
         var fullPath = Path.Combine(_path, testCase.Id.ToString());
         if (!Directory.Exists(fullPath))
         {
             Directory.CreateDirectory(fullPath);
         }
 
-        var filePath = Path.Combine(fullPath, "testcase.json");
-        // var content = JsonSerializer.Serialize<TestCase>(testCase);
-        //
-        // await using var writer = new BinaryWriter(File.OpenWrite(filePath));
-        // writer.Write(content);
+        var filePath = Path.Combine(fullPath, Constants.TestCase);
+
+        _logger.LogInformation("Writing test case {Id}: {Path}", testCase.Id, filePath);
 
         await using var createStream = File.Create(filePath);
         await JsonSerializer.SerializeAsync(createStream, testCase);
@@ -60,11 +58,9 @@ public class WriteService : IWriteService
 
     public async Task WriteMainJson(Root mainJson)
     {
-        var filePath = Path.Combine(_path, "main.json");
-        // var content = JsonSerializer.Serialize<Root>(mainJson);
+        var filePath = Path.Combine(_path, Constants.MainJson);
 
-        // await using var writer = new BinaryWriter(File.OpenWrite(filePath));
-        // writer.Write(content);
+        _logger.LogInformation("Writing main.json: {Path}", filePath);
 
         await using var createStream = File.Create(filePath);
         await JsonSerializer.SerializeAsync(createStream, mainJson);

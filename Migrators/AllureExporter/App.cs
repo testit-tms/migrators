@@ -7,19 +7,19 @@ namespace AllureExporter;
 public class App
 {
     private readonly ILogger<App> _logger;
-    private readonly ConvertService _convertService;
+    private readonly IExportService _exportService;
 
-    public App(ILogger<App> logger,  ConvertService convertService)
+    public App(ILogger<App> logger,  IExportService exportService)
     {
         _logger = logger;
-        _convertService = convertService;
+        _exportService = exportService;
     }
 
     public void Run(string[] args)
     {
         _logger.LogInformation("Starting application");
 
-        _convertService.ConvertMainJson().Wait();
+        _exportService.Export().Wait();
 
         _logger.LogInformation("Ending application");
     }

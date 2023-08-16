@@ -1,6 +1,6 @@
 using Models;
 
-namespace AllureExporter.Services;
+namespace JsonWriter;
 
 public interface IWriteService
 {

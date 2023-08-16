@@ -8,10 +8,10 @@ public class AllureStep
     public string Name { get; set; }
 
     [JsonPropertyName("attachments")]
-    public AllureAttachment[] Attachments { get; set; }
+    public List<AllureAttachment> Attachments { get; set; }
 
     [JsonPropertyName("steps")]
-    public AllureStep[] Steps { get; set; }
+    public List<AllureStep> Steps { get; set; }
 
     [JsonPropertyName("keyword")]
     public string Keyword { get; set; }

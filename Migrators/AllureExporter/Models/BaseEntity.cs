@@ -14,7 +14,7 @@ public class BaseEntity
 public class BaseEntities
 {
     [JsonPropertyName("content")]
-    public BaseEntity[] Content { get; set; }
+    public List<BaseEntity> Content { get; set; }
 }
 
 

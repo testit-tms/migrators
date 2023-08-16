@@ -1,5 +1,6 @@
 ﻿using AllureExporter.Client;
 using AllureExporter.Services;
+using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -48,7 +49,7 @@ namespace AllureExporter
                     services.AddSingleton(SetupConfiguration());
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IWriteService, WriteService>();
-                    services.AddSingleton<ConvertService, ConvertService>();
+                    services.AddSingleton<IExportService, ExportService>();
 
                 });
         }

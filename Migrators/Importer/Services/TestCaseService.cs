@@ -102,11 +102,11 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
                 {
                     if (IsImage(a))
                     {
-                        s.Action += $" \n <img src=\"/api/Attachments/{attachments[a]}\">";
+                        s.Action += $" <p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>";
                     }
                     else
                     {
-                        s.Action += $" \n File attached to test case: {a}";
+                        s.Action += $" <p> File attached to test case: {a} </p>";
                     }
                 });
             });

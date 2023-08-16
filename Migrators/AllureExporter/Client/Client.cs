@@ -84,7 +84,7 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var testCases = JsonSerializer.Deserialize<BaseEntities>(content);
 
-        return testCases is { Content.Length: 0 } ? new List<int>() : testCases.Content.Select(t => t.Id).ToList();
+        return testCases is { Content.Count: 0 } ? new List<int>() : testCases.Content.Select(t => t.Id).ToList();
     }
 
     public async Task<List<int>> GetTestCaseIdsFromSuite(int projectId, int suiteId)
@@ -106,7 +106,7 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var testCases = JsonSerializer.Deserialize<BaseEntities>(content);
 
-        return testCases is { Content.Length: 0 } ? new List<int>() : testCases.Content.Select(t => t.Id).ToList();
+        return testCases is { Content.Count: 0 } ? new List<int>() : testCases.Content.Select(t => t.Id).ToList();
     }
 
     public async Task<AllureTestCase> GetTestCaseById(int testCaseId)

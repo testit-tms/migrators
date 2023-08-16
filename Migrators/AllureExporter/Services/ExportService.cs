@@ -1,31 +1,35 @@
+using System.Text;
 using AllureExporter.Client;
 using AllureExporter.Models;
+using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
 using Attribute = Models.Attribute;
 
 namespace AllureExporter.Services;
 
-public class ConvertService
+public class ExportService : IExportService
 {
-    private readonly ILogger<ConvertService> _logger;
+    private readonly ILogger<ExportService> _logger;
     private readonly IClient _client;
     private readonly IWriteService _writeService;
     private readonly Dictionary<int, Guid> _sectionIdMap = new();
     private readonly Guid _attributeId = Guid.NewGuid();
 
-    public ConvertService(ILogger<ConvertService> logger, IClient client, IWriteService writeService)
+    public ExportService(ILogger<ExportService> logger, IClient client, IWriteService writeService)
     {
         _logger = logger;
         _client = client;
         _writeService = writeService;
     }
 
-    public async Task ConvertMainJson()
+    public virtual async Task Export()
     {
+        _logger.LogInformation("Starting export");
+
         var project = await _client.GetProjectId();
-        var section = await ConvertSection();
-        var testCaseGuids = await ConvertTestCase();
+        var section = await ConvertSection(project.Id);
+        var testCaseGuids = await ConvertTestCase(project.Id);
 
         var mainJson = new Root
         {
@@ -42,7 +46,7 @@ public class ConvertService
                     IsActive = true,
                     IsRequired = true,
                     Type = AttributeType.Options,
-                    Options = new List<string>()
+                    Options = new List<string>
                     {
                         "Draft",
                         "Active",
@@ -54,12 +58,13 @@ public class ConvertService
         };
 
         await _writeService.WriteMainJson(mainJson);
+
+        _logger.LogInformation("Ending export");
     }
 
-    public async Task<Section> ConvertSection()
+    protected virtual async Task<Section> ConvertSection(int projectId)
     {
-        var project = await _client.GetProjectId();
-        var sections = await _client.GetSuites(project.Id);
+        var sections = await _client.GetSuites(projectId);
 
         var childSections = new List<Section>();
 
@@ -90,21 +95,19 @@ public class ConvertService
         return section;
     }
 
-    public async Task<List<Guid>> ConvertTestCase()
+    protected virtual async Task<List<Guid>> ConvertTestCase(int projectId)
     {
-        var project = await _client.GetProjectId();
-
         var testCaseGuids = new List<Guid>();
         foreach (var section in _sectionIdMap)
         {
             List<int> ids;
             if (section.Key == 0)
             {
-                ids = await _client.GetTestCaseIdsFromMainSuite(project.Id);
+                ids = await _client.GetTestCaseIdsFromMainSuite(projectId);
             }
             else
             {
-                ids = await _client.GetTestCaseIdsFromSuite(project.Id, section.Key);
+                ids = await _client.GetTestCaseIdsFromSuite(projectId, section.Key);
             }
 
             foreach (var testCaseId in ids)
@@ -118,16 +121,12 @@ public class ConvertService
         return testCaseGuids;
     }
 
-    private async Task<List<Step>> ConvertSteps(int testCaseId)
+    protected virtual async Task<List<Step>> ConvertSteps(int testCaseId)
     {
         var steps = await _client.GetSteps(testCaseId);
 
         return steps.Select(allureStep =>
             {
-                var childSteps = allureStep.Steps
-                    .Select(s => s.Keyword + "\n" + s.Name)
-                    .ToList();
-
                 var attachments = new List<string>();
 
                 foreach (var allureStepStep in allureStep.Steps)
@@ -137,7 +136,7 @@ public class ConvertService
 
                 var step = new Step
                 {
-                    Action = allureStep.Keyword + "\n" + allureStep.Name + "\n" + string.Join("\n", childSteps),
+                    Action = GetStepAction(allureStep),
                     Attachments = allureStep.Attachments.Select(a => a.Name).ToList()
                 };
 
@@ -146,6 +145,31 @@ public class ConvertService
                 return step;
             })
             .ToList();
+    }
+
+    private static string GetStepAction(AllureStep step)
+    {
+        var builder = new StringBuilder();
+
+        if (!string.IsNullOrEmpty(step.Keyword))
+        {
+            builder.AppendLine($"<p>{step.Keyword}</p>");
+        }
+
+        builder.AppendLine($"<p>{step.Name}</p>");
+
+        step.Steps
+            .ForEach(s =>
+            {
+                if (!string.IsNullOrEmpty(s.Keyword))
+                {
+                    builder.AppendLine($"<p>{s.Keyword}</p>");
+                }
+
+                builder.AppendLine($"<p>{s.Name}</p>");
+            });
+
+        return builder.ToString();
     }
 
     private async Task<List<string>> DownloadAttachments(Guid id, IEnumerable<AllureAttachment> attachments)
@@ -162,10 +186,9 @@ public class ConvertService
         return names;
     }
 
-    private async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId)
+    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
-
         var attachments = await _client.GetAttachments(testCaseId);
         var links = await _client.GetLinks(testCaseId);
 
@@ -181,12 +204,12 @@ public class ConvertService
             Tags = testCase.Tags.Select(t => t.Name).ToList(),
             Iterations = new List<Iteration>(),
             SectionId = sectionId,
-            Links = links.Select(l => new Link()
+            Links = links.Select(l => new Link
             {
                 Url = l.Url,
                 Title = l.Name,
             }).ToList(),
-            Attributes = new List<CaseAttribute>()
+            Attributes = new List<CaseAttribute>
             {
                 new()
                 {
