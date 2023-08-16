@@ -19,7 +19,6 @@ public class SharedStepServiceTests
     private List<Guid> _sharedStepsIds;
     private Dictionary<Guid, Guid> _sharedStepsMap;
     private List<SharedStep> _sharedSteps;
-    private List<SharedStep> _sharedStepsChanged;
 
     [SetUp]
     public void Setup()
@@ -162,84 +161,6 @@ public class SharedStepServiceTests
                 }
             }
         };
-
-        _sharedStepsChanged = new List<SharedStep>()
-        {
-            new SharedStep()
-            {
-                Id = Guid.Parse("cacaec23-cf89-46f8-918e-bfae7003895e"),
-                Name = "TestSharedStep",
-                Description = "TestSharedStepDescription",
-                Steps = new List<Step>
-                {
-                    new()
-                    {
-                        Action = "TestAction",
-                        Expected = "TestExpectedResult"
-                    },
-                },
-                Attributes = new List<CaseAttribute>
-                {
-                    new()
-                    {
-                        Id = Guid.Parse("8e2b4dc4-f6c3-472f-a58f-d57b968bbe10"),
-                        Value = "TestValue"
-                    }
-                },
-                Attachments = new List<string>()
-                {
-                    "64fd2285-7a94-5d2e-8f3e-033225b38c99"
-                },
-                Priority = PriorityType.Medium,
-                State = StateType.Ready,
-                SectionId = Guid.Parse("82fd2285-7a94-4d2e-8f3e-033225b38c88"),
-                Links = new List<Link>()
-                {
-                    new Link()
-                    {
-                        Description = "TestLinkDescription",
-                        Type = LinkType.Defect,
-                        Title = "TestLinkTitle",
-                        Url = "https://ya.ru"
-                    }
-                },
-                Tags = new List<string>()
-                {
-                    "TestTag"
-                }
-            },
-            new SharedStep()
-            {
-                Id = Guid.Parse("ad1b46bc-13c6-400f-af4d-8243c0aec4d2"),
-                Name = "TestSharedStep2",
-                Description = "TestSharedStepDescription2",
-                Steps = new List<Step>
-                {
-                    new()
-                    {
-                        Action = "TestAction",
-                        Expected = "TestExpectedResult"
-                    },
-                },
-                Attributes = new List<CaseAttribute>
-                {
-                    new()
-                    {
-                        Id = Guid.Parse("8e2b4dc4-f6c3-472f-a58f-d57b968bbe10"),
-                        Value = "TestValue"
-                    }
-                },
-                Attachments = new List<string>(),
-                Priority = PriorityType.Medium,
-                State = StateType.Ready,
-                SectionId = Guid.Parse("82fd2285-7a94-4d2e-8f3e-033225b38c88"),
-                Links = new List<Link>(),
-                Tags = new List<string>()
-                {
-                    "TestTag"
-                }
-            }
-        };
     }
 
     [Test]
@@ -283,7 +204,7 @@ public class SharedStepServiceTests
         // Arrange
         _parserService.GetSharedStep(_sharedStepsIds[0]).Returns(_sharedSteps[0]);
         _attachmentService.GetAttachments(_sharedSteps[0].Id, _sharedSteps[0].Attachments)
-            .Returns(_sharedStepsChanged[0].Attachments);
+            .Returns(new Dictionary<string, Guid>());
         // TODO: use real model of shared step
         _client.ImportSharedStep(_sectionsMap[_sharedSteps[0].SectionId], Arg.Any<SharedStep>())
             .ThrowsAsync(new Exception("Failed to import shared step"));
@@ -303,9 +224,9 @@ public class SharedStepServiceTests
         _parserService.GetSharedStep(_sharedStepsIds[0]).Returns(_sharedSteps[0]);
         _parserService.GetSharedStep(_sharedStepsIds[1]).Returns(_sharedSteps[1]);
         _attachmentService.GetAttachments(_sharedSteps[0].Id, _sharedSteps[0].Attachments)
-            .Returns(_sharedStepsChanged[0].Attachments);
+            .Returns(new Dictionary<string, Guid>());
         _attachmentService.GetAttachments(_sharedSteps[1].Id, _sharedSteps[1].Attachments)
-            .Returns(_sharedStepsChanged[1].Attachments);
+            .Returns(new Dictionary<string, Guid>() {{"TestAttachment", Guid.Parse("64fd2285-7a94-5d2e-8f3e-033225b38c99")}});
         // TODO: use real model of shared step
         _client.ImportSharedStep(_sectionsMap[_sharedSteps[0].SectionId], Arg.Any<SharedStep>())
             .Returns(_sharedStepsMap[_sharedSteps[0].Id]);

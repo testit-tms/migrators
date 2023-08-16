@@ -74,7 +74,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
 
             if (!isStepChanged)
             {
-                testCase.Steps.ToList().ForEach(
+                tmsTestCase.Steps.ToList().ForEach(
                     s =>
                     {
                         s.Action = AddParameter(s.Action, parameters);
@@ -84,7 +84,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
                 isStepChanged = true;
             }
 
-            iterations.Add(new TmsIterations()
+            iterations.Add(new TmsIterations
             {
                 Parameters = parameters.Select(p => p.Id).ToList()
             });
@@ -92,11 +92,39 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
 
         tmsTestCase.TmsIterations = iterations;
 
-        tmsTestCase.Attachments = await _attachmentService.GetAttachments(testCase.Id, testCase.Attachments);
+        var attachments = await _attachmentService.GetAttachments(testCase.Id, testCase.Attachments);
+        tmsTestCase.Attachments = attachments.Select(a => a.Value.ToString()).ToList();
+
+        tmsTestCase.Steps.ToList().ForEach(
+            s =>
+            {
+                s.Attachments.ForEach(a =>
+                {
+                    if (IsImage(a))
+                    {
+                        s.Action += $" \n <img src=\"/api/Attachments/{attachments[a]}\">";
+                    }
+                    else
+                    {
+                        s.Action += $" \n File attached to test case: {a}";
+                    }
+                });
+            });
 
         await _client.ImportTestCase(sectionId, tmsTestCase);
 
         _logger.LogDebug("Imported test case {Name} to section {Id}", testCase.Name, sectionId);
+    }
+
+    private static bool IsImage(string name)
+    {
+        return Path.GetExtension(name) switch
+        {
+            ".jpg" => true,
+            ".jpeg" => true,
+            ".png" => true,
+            _ => false
+        };
     }
 
     private string AddParameter(string line, IEnumerable<TmsParameter> parameters)

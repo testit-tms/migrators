@@ -30,12 +30,12 @@ public class ConvertService
         var mainJson = new Root
         {
             ProjectName = project.Name,
-            Sections = new List<Section>() { section },
+            Sections = new List<Section> { section },
             TestCases = testCaseGuids,
             SharedSteps = new List<Guid>(),
-            Attributes = new List<Attribute>()
+            Attributes = new List<Attribute>
             {
-                new Attribute()
+                new()
                 {
                     Id = _attributeId,
                     Name = "AllureStatus",
@@ -118,38 +118,34 @@ public class ConvertService
         return testCaseGuids;
     }
 
-    private async Task<List<Step>> ConvertSteps(int testCaseId, Guid testCaseGuid)
+    private async Task<List<Step>> ConvertSteps(int testCaseId)
     {
         var steps = await _client.GetSteps(testCaseId);
 
-        var newSteps = new List<Step>();
-        foreach (var allureStep in steps)
-        {
-            var newStep = await ConvertStep(testCaseGuid, allureStep);
-            newSteps.Add(newStep);
-        }
+        return steps.Select(allureStep =>
+            {
+                var childSteps = allureStep.Steps
+                    .Select(s => s.Keyword + "\n" + s.Name)
+                    .ToList();
 
-        return newSteps;
-    }
+                var attachments = new List<string>();
 
-    private async Task<Step> ConvertStep(Guid testCaseId, AllureStep step)
-    {
-        var newStep = new Step
-        {
-            Action = step.Keyword + " " + step.Name
-        };
+                foreach (var allureStepStep in allureStep.Steps)
+                {
+                    attachments.AddRange(allureStepStep.Attachments.Select(a => a.Name));
+                }
 
-        var newSteps = new List<Step>();
-        foreach (var allureStep in step.Steps)
-        {
-            var newChildStep = await ConvertStep(testCaseId, allureStep);
-            newSteps.Add(newChildStep);
-        }
+                var step = new Step
+                {
+                    Action = allureStep.Keyword + "\n" + allureStep.Name + "\n" + string.Join("\n", childSteps),
+                    Attachments = allureStep.Attachments.Select(a => a.Name).ToList()
+                };
 
-        newStep.Steps = newSteps;
-        newStep.Attachments = await DownloadAttachments(testCaseId, step.Attachments);
+                step.Attachments.AddRange(attachments);
 
-        return newStep;
+                return step;
+            })
+            .ToList();
     }
 
     private async Task<List<string>> DownloadAttachments(Guid id, IEnumerable<AllureAttachment> attachments)
@@ -192,7 +188,7 @@ public class ConvertService
             }).ToList(),
             Attributes = new List<CaseAttribute>()
             {
-                new CaseAttribute()
+                new()
                 {
                     Id = _attributeId,
                     Value = testCase.Status.Name
@@ -201,7 +197,7 @@ public class ConvertService
         };
 
         allureTestCase.Attachments = await DownloadAttachments(allureTestCase.Id, attachments);
-        allureTestCase.Steps = await ConvertSteps(testCaseId, allureTestCase.Id);
+        allureTestCase.Steps = await ConvertSteps(testCaseId);
 
         return allureTestCase;
     }
