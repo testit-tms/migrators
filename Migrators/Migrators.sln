@@ -1,13 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{6ABE461F-B644-40A5-A525-4F59ED1C177A}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csproj", "{6ABE461F-B644-40A5-A525-4F59ED1C177A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Importer", "Importer\Importer.csproj", "{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Importer", "Importer\Importer.csproj", "{C3AF4E9F-D540-49EB-8DBD-8098FE9ED2AF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImporterTests", "ImporterTests\ImporterTests.csproj", "{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImporterTests", "ImporterTests\ImporterTests.csproj", "{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureExporter", "AzureExporter\AzureExporter.csproj", "{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,5 +35,15 @@ Global
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8D31D15C-2ECB-4619-97E9-7CA04EA8316C}
 	EndGlobalSection
 EndGlobal
