@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using Serilog.Expressions;
+using Serilog.Settings.Configuration;
 
 namespace Importer
 {
@@ -29,9 +31,12 @@ namespace Importer
 
         static IHostBuilder CreateHostBuilder(string[] strings)
         {
+            var options = new ConfigurationReaderOptions(typeof(ConsoleLoggerConfigurationExtensions).Assembly,
+                typeof(SerilogExpression).Assembly);
+
             return Host.CreateDefaultBuilder()
                 .UseSerilog((context, services, configuration) => configuration
-                    .ReadFrom.Configuration(context.Configuration)
+                    .ReadFrom.Configuration(context.Configuration, options)
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
                     .MinimumLevel.Debug()

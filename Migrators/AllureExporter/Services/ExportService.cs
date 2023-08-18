@@ -16,6 +16,8 @@ public class ExportService : IExportService
     private readonly Dictionary<int, Guid> _sectionIdMap = new();
     private readonly Guid _attributeId = Guid.NewGuid();
 
+    private const int MainSectionId = 0;
+
     public ExportService(ILogger<ExportService> logger, IClient client, IWriteService writeService)
     {
         _logger = logger;
@@ -23,7 +25,7 @@ public class ExportService : IExportService
         _writeService = writeService;
     }
 
-    public virtual async Task Export()
+    public virtual async Task ExportProject()
     {
         _logger.LogInformation("Starting export");
 
@@ -64,7 +66,11 @@ public class ExportService : IExportService
 
     protected virtual async Task<Section> ConvertSection(int projectId)
     {
+        _logger.LogInformation("Converting sections");
+
         var sections = await _client.GetSuites(projectId);
+
+        _logger.LogDebug("Found {Count} sections: {@Sections}", sections.Count, sections);
 
         var childSections = new List<Section>();
 
@@ -90,18 +96,24 @@ public class ExportService : IExportService
             PostconditionSteps = new List<Step>(),
             Sections = childSections
         };
-        _sectionIdMap.Add(0, section.Id);
+        _sectionIdMap.Add(MainSectionId, section.Id);
+
+        _logger.LogDebug("Converted sections: {@Sections}", section);
+
+        _logger.LogInformation("Ending converting sections");
 
         return section;
     }
 
     protected virtual async Task<List<Guid>> ConvertTestCase(int projectId)
     {
+        _logger.LogInformation("Converting test cases");
+
         var testCaseGuids = new List<Guid>();
         foreach (var section in _sectionIdMap)
         {
             List<int> ids;
-            if (section.Key == 0)
+            if (section.Key == MainSectionId)
             {
                 ids = await _client.GetTestCaseIdsFromMainSuite(projectId);
             }
@@ -118,12 +130,16 @@ public class ExportService : IExportService
             }
         }
 
+        _logger.LogInformation("Ending converting test cases");
+
         return testCaseGuids;
     }
 
     protected virtual async Task<List<Step>> ConvertSteps(int testCaseId)
     {
         var steps = await _client.GetSteps(testCaseId);
+
+        _logger.LogDebug("Found steps: {@Steps}", steps);
 
         return steps.Select(allureStep =>
             {
@@ -189,8 +205,16 @@ public class ExportService : IExportService
     protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
+
+        _logger.LogDebug("Found test case: {@TestCase}", testCase);
+
         var attachments = await _client.GetAttachments(testCaseId);
+
+        _logger.LogDebug("Found attachments: {@Attachments}", attachments);
+
         var links = await _client.GetLinks(testCaseId);
+
+        _logger.LogDebug("Found links: {@Links}", links);
 
         var allureTestCase = new TestCase
         {
@@ -221,6 +245,8 @@ public class ExportService : IExportService
 
         allureTestCase.Attachments = await DownloadAttachments(allureTestCase.Id, attachments);
         allureTestCase.Steps = await ConvertSteps(testCaseId);
+
+        _logger.LogDebug("Converted test case: {@TestCase}", allureTestCase);
 
         return allureTestCase;
     }
