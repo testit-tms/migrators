@@ -55,6 +55,9 @@ namespace AllureExporter
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IWriteService, WriteService>();
                     services.AddSingleton<IExportService, ExportService>();
+                    services.AddSingleton<ISectionService, SectionService>();
+                    services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
                 });
         }
 
