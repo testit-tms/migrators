@@ -11,6 +11,7 @@ public class SectionService : ISectionService
     private readonly IClient _client;
 
     private const int MainSectionId = 0;
+    private const string MainSectionName = "Allure";
 
     public SectionService(ILogger<SectionService> logger, IClient client)
     {
@@ -46,7 +47,7 @@ public class SectionService : ISectionService
         var section = new Section
         {
             Id = Guid.NewGuid(),
-            Name = "Allure",
+            Name = MainSectionName,
             PreconditionSteps = new List<Step>(),
             PostconditionSteps = new List<Step>(),
             Sections = childSections
