@@ -21,7 +21,7 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCase(int projectId, Guid statusAttribute,
+    public async Task<List<TestCase>> ConvertTestCases(int projectId, Guid statusAttribute,
         Dictionary<int, Guid> sectionIdMap)
     {
         _logger.LogInformation("Converting test cases");
@@ -42,6 +42,7 @@ public class TestCaseService : ITestCaseService
             foreach (var testCaseId in ids)
             {
                 var testCase = await ConvertTestCase(testCaseId, section.Value, statusAttribute);
+
                 testCases.Add(testCase);
             }
         }
@@ -118,9 +119,13 @@ public class TestCaseService : ITestCaseService
 
         _logger.LogDebug("Found links: {@Links}", links);
 
+        var testCaseGuid = Guid.NewGuid();
+        var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseGuid, attachments);
+        var steps = await ConvertSteps(testCaseId);
+
         var allureTestCase = new TestCase
         {
-            Id = Guid.NewGuid(),
+            Id = testCaseGuid,
             Name = testCase.Name,
             Description = testCase.Description,
             State = StateType.NotReady,
@@ -142,11 +147,10 @@ public class TestCaseService : ITestCaseService
                     Id = statusAttribute,
                     Value = testCase.Status.Name
                 }
-            }
+            },
+            Attachments = tmsAttachments,
+            Steps = steps
         };
-
-        allureTestCase.Attachments = await _attachmentService.DownloadAttachments(allureTestCase.Id, attachments);
-        allureTestCase.Steps = await ConvertSteps(testCaseId);
 
         _logger.LogDebug("Converted test case: {@TestCase}", allureTestCase);
 

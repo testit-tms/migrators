@@ -33,7 +33,7 @@ public class ExportService : IExportService
 
         var project = await _client.GetProjectId();
         var section = await _sectionService.ConvertSection(project.Id);
-        var testCases = await _testCaseService.ConvertTestCase(project.Id, _attributeId, section.SectionDictionary);
+        var testCases = await _testCaseService.ConvertTestCases(project.Id, _attributeId, section.SectionDictionary);
 
         testCases.ForEach(t => _writeService.WriteTestCase(t));
 
