@@ -3,6 +3,7 @@ using AllureExporter.Client;
 using AllureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
+using Constants = AllureExporter.Models.Constants;
 
 namespace AllureExporter.Services;
 
@@ -11,8 +12,6 @@ public class TestCaseService : ITestCaseService
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IAttachmentService _attachmentService;
-
-    private const int MainSectionId = 0;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IAttachmentService attachmentService)
     {
@@ -30,7 +29,7 @@ public class TestCaseService : ITestCaseService
         foreach (var section in sectionIdMap)
         {
             List<int> ids;
-            if (section.Key == MainSectionId)
+            if (section.Key == Constants.MainSectionId)
             {
                 ids = await _client.GetTestCaseIdsFromMainSuite(projectId);
             }

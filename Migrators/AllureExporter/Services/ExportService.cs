@@ -1,6 +1,4 @@
-using System.Text;
 using AllureExporter.Client;
-using AllureExporter.Models;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -16,6 +14,8 @@ public class ExportService : IExportService
     private readonly ISectionService _sectionService;
     private readonly ITestCaseService _testCaseService;
     private readonly Guid _attributeId = Guid.NewGuid();
+
+    private const string AllureStatus = "AllureStatus";
 
     public ExportService(ILogger<ExportService> logger, IClient client, IWriteService writeService,
         ISectionService sectionService, ITestCaseService testCaseService)
@@ -48,7 +48,7 @@ public class ExportService : IExportService
                 new()
                 {
                     Id = _attributeId,
-                    Name = "AllureStatus",
+                    Name = AllureStatus,
                     IsActive = true,
                     IsRequired = true,
                     Type = AttributeType.Options,

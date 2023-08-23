@@ -2,6 +2,7 @@ using AllureExporter.Client;
 using AllureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
+using Constants = AllureExporter.Models.Constants;
 
 namespace AllureExporter.Services;
 
@@ -10,7 +11,6 @@ public class SectionService : ISectionService
     private readonly ILogger<SectionService> _logger;
     private readonly IClient _client;
 
-    private const int MainSectionId = 0;
     private const string MainSectionName = "Allure";
 
     public SectionService(ILogger<SectionService> logger, IClient client)
@@ -52,7 +52,7 @@ public class SectionService : ISectionService
             PostconditionSteps = new List<Step>(),
             Sections = childSections
         };
-        sectionIdMap.Add(MainSectionId, section.Id);
+        sectionIdMap.Add(Constants.MainSectionId, section.Id);
 
         _logger.LogDebug("Converted sections: {@Section}", section);
 

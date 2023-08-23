@@ -1,5 +1,4 @@
 using AllureExporter.Models;
-using Models;
 
 namespace AllureExporter.Services;
 
