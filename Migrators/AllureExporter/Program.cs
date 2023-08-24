@@ -1,5 +1,6 @@
-﻿using Importer.Client;
-using Importer.Services;
+﻿using AllureExporter.Client;
+using AllureExporter.Services;
+using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +9,7 @@ using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
 
-namespace Importer
+namespace AllureExporter
 {
     internal class Program
     {
@@ -49,17 +50,14 @@ namespace Importer
                 )
                 .ConfigureServices((_, services) =>
                 {
-                    services.AddSingleton<IImportService, ImportService>();
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    services.AddSingleton<IParserService, ParserService>();
                     services.AddSingleton<IClient, Client.Client>();
-                    services.AddSingleton<IAttributeService, AttributeService>();
-                    services.AddSingleton<IParameterService, ParameterService>();
+                    services.AddSingleton<IWriteService, WriteService>();
+                    services.AddSingleton<IExportService, ExportService>();
                     services.AddSingleton<ISectionService, SectionService>();
-                    services.AddSingleton<ISharedStepService, SharedStepService>();
-                    services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
                 });
         }
 
@@ -67,7 +65,7 @@ namespace Importer
         {
             return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("tms.config.json")
+                .AddJsonFile("allure.config.json")
                 .AddEnvironmentVariables()
                 .Build();
         }

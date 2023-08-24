@@ -9,6 +9,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Importer", "Importer\Import
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImporterTests", "ImporterTests\ImporterTests.csproj", "{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllureExporter", "AllureExporter\AllureExporter.csproj", "{BD50456A-86C5-463D-9621-5151C68C3A22}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonWriter", "JsonWriter\JsonWriter.csproj", "{C03F7958-C302-4F57-B158-E1F0E8A1A302}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllureExporterTests", "AllureExporterTests\AllureExporterTests.csproj", "{71D9999F-06FA-49B2-91C0-3CE322C9F33B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,5 +36,17 @@ Global
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD50456A-86C5-463D-9621-5151C68C3A22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

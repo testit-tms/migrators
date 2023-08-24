@@ -8,21 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Update="tms.config.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Models\Models.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-      <PackageReference Include="MimeTypes" Version="2.4.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
       <PackageReference Include="Serilog" Version="3.0.1" />
       <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
       <PackageReference Include="Serilog.Expressions" Version="3.4.1" />
@@ -30,13 +15,20 @@
       <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
       <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-      <PackageReference Include="TestIt.ApiClient" Version="2.2.0" />
+    </ItemGroup>
 
-
-
+    <ItemGroup>
+      <None Update="allure.config.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 
 
+
+    <ItemGroup>
+      <ProjectReference Include="..\JsonWriter\JsonWriter.csproj" />
+      <ProjectReference Include="..\Models\Models.csproj" />
+    </ItemGroup>
 
 </Project>

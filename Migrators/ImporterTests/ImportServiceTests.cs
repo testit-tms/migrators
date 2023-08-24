@@ -19,12 +19,12 @@ public class ImportServiceTests
     private ISharedStepService _sharedStepService;
     private ITestCaseService _testCaseService;
     private Root _mainJsonResult;
-    private Section[] _sections;
-    private Attribute[] _attributes;
+    private List<Section> _sections;
+    private List<Attribute> _attributes;
     private Dictionary<Guid, Guid> _sectionsMap;
     private Dictionary<Guid, TmsAttribute> _attributesMap;
-    private Guid[] _sharedSteps;
-    private Guid[] _testCases;
+    private List<Guid> _sharedSteps;
+    private List<Guid> _testCases;
     private Dictionary<Guid, Guid> _sharedStepsMap;
 
     [SetUp]
@@ -37,7 +37,7 @@ public class ImportServiceTests
         _sectionService = Substitute.For<ISectionService>();
         _sharedStepService = Substitute.For<ISharedStepService>();
         _testCaseService = Substitute.For<ITestCaseService>();
-        _attributes = new Attribute[]
+        _attributes = new List<Attribute>
         {
             new()
             {
@@ -46,7 +46,7 @@ public class ImportServiceTests
                 IsActive = true,
                 IsRequired = false,
                 Type = AttributeType.String,
-                Options = Array.Empty<string>()
+                Options = new List<string>()
             },
             new()
             {
@@ -55,16 +55,16 @@ public class ImportServiceTests
                 IsActive = true,
                 IsRequired = false,
                 Type = AttributeType.Options,
-                Options = new[] { "Option1", "Option2" }
+                Options = new List<string>() { "Option1", "Option2" }
             }
         };
-        _sections = new Section[]
+        _sections = new List<Section>
         {
             new()
             {
                 Id = Guid.Parse("82fd2285-7a94-4d2e-8f3e-033225b38c88"),
                 Name = "TestSection",
-                PreconditionSteps = new Step[]
+                PreconditionSteps = new List<Step>
                 {
                     new()
                     {
@@ -72,7 +72,7 @@ public class ImportServiceTests
                         Expected = "TestExpected"
                     }
                 },
-                PostconditionSteps = new Step[]
+                PostconditionSteps = new List<Step>
                 {
                     new()
                     {
@@ -80,13 +80,13 @@ public class ImportServiceTests
                         Expected = "TestExpected"
                     }
                 },
-                Sections = new Section[]
+                Sections = new List<Section>
                 {
                     new()
                     {
                         Id = Guid.Parse("0993a214-1ff7-4350-bdaf-275f53781de9"),
                         Name = "TestSection02",
-                        PreconditionSteps = new Step[]
+                        PreconditionSteps = new List<Step>
                         {
                             new()
                             {
@@ -94,7 +94,7 @@ public class ImportServiceTests
                                 Expected = "TestExpected"
                             }
                         },
-                        PostconditionSteps = new Step[]
+                        PostconditionSteps = new List<Step>
                         {
                             new()
                             {
@@ -102,17 +102,17 @@ public class ImportServiceTests
                                 Expected = "TestExpected"
                             }
                         },
-                        Sections = Array.Empty<Section>()
+                        Sections = new List<Section>()
                     }
                 }
             }
         };
-        _sharedSteps = new[]
+        _sharedSteps = new List<Guid>
         {
             Guid.Parse("cacaec23-cf89-46f8-918e-bfae7003895e"),
             Guid.Parse("ad1b46bc-13c6-400f-af4d-8243c0aec4d2")
         };
-        _testCases = new[]
+        _testCases = new List<Guid>
         {
             Guid.Parse("e6053aae-d79a-4ae5-9dee-9d2e59c2abc9"),
             Guid.Parse("2742c22e-9cc4-428a-ac23-bc344b54a8ea")

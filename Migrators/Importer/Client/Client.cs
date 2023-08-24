@@ -162,6 +162,38 @@ public class Client : IClient
         }
     }
 
+    public async Task<TmsAttribute> GetAttribute(Guid id)
+    {
+        _logger.LogInformation("Getting attribute {Id}", id);
+
+        try
+        {
+            var resp = await _customAttributesApi.ApiV2CustomAttributesIdGetAsync(id: id);
+
+            _logger.LogDebug("Got attribute {@Attribute}", resp);
+
+            return new TmsAttribute
+            {
+                Id = resp.Id,
+                Name = resp.Name,
+                Type = resp.Type.ToString(),
+                IsRequired = resp.IsRequired,
+                IsEnabled = resp.IsEnabled,
+                Options = resp.Options.Select(o => new TmsAttributeOptions()
+                {
+                    Id = o.Id,
+                    Value = o.Value,
+                    IsDefault = o.IsDefault
+                }).ToList()
+            };
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Could not get attribute {Id}: {Message}", id, e.Message);
+            throw;
+        }
+    }
+
     public async Task<Guid> ImportSharedStep(Guid parentSectionId, SharedStep sharedStep)
     {
         try
