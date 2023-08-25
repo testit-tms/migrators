@@ -7,9 +7,9 @@ namespace AzureExporter;
 public class App
 {
     private readonly ILogger<App> _logger;
-    private readonly IService _service;
+    private readonly IExportService _service;
 
-    public App(ILogger<App> logger, IService service)
+    public App(ILogger<App> logger, IExportService service)
     {
         _logger = logger;
         _service = service;

@@ -1,6 +1,6 @@
 namespace AzureExporter.Services;
 
-public interface IService
+public interface ITestCaseService
 {
     Task Export();
 }
