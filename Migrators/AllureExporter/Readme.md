@@ -4,7 +4,7 @@ You can use this exporter to export your test cases from Allure.
 
 ## How to use
 
-1. Configure connection in the `allure.config.json` file and save it near the AllureExporter.
+1. Configure connection in the `allure.config.json` file and save it in the AllureExporter location.
 
 ```json
 {
@@ -20,9 +20,9 @@ You can use this exporter to export your test cases from Allure.
 Where:
 
 - resultPath - path to the folder where the results will be saved
-- allure.url - url to the allure server
-- allure.token - token for access to the allure server
-- allure.projectName - name of the project in the allure server
+- allure.url - url to the Allure server
+- allure.token - token for access to the Allure server
+- allure.projectName - name of the project in the Allure server
 
 2. Run the exporter with the following command:
 

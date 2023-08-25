@@ -1,10 +1,10 @@
 # Importer
 
-You can use this importer to import your test cases to Test IT.
+You can use this Importer to import your test cases to Test IT.
 
 ## How to use
 
-1. Configure connection in the `tms.config.json` file and save it near the Importer.
+1. Configure connection in the `tms.config.json` file and save it in the Importer location.
 
 ```json
 {
@@ -23,7 +23,7 @@ Where:
 - tms.privateToken - token for access to the Test IT server
 - tms.certValidation - enable/disable certificate validation
 
-2. Run the importer with the following command:
+2. Run the Importer with the following command:
 
 ```bash
 .\Importer

@@ -1,9 +1,9 @@
 # Migrators
 
-You can use the following migrators to migrate your test cases from other TMS systems to Test IT.
+You can migrate your test cases from other TMS systems to Test IT using our migrators.
 
 We support the following systems:
 
 - [Allure TestOps](https://github.com/testit-tms/migrators/tree/main/Migrators/AllureExporter/Readme.md)
 
-We are constantly working on new migrators. If you need a migrator for a system that is not listed here, please contact us.
+We are constantly working on new migrators. If you need a migrator for a system that is not listed here, please contact us at [support@yoonion.ru](mailto:support@yoonion.ru).
