@@ -21,7 +21,7 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task Export()
+    public async Task<List<TestCase>> Export()
     {
         _logger.LogInformation("Export test cases");
 
@@ -47,6 +47,8 @@ public class TestCaseService : ITestCaseService
         }
 
         _logger.LogInformation("Exported test cases");
+
+        return testCases;
     }
 
     protected async Task<TestCase> ConvertTestCase(AzureTestCase azureTestCase)

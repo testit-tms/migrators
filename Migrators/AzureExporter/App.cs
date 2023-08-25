@@ -19,7 +19,7 @@ public class App
     {
         _logger.LogInformation("Starting application");
 
-        _service.Export().Wait();
+        _service.ExportProject().Wait();
 
         _logger.LogInformation("Ending application");
     }

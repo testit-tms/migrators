@@ -19,7 +19,7 @@ public class ExportService : IExportService
         _testCaseService = testCaseService;
     }
 
-    public async Task Export()
+    public async Task ExportProject()
     {
         _logger.LogInformation("Export");
 

@@ -1,6 +1,8 @@
+using Models;
+
 namespace AzureExporter.Services;
 
 public interface ITestCaseService
 {
-    Task Export();
+    Task<List<TestCase>> Export();
 }
