@@ -145,7 +145,9 @@ public class AttributeServiceTests
         // Arrange
         _client.GetProjectAttributes().Returns(new List<TmsAttribute>());
         _client.ImportAttribute(_attributes[1]).Returns(_attributesMap[_attributes[1].Id]);
+        _client.GetAttribute(_attributesMap[_attributes[1].Id].Id).Returns(_attributesMap[_attributes[1].Id]);
         _client.ImportAttribute(_attributes[0]).Returns(_attributesMap[_attributes[0].Id]);
+        _client.GetAttribute(_attributesMap[_attributes[0].Id].Id).Returns(_attributesMap[_attributes[0].Id]);
         var attributeService = new AttributeService(_logger, _client);
 
         // Act

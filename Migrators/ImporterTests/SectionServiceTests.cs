@@ -138,6 +138,6 @@ public class SectionServiceTests
         var resp = await sectionService.ImportSections(_sections);
 
         // Assert
-        Assert.Equals(resp, _sectionsMap);
+        Assert.That(_sectionsMap, Is.EqualTo(resp));
     }
 }
