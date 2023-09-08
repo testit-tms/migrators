@@ -2,6 +2,10 @@
 
 You can use this exporter to export your test cases from Allure.
 
+## Download
+
+You can download the latest version of the AllureExporter from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
+
 ## How to use
 
 1. Configure connection in the `allure.config.json` file and save it in the AllureExporter location.
