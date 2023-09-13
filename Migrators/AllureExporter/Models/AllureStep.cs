@@ -15,6 +15,9 @@ public class AllureStep
 
     [JsonPropertyName("keyword")]
     public string Keyword { get; set; }
+
+    [JsonPropertyName("expectedResult")]
+    public string ExpectedResult { get; set; }
 }
 
 public class AllureSteps
