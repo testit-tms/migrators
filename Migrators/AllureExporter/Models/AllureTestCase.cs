@@ -15,6 +15,9 @@ public class AllureTestCase
 
     [JsonPropertyName("status")]
     public Status Status { get; set; }
+
+    [JsonPropertyName("testLayer")]
+    public TestLayer Layer { get; set; }
 }
 
 public class Tags
@@ -24,6 +27,12 @@ public class Tags
 }
 
 public class Status
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+}
+
+public class TestLayer
 {
     [JsonPropertyName("name")]
     public string Name { get; set; }

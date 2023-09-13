@@ -21,6 +21,7 @@ public class TestCaseService : ITestCaseService
     }
 
     public async Task<List<TestCase>> ConvertTestCases(int projectId, Guid statusAttribute,
+        Guid layerAttribute,
         Dictionary<int, Guid> sectionIdMap)
     {
         _logger.LogInformation("Converting test cases");
@@ -40,7 +41,7 @@ public class TestCaseService : ITestCaseService
 
             foreach (var testCaseId in ids)
             {
-                var testCase = await ConvertTestCase(testCaseId, section.Value, statusAttribute);
+                var testCase = await ConvertTestCase(testCaseId, section.Value, statusAttribute, layerAttribute);
 
                 testCases.Add(testCase);
             }
@@ -105,7 +106,8 @@ public class TestCaseService : ITestCaseService
         return builder.ToString();
     }
 
-    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Guid statusAttribute)
+    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Guid statusAttribute,
+        Guid layerAttribute)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
 
@@ -146,6 +148,11 @@ public class TestCaseService : ITestCaseService
                 {
                     Id = statusAttribute,
                     Value = testCase.Status.Name
+                },
+                new ()
+                {
+                    Id = layerAttribute,
+                    Value = testCase.Layer != null ? testCase.Layer.Name : String.Empty
                 }
             },
             Attachments = tmsAttachments,
