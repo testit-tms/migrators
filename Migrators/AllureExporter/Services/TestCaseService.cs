@@ -69,7 +69,8 @@ public class TestCaseService : ITestCaseService
                 var step = new Step
                 {
                     Action = GetStepAction(allureStep),
-                    Attachments = allureStep.Attachments.Select(a => a.Name).ToList()
+                    Attachments = allureStep.Attachments.Select(a => a.Name).ToList(),
+                    Expected = allureStep.ExpectedResult
                 };
 
                 step.Attachments.AddRange(attachments);
