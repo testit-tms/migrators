@@ -29,8 +29,8 @@ public class AttachmentService : IAttachmentService
             _logger.LogDebug("Downloading attachment: {Name}", attachment.Name);
 
             var bytes = await _client.DownloadAttachment(attachment.Id);
-            await _writeService.WriteAttachment(id, bytes, attachment.Name);
-            names.Add(attachment.Name);
+            var name = await _writeService.WriteAttachment(id, bytes, attachment.Name);
+            names.Add(name);
         }
 
         _logger.LogDebug("Ending downloading attachments: {@Names}", names);

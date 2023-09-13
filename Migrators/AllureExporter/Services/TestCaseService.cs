@@ -62,15 +62,17 @@ public class TestCaseService : ITestCaseService
             {
                 var attachments = new List<string>();
 
-                foreach (var allureStepStep in allureStep.Steps)
+                foreach (var allureStepStep in allureStep.Steps.Where(allureStepStep => allureStepStep.Attachments != null))
                 {
-                    attachments.AddRange(allureStepStep.Attachments.Select(a => a.Name));
+                    attachments.AddRange(allureStepStep.Attachments!.Select(a => a.Name));
                 }
 
                 var step = new Step
                 {
                     Action = GetStepAction(allureStep),
-                    Attachments = allureStep.Attachments.Select(a => a.Name).ToList(),
+                    Attachments = allureStep.Attachments != null
+                        ? allureStep.Attachments.Select(a => a.Name).ToList()
+                        : new List<string>(),
                     Expected = allureStep.ExpectedResult
                 };
 
@@ -149,10 +151,10 @@ public class TestCaseService : ITestCaseService
                     Id = statusAttribute,
                     Value = testCase.Status.Name
                 },
-                new ()
+                new()
                 {
                     Id = layerAttribute,
-                    Value = testCase.Layer != null ? testCase.Layer.Name : String.Empty
+                    Value = testCase.Layer != null ? testCase.Layer.Name : string.Empty
                 }
             },
             Attachments = tmsAttachments,

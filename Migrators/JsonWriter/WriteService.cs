@@ -23,7 +23,7 @@ public class WriteService : IWriteService
         _path = path;
     }
 
-    public async Task WriteAttachment(Guid id, byte[] content, string fileName)
+    public async Task<string> WriteAttachment(Guid id, byte[] content, string fileName)
     {
         var fullPath = Path.Combine(_path, id.ToString());
         if (!Directory.Exists(fullPath))
@@ -31,13 +31,44 @@ public class WriteService : IWriteService
             Directory.CreateDirectory(fullPath);
         }
 
-        var filePath = Path.Combine(fullPath, fileName);
+        var filePath = GetAttachmentPath(fileName, fullPath);
 
         _logger.LogInformation("Writing attachment {FileName} for test case {Id}: {Path}",
             fileName, id, filePath);
 
         await using var writer = new BinaryWriter(File.OpenWrite(filePath));
         writer.Write(content);
+
+        return Path.GetFileName(filePath);
+    }
+
+    private static string GetAttachmentPath(string fileName, string directoryPath)
+    {
+        var files = Directory.GetFiles(directoryPath);
+
+        if (files.Length == 0)
+        {
+            return Path.Combine(directoryPath, fileName);
+        }
+
+        var existFile =
+            files.FirstOrDefault(f => string.Equals(Path.GetFileName(f), fileName, StringComparison.InvariantCultureIgnoreCase));
+
+        if (existFile == null)
+        {
+            return Path.Combine(directoryPath, fileName);
+        }
+
+        var newName = fileName;
+
+        var i = 1;
+        while (files.Any(f => Path.GetFileName(f) == newName))
+        {
+            newName = $"{Path.GetFileNameWithoutExtension(fileName)} ({i}){Path.GetExtension(fileName)}";
+            i++;
+        }
+
+        return Path.Combine(directoryPath, newName);
     }
 
     public async Task WriteTestCase(TestCase testCase)

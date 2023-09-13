@@ -79,6 +79,8 @@ public class AttachmentServiceTests
         var bytes = new byte[] { 1, 2, 3 };
         _client.DownloadAttachment(_attachments[0].Id).Returns(bytes);
         _client.DownloadAttachment(_attachments[1].Id).Returns(bytes);
+        _writeService.WriteAttachment(guid, bytes, _attachments[0].Name).Returns(_attachments[0].Name);
+        _writeService.WriteAttachment(guid, bytes, _attachments[1].Name).Returns(_attachments[1].Name);
 
         var service = new AttachmentService(_logger, _client, _writeService);
 

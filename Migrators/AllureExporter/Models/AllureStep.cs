@@ -8,7 +8,7 @@ public class AllureStep
     public string Name { get; set; }
 
     [JsonPropertyName("attachments")]
-    public List<AllureAttachment> Attachments { get; set; }
+    public List<AllureAttachment>? Attachments { get; set; }
 
     [JsonPropertyName("steps")]
     public List<AllureStep> Steps { get; set; }
