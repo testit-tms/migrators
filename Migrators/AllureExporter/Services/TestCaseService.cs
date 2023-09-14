@@ -20,8 +20,7 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(int projectId, Guid statusAttribute,
-        Guid layerAttribute,
+    public async Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<string, Guid> attributes,
         Dictionary<int, Guid> sectionIdMap)
     {
         _logger.LogInformation("Converting test cases");
@@ -41,7 +40,7 @@ public class TestCaseService : ITestCaseService
 
             foreach (var testCaseId in ids)
             {
-                var testCase = await ConvertTestCase(testCaseId, section.Value, statusAttribute, layerAttribute);
+                var testCase = await ConvertTestCase(testCaseId, section.Value, attributes);
 
                 testCases.Add(testCase);
             }
@@ -62,7 +61,8 @@ public class TestCaseService : ITestCaseService
             {
                 var attachments = new List<string>();
 
-                foreach (var allureStepStep in allureStep.Steps.Where(allureStepStep => allureStepStep.Attachments != null))
+                foreach (var allureStepStep in allureStep.Steps.Where(allureStepStep =>
+                             allureStepStep.Attachments != null))
                 {
                     attachments.AddRange(allureStepStep.Attachments!.Select(a => a.Name));
                 }
@@ -108,8 +108,7 @@ public class TestCaseService : ITestCaseService
         return builder.ToString();
     }
 
-    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Guid statusAttribute,
-        Guid layerAttribute)
+    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Dictionary<string, Guid> attributes)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
 
@@ -144,18 +143,47 @@ public class TestCaseService : ITestCaseService
             {
                 new()
                 {
-                    Id = statusAttribute,
+                    Id = attributes[Constants.AllureStatus],
                     Value = testCase.Status.Name
                 },
                 new()
                 {
-                    Id = layerAttribute,
+                    Id = attributes[Constants.AllureTestLayer],
                     Value = testCase.Layer != null ? testCase.Layer.Name : string.Empty
                 }
             },
             Attachments = tmsAttachments,
             Steps = steps
         };
+
+        var customFields = await _client.GetCustomFieldsFromTestCase(testCaseId);
+
+        foreach (var attribute in attributes)
+        {
+            if (attribute.Key == Constants.AllureStatus || attribute.Key == Constants.AllureTestLayer)
+            {
+                continue;
+            }
+
+            var customField = customFields.FirstOrDefault(cf => cf.CustomField.Name == attribute.Key);
+
+            if (customField != null)
+            {
+                allureTestCase.Attributes.Add(new CaseAttribute
+                {
+                    Id = attribute.Value,
+                    Value = customField.Name
+                });
+            }
+            else
+            {
+                allureTestCase.Attributes.Add(new CaseAttribute
+                {
+                    Id = attribute.Value,
+                    Value = string.Empty
+                });
+            }
+        }
 
         _logger.LogDebug("Converted test case: {@TestCase}", allureTestCase);
 

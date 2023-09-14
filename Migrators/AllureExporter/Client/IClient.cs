@@ -14,4 +14,7 @@ public interface IClient
     Task<List<BaseEntity>> GetSuites(int projectId);
     Task<byte[]> DownloadAttachment(int attachmentId);
     Task<List<BaseEntity>> GetTestLayers();
+    Task<List<BaseEntity>> GetCustomFieldNames(int projectId);
+    Task<List<BaseEntity>> GetCustomFieldValues(int fieldId);
+    Task<List<AllureCustomField>> GetCustomFieldsFromTestCase(int testCaseId);
 }
