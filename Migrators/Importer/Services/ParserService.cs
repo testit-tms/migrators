@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Importer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -20,10 +19,6 @@ public class ParserService : IParserService
         }
     };
 
-    private const string MainJsonFileName = "main.json";
-    private const string SharedStepJsonFileName = "sharedstep.json";
-    private const string TestCaseJsonFileName = "testcase.json";
-
     public ParserService(ILogger<ParserService> logger, IConfiguration configuration)
     {
         _logger = logger;
@@ -39,7 +34,7 @@ public class ParserService : IParserService
 
     public async Task<Root> GetMainFile()
     {
-        var mainJsonPath = Path.Combine(_resultPath, MainJsonFileName);
+        var mainJsonPath = Path.Combine(_resultPath, Constants.MainJson);
         if (!File.Exists(mainJsonPath))
         {
             _logger.LogError("Main json file not found: {Path}", mainJsonPath);
@@ -57,7 +52,7 @@ public class ParserService : IParserService
 
     public async Task<SharedStep> GetSharedStep(Guid guid)
     {
-        var sharedStepPath = Path.Combine(_resultPath, guid.ToString(), SharedStepJsonFileName);
+        var sharedStepPath = Path.Combine(_resultPath, guid.ToString(), Constants.SharedStep);
         if (!File.Exists(sharedStepPath))
         {
             _logger.LogError("Shared step file not found: {Path}", sharedStepPath);
@@ -75,7 +70,7 @@ public class ParserService : IParserService
 
     public async Task<TestCase> GetTestCase(Guid guid)
     {
-        var testCasePath = Path.Combine(_resultPath, guid.ToString(), TestCaseJsonFileName);
+        var testCasePath = Path.Combine(_resultPath, guid.ToString(), Constants.TestCase);
         if (!File.Exists(testCasePath))
         {
             _logger.LogError("Test case file not found: {Path}", testCasePath);
@@ -91,15 +86,14 @@ public class ParserService : IParserService
         throw new ApplicationException("Test case file is empty");
     }
 
-    public async Task<Stream> GetAttachment(Guid guid, string fileName)
+    public Task<Stream> GetAttachment(Guid guid, string fileName)
     {
         var filePath = Path.Combine(_resultPath, guid.ToString(), fileName);
-        if (!File.Exists(filePath))
-        {
-            _logger.LogError("Attachment file not found: {Path}", filePath);
-            throw new ApplicationException("Attachment file not found");
-        }
 
-        return new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        if (File.Exists(filePath))
+            return Task.FromResult<Stream>(new FileStream(filePath, FileMode.Open, FileAccess.Read));
+
+        _logger.LogError("Attachment file not found: {Path}", filePath);
+        throw new ApplicationException("Attachment file not found");
     }
 }

@@ -17,5 +17,5 @@ public class AzureSteps
     public List<AzureStep> Steps { get; set; }
 
     [JsonPropertyName("compref")]
-    public List<WorkItem> SharedSteps { get; set; }
+    public List<AzureWorkItem> SharedSteps { get; set; }
 }

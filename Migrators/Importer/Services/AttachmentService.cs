@@ -16,20 +16,20 @@ public class AttachmentService : IAttachmentService
         _parserService = parserService;
     }
 
-    public async Task<string[]> GetAttachments(Guid workItemId, IEnumerable<string> attachments)
+    public async Task<Dictionary<string, Guid>> GetAttachments(Guid workItemId, IEnumerable<string> attachments)
     {
         _logger.LogInformation("Importing attachments for work item {Id}", workItemId);
 
-        List<string> ids = new();
+        Dictionary<string, Guid> ids = new();
 
         foreach (var attachment in attachments)
         {
             var stream = await _parserService.GetAttachment(workItemId, attachment);
             var id = await _client.UploadAttachment(attachment, stream);
-            
-            ids.Add(id.ToString());
+
+            ids.Add(attachment, id);
         }
 
-        return ids.ToArray();
+        return ids;
     }
 }

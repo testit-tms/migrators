@@ -7,7 +7,7 @@ public abstract class BaseWorkItemService
 {
     private const string OptionsType = "options";
 
-    protected static CaseAttribute[] ConvertAttributes(IEnumerable<CaseAttribute> attributes,
+    protected static List<CaseAttribute> ConvertAttributes(IEnumerable<CaseAttribute> attributes,
         Dictionary<Guid, TmsAttribute> tmsAttributes)
     {
         var list = new List<CaseAttribute>();
@@ -23,6 +23,6 @@ public abstract class BaseWorkItemService
             list.Add(new CaseAttribute { Id = atr.Id, Value = value });
         }
 
-        return list.ToArray();
+        return list;
     }
 }

@@ -2,14 +2,14 @@ using System.Text.Json.Serialization;
 
 namespace AzureExporter.Models;
 
-public class Suite
+public class AzureTestPlan
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
 }
 
-public class Suites
+public class AzureTestPlans
 {
     [JsonPropertyName("value")]
-    public List<Suite> Value { get; set; }
+    public List<AzureTestPlan> Value { get; set; }
 }

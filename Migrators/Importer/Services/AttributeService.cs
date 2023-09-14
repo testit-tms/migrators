@@ -33,6 +33,7 @@ public class AttributeService : IAttributeService
                 _logger.LogInformation("Creating attribute {Name}", attribute.Name);
 
                 var attributeId = await _client.ImportAttribute(attribute);
+                attributeId = await _client.GetAttribute(attributeId.Id);
 
                 attributesMap.Add(attribute.Id, attributeId);
             }

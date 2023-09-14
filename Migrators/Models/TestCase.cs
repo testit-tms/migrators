@@ -20,31 +20,31 @@ public class TestCase
     public PriorityType Priority { get; set; }
 
     [JsonPropertyName("steps")]
-    public Step[] Steps { get; set; }
+    public List<Step> Steps { get; set; }
 
     [JsonPropertyName("preconditionSteps")]
-    public Step[] PreconditionSteps { get; set; }
+    public List<Step> PreconditionSteps { get; set; }
 
     [JsonPropertyName("postconditionSteps")]
-    public Step[] PostconditionSteps { get; set; }
+    public List<Step> PostconditionSteps { get; set; }
 
     [JsonPropertyName("duration")]
     public int Duration { get; set; }
 
     [JsonPropertyName("attributes")]
-    public CaseAttribute[] Attributes { get; set; }
+    public List<CaseAttribute> Attributes { get; set; }
 
     [JsonPropertyName("tags")]
-    public string[] Tags { get; set; }
+    public List<string> Tags { get; set; }
 
     [JsonPropertyName("attachments")]
-    public string[] Attachments { get; set; }
+    public List<string> Attachments { get; set; }
 
     [JsonPropertyName("iterations")]
-    public Iteration[] Iterations { get; set; }
+    public List<Iteration> Iterations { get; set; }
 
     [JsonPropertyName("links")]
-    public Link[] Links { get; set; }
+    public List<Link> Links { get; set; }
 
     [JsonPropertyName("name")]
     [JsonRequired]

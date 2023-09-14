@@ -9,17 +9,17 @@ public class Root
     public string ProjectName { get; set; }
 
     [JsonPropertyName("attributes")]
-    public Attribute[] Attributes { get; set; }
+    public List<Attribute> Attributes { get; set; }
 
     [JsonPropertyName("sections")]
     [JsonRequired]
-    public Section[] Sections { get; set; }
+    public List<Section> Sections { get; set; }
 
     [JsonPropertyName("sharedSteps")]
     [JsonRequired]
-    public Guid[] SharedSteps { get; set; }
+    public List<Guid> SharedSteps { get; set; }
 
     [JsonPropertyName("testCases")]
     [JsonRequired]
-    public Guid[] TestCases { get; set; }
+    public List<Guid> TestCases { get; set; }
 }

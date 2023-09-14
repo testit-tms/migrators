@@ -23,13 +23,13 @@ public class AttachmentService : IAttachmentService
 
         var names = new List<string>();
 
-        foreach (var attachment in attachments)
-        {
-            _logger.LogDebug("Downloading attachment: {Name}", attachment);
+        //foreach (var attachment in attachments)
+        //{
+        //    _logger.LogDebug("Downloading attachment: {Name}", attachment);
 
-            var bytes = await _client.GetAttachmentById(attachment);
-            names.Add(attachment.ToString());
-        }
+        //    var bytes = await _client.GetAttachmentById(attachment);
+        //    names.Add(attachment.ToString());
+        //}
 
         _logger.LogDebug("Ending downloading attachments: {@Names}", names);
 

@@ -1,8 +1,7 @@
 {
   "azure": {
-    "url": "",
-    "token": "",
-    "projectName": "",
-    "organisationName": ""
+    "url": "https://dev.azure.com/pavelbutuzov",
+    "token": "xjq5t6z3w257j4vbrea2lfdjpqoqvraon47ts7lwqbd2372do6ra",
+    "projectName": "TestProjectAzure"
   }
 }

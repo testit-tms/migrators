@@ -9,6 +9,7 @@ public interface IClient
     Task CreateProject(string name);
     Task<Guid> ImportSection(Guid parentSectionId, Section section);
     Task<TmsAttribute> ImportAttribute(Attribute attribute);
+    Task<TmsAttribute> GetAttribute(Guid id);
     Task<Guid> ImportSharedStep(Guid parentSectionId, SharedStep sharedStep);
     Task ImportTestCase(Guid parentSectionId, TmsTestCase testCase);
     Task<Guid> GetRootSectionId();

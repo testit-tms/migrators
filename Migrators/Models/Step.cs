@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using System.Text.Json.Serialization;
 
 namespace Models;
@@ -12,4 +13,7 @@ public class Step
 
     [JsonPropertyName("expected")]
     public string Expected { get; set; }
+
+    [JsonPropertyName("attachments")]
+    public List<string> Attachments { get; set; }
 }
