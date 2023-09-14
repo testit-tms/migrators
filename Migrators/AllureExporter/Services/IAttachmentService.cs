@@ -4,5 +4,5 @@ namespace AllureExporter.Services;
 
 public interface IAttachmentService
 {
-    Task<List<string>> DownloadAttachments(Guid id, IEnumerable<AllureAttachment> attachments);
+    Task<List<string>> DownloadAttachments(int testCaseId, Guid id);
 }

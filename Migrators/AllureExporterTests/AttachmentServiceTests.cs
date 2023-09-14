@@ -14,6 +14,7 @@ public class AttachmentServiceTests
     private IClient _client;
     private IWriteService _writeService;
     private List<AllureAttachment> _attachments;
+    private const int TestCaseId = 1;
 
     [SetUp]
     public void Setup()
@@ -37,9 +38,29 @@ public class AttachmentServiceTests
     }
 
     [Test]
+    public async Task DownloadAttachments_FailedGetAttachments()
+    {
+        // Arrange
+        _client.GetAttachments(TestCaseId)
+            .ThrowsAsync(new Exception("Failed to get attachments"));
+
+        var service = new AttachmentService(_logger, _client, _writeService);
+
+        // Act
+        Assert.ThrowsAsync<Exception>(async () =>
+            await service.DownloadAttachments(TestCaseId, Guid.NewGuid()));
+
+        // Assert
+        await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
+        await _writeService.DidNotReceive()
+            .WriteAttachment(Arg.Any<Guid>(), Arg.Any<byte[]>(), Arg.Any<string>());
+    }
+
+    [Test]
     public async Task DownloadAttachments_FailedDownloadAttachment()
     {
         // Arrange
+        _client.GetAttachments(TestCaseId).Returns(_attachments);
         _client.DownloadAttachment(_attachments[0].Id)
             .ThrowsAsync(new Exception("Failed to download attachment"));
 
@@ -47,7 +68,7 @@ public class AttachmentServiceTests
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(Guid.NewGuid(), _attachments));
+            await service.DownloadAttachments(TestCaseId, Guid.NewGuid()));
 
         // Assert
         await _writeService.DidNotReceive()
@@ -60,6 +81,7 @@ public class AttachmentServiceTests
         // Arrange
         var guid = new Guid();
         var bytes = new byte[] { 1, 2, 3 };
+        _client.GetAttachments(TestCaseId).Returns(_attachments);
         _client.DownloadAttachment(_attachments[0].Id).Returns(bytes);
         _writeService.WriteAttachment(guid, bytes, _attachments[0].Name)
             .Throws(new Exception("Failed to write attachment"));
@@ -68,7 +90,7 @@ public class AttachmentServiceTests
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(guid, _attachments));
+            await service.DownloadAttachments(TestCaseId, guid));
     }
 
     [Test]
@@ -77,6 +99,7 @@ public class AttachmentServiceTests
         // Arrange
         var guid = new Guid();
         var bytes = new byte[] { 1, 2, 3 };
+        _client.GetAttachments(TestCaseId).Returns(_attachments);
         _client.DownloadAttachment(_attachments[0].Id).Returns(bytes);
         _client.DownloadAttachment(_attachments[1].Id).Returns(bytes);
         _writeService.WriteAttachment(guid, bytes, _attachments[0].Name).Returns(_attachments[0].Name);
@@ -85,7 +108,7 @@ public class AttachmentServiceTests
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
-        var result = await service.DownloadAttachments(guid, _attachments);
+        var result = await service.DownloadAttachments(TestCaseId, guid);
 
         // Assert
         await _writeService.Received(1).WriteAttachment(guid, bytes, _attachments[0].Name);

@@ -49,7 +49,7 @@ public class TestCaseServiceTests
         await _client.DidNotReceive()
             .GetTestCaseIdsFromSuite(ProjectId, Arg.Any<int>());
         await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>());
+            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
         await _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
         await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
@@ -76,7 +76,7 @@ public class TestCaseServiceTests
         await _client.DidNotReceive()
             .GetTestCaseIdsFromMainSuite(ProjectId);
         await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>());
+            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
         await _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
         await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
@@ -105,38 +105,9 @@ public class TestCaseServiceTests
         await _client.DidNotReceive()
             .GetTestCaseIdsFromMainSuite(ProjectId);
         await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>());
+            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
         await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _client.DidNotReceive().GetSteps(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedDownloadAttachment()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1, 2 });
-        _client.GetTestCaseById(1)
-            .Returns(new AllureTestCase());
-        _client.GetAttachments(1)
-            .ThrowsAsync(new Exception("Failed to get attachments"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>());
-        await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().GetSteps(Arg.Any<int>());
     }
 
@@ -165,7 +136,7 @@ public class TestCaseServiceTests
         await _client.DidNotReceive()
             .GetTestCaseIdsFromMainSuite(ProjectId);
         await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>());
+            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
         await _client.DidNotReceive().GetSteps(Arg.Any<int>());
     }
 
@@ -180,7 +151,7 @@ public class TestCaseServiceTests
         _client.GetAttachments(1)
             .Returns(new List<AllureAttachment>());
         _client.GetLinks(1).Returns(new List<AllureLink>());
-        _attachmentService.DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>())
+        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
             .ThrowsAsync(new Exception("Failed to download attachments"));
 
         var service = new TestCaseService(_logger, _client, _attachmentService);
@@ -209,7 +180,7 @@ public class TestCaseServiceTests
         _client.GetAttachments(1)
             .Returns(new List<AllureAttachment>());
         _client.GetLinks(1).Returns(new List<AllureLink>());
-        _attachmentService.DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>())
+        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
             .Returns(new List<string>());
         _client.GetSteps(1).ThrowsAsync(new Exception("Failed to get steps"));
 
@@ -258,7 +229,7 @@ public class TestCaseServiceTests
         _client.GetAttachments(1)
             .Returns(new List<AllureAttachment>());
         _client.GetLinks(1).Returns(new List<AllureLink>());
-        _attachmentService.DownloadAttachments(Arg.Any<Guid>(), Arg.Any<List<AllureAttachment>>())
+        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
             .Returns(new List<string>());
         _client.GetSteps(1).Returns(new List<AllureStep>
         {
