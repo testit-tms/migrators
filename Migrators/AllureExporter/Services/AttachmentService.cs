@@ -1,5 +1,4 @@
 using AllureExporter.Client;
-using AllureExporter.Models;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 
@@ -18,9 +17,13 @@ public class AttachmentService : IAttachmentService
         _writeService = writeService;
     }
 
-    public async Task<List<string>> DownloadAttachments(Guid id, IEnumerable<AllureAttachment> attachments)
+    public async Task<List<string>> DownloadAttachments(int testCaseId, Guid id)
     {
         _logger.LogInformation("Downloading attachments");
+
+        var attachments = await _client.GetAttachments(testCaseId);
+
+        _logger.LogDebug("Found attachments: {@Attachments}", attachments);
 
         var names = new List<string>();
 

@@ -115,16 +115,12 @@ public class TestCaseService : ITestCaseService
 
         _logger.LogDebug("Found test case: {@TestCase}", testCase);
 
-        var attachments = await _client.GetAttachments(testCaseId);
-
-        _logger.LogDebug("Found attachments: {@Attachments}", attachments);
-
         var links = await _client.GetLinks(testCaseId);
 
         _logger.LogDebug("Found links: {@Links}", links);
 
         var testCaseGuid = Guid.NewGuid();
-        var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseGuid, attachments);
+        var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseId, testCaseGuid);
         var steps = await ConvertSteps(testCaseId);
 
         var allureTestCase = new TestCase
