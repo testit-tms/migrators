@@ -58,6 +58,7 @@ namespace AllureExporter
                     services.AddSingleton<ISectionService, SectionService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();
                     services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<IAttributeService, AttributeService>();
                 });
         }
 

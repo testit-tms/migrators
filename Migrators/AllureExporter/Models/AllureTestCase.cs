@@ -17,7 +17,7 @@ public class AllureTestCase
     public Status Status { get; set; }
 
     [JsonPropertyName("testLayer")]
-    public TestLayer Layer { get; set; }
+    public TestLayer? Layer { get; set; }
 }
 
 public class Tags
