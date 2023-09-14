@@ -21,6 +21,7 @@ public class TestCaseService : ITestCaseService
     }
 
     public async Task<List<TestCase>> ConvertTestCases(int projectId, Guid statusAttribute,
+        Guid layerAttribute,
         Dictionary<int, Guid> sectionIdMap)
     {
         _logger.LogInformation("Converting test cases");
@@ -40,7 +41,7 @@ public class TestCaseService : ITestCaseService
 
             foreach (var testCaseId in ids)
             {
-                var testCase = await ConvertTestCase(testCaseId, section.Value, statusAttribute);
+                var testCase = await ConvertTestCase(testCaseId, section.Value, statusAttribute, layerAttribute);
 
                 testCases.Add(testCase);
             }
@@ -61,15 +62,18 @@ public class TestCaseService : ITestCaseService
             {
                 var attachments = new List<string>();
 
-                foreach (var allureStepStep in allureStep.Steps)
+                foreach (var allureStepStep in allureStep.Steps.Where(allureStepStep => allureStepStep.Attachments != null))
                 {
-                    attachments.AddRange(allureStepStep.Attachments.Select(a => a.Name));
+                    attachments.AddRange(allureStepStep.Attachments!.Select(a => a.Name));
                 }
 
                 var step = new Step
                 {
                     Action = GetStepAction(allureStep),
-                    Attachments = allureStep.Attachments.Select(a => a.Name).ToList()
+                    Attachments = allureStep.Attachments != null
+                        ? allureStep.Attachments.Select(a => a.Name).ToList()
+                        : new List<string>(),
+                    Expected = allureStep.ExpectedResult
                 };
 
                 step.Attachments.AddRange(attachments);
@@ -104,22 +108,19 @@ public class TestCaseService : ITestCaseService
         return builder.ToString();
     }
 
-    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Guid statusAttribute)
+    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Guid statusAttribute,
+        Guid layerAttribute)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
 
         _logger.LogDebug("Found test case: {@TestCase}", testCase);
-
-        var attachments = await _client.GetAttachments(testCaseId);
-
-        _logger.LogDebug("Found attachments: {@Attachments}", attachments);
 
         var links = await _client.GetLinks(testCaseId);
 
         _logger.LogDebug("Found links: {@Links}", links);
 
         var testCaseGuid = Guid.NewGuid();
-        var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseGuid, attachments);
+        var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseId, testCaseGuid);
         var steps = await ConvertSteps(testCaseId);
 
         var allureTestCase = new TestCase
@@ -145,6 +146,11 @@ public class TestCaseService : ITestCaseService
                 {
                     Id = statusAttribute,
                     Value = testCase.Status.Name
+                },
+                new()
+                {
+                    Id = layerAttribute,
+                    Value = testCase.Layer != null ? testCase.Layer.Name : string.Empty
                 }
             },
             Attachments = tmsAttachments,

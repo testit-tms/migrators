@@ -14,8 +14,10 @@ public class ExportService : IExportService
     private readonly ISectionService _sectionService;
     private readonly ITestCaseService _testCaseService;
     private readonly Guid _attributeId = Guid.NewGuid();
+    private readonly Guid _layerId = Guid.NewGuid();
 
     private const string AllureStatus = "AllureStatus";
+    private const string AllureTestLayer = "Test Layer";
 
     public ExportService(ILogger<ExportService> logger, IClient client, IWriteService writeService,
         ISectionService sectionService, ITestCaseService testCaseService)
@@ -33,7 +35,7 @@ public class ExportService : IExportService
 
         var project = await _client.GetProjectId();
         var section = await _sectionService.ConvertSection(project.Id);
-        var testCases = await _testCaseService.ConvertTestCases(project.Id, _attributeId, section.SectionDictionary);
+        var testCases = await _testCaseService.ConvertTestCases(project.Id, _attributeId, _layerId, section.SectionDictionary);
 
         testCases.ForEach(t => _writeService.WriteTestCase(t));
 
@@ -59,6 +61,15 @@ public class ExportService : IExportService
                         "Outdated",
                         "Review"
                     }
+                },
+                new ()
+                {
+                    Id = _layerId,
+                    Name = AllureTestLayer,
+                    IsActive = true,
+                    IsRequired = true,
+                    Type = AttributeType.String,
+                    Options = new List<string>()
                 }
             }
         };
