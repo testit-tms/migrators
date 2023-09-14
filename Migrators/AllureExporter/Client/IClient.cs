@@ -13,4 +13,5 @@ public interface IClient
     Task<List<AllureLink>> GetLinks(int testCaseId);
     Task<List<BaseEntity>> GetSuites(int projectId);
     Task<byte[]> DownloadAttachment(int attachmentId);
+    Task<List<BaseEntity>> GetTestLayers();
 }

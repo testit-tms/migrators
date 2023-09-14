@@ -35,9 +35,12 @@ public class ExportService : IExportService
 
         var project = await _client.GetProjectId();
         var section = await _sectionService.ConvertSection(project.Id);
-        var testCases = await _testCaseService.ConvertTestCases(project.Id, _attributeId, _layerId, section.SectionDictionary);
+        var testCases =
+            await _testCaseService.ConvertTestCases(project.Id, _attributeId, _layerId, section.SectionDictionary);
 
         testCases.ForEach(t => _writeService.WriteTestCase(t));
+
+        var testLayers = await _client.GetTestLayers();
 
         var mainJson = new Root
         {
@@ -62,14 +65,14 @@ public class ExportService : IExportService
                         "Review"
                     }
                 },
-                new ()
+                new()
                 {
                     Id = _layerId,
                     Name = AllureTestLayer,
                     IsActive = true,
                     IsRequired = true,
-                    Type = AttributeType.String,
-                    Options = new List<string>()
+                    Type = AttributeType.Options,
+                    Options = testLayers.Select(l => l.Name).ToList()
                 }
             }
         };

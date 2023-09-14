@@ -216,4 +216,25 @@ public class Client : IClient
 
         return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
     }
+
+    public async Task<List<BaseEntity>> GetTestLayers()
+    {
+        _logger.LogInformation("Getting test layers");
+
+        var response = await _httpClient.GetAsync($"api/rs/testlayer");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test layers. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get test layers. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var layers = JsonSerializer.Deserialize<BaseEntities>(content);
+
+        return layers.Content.ToList();
+    }
 }
