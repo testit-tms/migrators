@@ -1,4 +1,3 @@
-using System.Text;
 using AllureExporter.Client;
 using AllureExporter.Models;
 using Microsoft.Extensions.Logging;
@@ -12,12 +11,15 @@ public class TestCaseService : ITestCaseService
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IAttachmentService _attachmentService;
+    private readonly IStepService _stepService;
 
-    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IAttachmentService attachmentService)
+    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IAttachmentService attachmentService,
+        IStepService stepService)
     {
         _logger = logger;
         _client = client;
         _attachmentService = attachmentService;
+        _stepService = stepService;
     }
 
     public async Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<string, Guid> attributes,
@@ -51,64 +53,8 @@ public class TestCaseService : ITestCaseService
         return testCases;
     }
 
-    protected virtual async Task<List<Step>> ConvertSteps(int testCaseId)
-    {
-        var steps = await _client.GetSteps(testCaseId);
-
-        _logger.LogDebug("Found steps: {@Steps}", steps);
-
-        return steps.Select(allureStep =>
-            {
-                var attachments = new List<string>();
-
-                foreach (var allureStepStep in allureStep.Steps.Where(allureStepStep =>
-                             allureStepStep.Attachments != null))
-                {
-                    attachments.AddRange(allureStepStep.Attachments!.Select(a => a.Name));
-                }
-
-                var step = new Step
-                {
-                    Action = GetStepAction(allureStep),
-                    Attachments = allureStep.Attachments != null
-                        ? allureStep.Attachments.Select(a => a.Name).ToList()
-                        : new List<string>(),
-                    Expected = allureStep.ExpectedResult
-                };
-
-                step.Attachments.AddRange(attachments);
-
-                return step;
-            })
-            .ToList();
-    }
-
-    private static string GetStepAction(AllureStep step)
-    {
-        var builder = new StringBuilder();
-
-        if (!string.IsNullOrEmpty(step.Keyword))
-        {
-            builder.AppendLine($"<p>{step.Keyword}</p>");
-        }
-
-        builder.AppendLine($"<p>{step.Name}</p>");
-
-        step.Steps
-            .ForEach(s =>
-            {
-                if (!string.IsNullOrEmpty(s.Keyword))
-                {
-                    builder.AppendLine($"<p>{s.Keyword}</p>");
-                }
-
-                builder.AppendLine($"<p>{s.Name}</p>");
-            });
-
-        return builder.ToString();
-    }
-
-    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId, Dictionary<string, Guid> attributes)
+    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId,
+        Dictionary<string, Guid> attributes)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
 
@@ -120,7 +66,8 @@ public class TestCaseService : ITestCaseService
 
         var testCaseGuid = Guid.NewGuid();
         var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseId, testCaseGuid);
-        var steps = await ConvertSteps(testCaseId);
+        var steps = await _stepService.ConvertSteps(testCaseId);
+        var caseAttributes = await ConvertAttributes(testCaseId, testCase, attributes);
 
         var allureTestCase = new TestCase
         {
@@ -139,28 +86,38 @@ public class TestCaseService : ITestCaseService
                 Url = l.Url,
                 Title = l.Name,
             }).ToList(),
-            Attributes = new List<CaseAttribute>
-            {
-                new()
-                {
-                    Id = attributes[Constants.AllureStatus],
-                    Value = testCase.Status.Name
-                },
-                new()
-                {
-                    Id = attributes[Constants.AllureTestLayer],
-                    Value = testCase.Layer != null ? testCase.Layer.Name : string.Empty
-                }
-            },
+            Attributes = caseAttributes,
             Attachments = tmsAttachments,
             Steps = steps
+        };
+
+        _logger.LogDebug("Converted test case: {@TestCase}", allureTestCase);
+
+        return allureTestCase;
+    }
+
+    private async Task<List<CaseAttribute>> ConvertAttributes(int testCaseId, AllureTestCase testCase,
+        Dictionary<string, Guid> attributes)
+    {
+        var caseAttributes = new List<CaseAttribute>
+        {
+            new CaseAttribute
+            {
+                Id = attributes[Constants.AllureStatus],
+                Value = testCase.Status.Name
+            },
+            new CaseAttribute
+            {
+                Id = attributes[Constants.AllureTestLayer],
+                Value = testCase.Layer != null ? testCase.Layer.Name : string.Empty
+            }
         };
 
         var customFields = await _client.GetCustomFieldsFromTestCase(testCaseId);
 
         foreach (var attribute in attributes)
         {
-            if (attribute.Key == Constants.AllureStatus || attribute.Key == Constants.AllureTestLayer)
+            if (attribute.Key is Constants.AllureStatus or Constants.AllureTestLayer)
             {
                 continue;
             }
@@ -169,7 +126,7 @@ public class TestCaseService : ITestCaseService
 
             if (customField != null)
             {
-                allureTestCase.Attributes.Add(new CaseAttribute
+                caseAttributes.Add(new CaseAttribute
                 {
                     Id = attribute.Value,
                     Value = customField.Name
@@ -177,7 +134,7 @@ public class TestCaseService : ITestCaseService
             }
             else
             {
-                allureTestCase.Attributes.Add(new CaseAttribute
+                caseAttributes.Add(new CaseAttribute
                 {
                     Id = attribute.Value,
                     Value = string.Empty
@@ -185,8 +142,6 @@ public class TestCaseService : ITestCaseService
             }
         }
 
-        _logger.LogDebug("Converted test case: {@TestCase}", allureTestCase);
-
-        return allureTestCase;
+        return caseAttributes;
     }
 }
