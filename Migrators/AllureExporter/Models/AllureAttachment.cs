@@ -8,6 +8,7 @@ public class AllureAttachment
     public int Id { get; set; }
     [JsonPropertyName("name")]
     public string Name { get; set; }
+
     [JsonPropertyName("contentType")]
     public string ContentType { get; set; }
 }
