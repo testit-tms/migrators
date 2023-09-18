@@ -25,7 +25,7 @@ public class AttachmentService : IAttachmentService
         foreach (var attachment in attachments)
         {
             var stream = await _parserService.GetAttachment(workItemId, attachment);
-            var id = await _client.UploadAttachment(attachment, stream);
+            var id = await _client.UploadAttachment(Path.GetFileName(stream.Name), stream);
 
             ids.Add(attachment, id);
         }
