@@ -63,6 +63,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           append: true
+          recreate: true
           path: code-coverage-results.md
     
       - name: Write to Job Summary
