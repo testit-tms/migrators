@@ -66,7 +66,7 @@ public class Client : IClient
 
     public async Task<Guid> GetProjectId()
     {
-        var projects = await _projectClient.GetProjects();
+        var projects = _projectClient.GetProjects().Result;
         var project = projects.FirstOrDefault(p => p.Name.Equals(_projectName, StringComparison.InvariantCultureIgnoreCase));
 
         if (project == null)
@@ -79,21 +79,21 @@ public class Client : IClient
 
     public async Task<PagedList<TestPlan>> GetTestPlansByProjectId(Guid id)
     {
-        var testPlans = await _testPlanClient.GetTestPlansAsync(project: id);
+        var testPlans = _testPlanClient.GetTestPlansAsync(project: id).Result;
 
         return testPlans;
     }
 
     public async Task<PagedList<TestSuite>> GetTestSuitesByProjectIdAndTestPlanId(Guid projectId, int planId)
     {
-        var testSuites = await _testPlanClient.GetTestSuitesForPlanAsync(project: projectId, planId: planId);
+        var testSuites = _testPlanClient.GetTestSuitesForPlanAsync(project: projectId, planId: planId).Result;
 
         return testSuites;
     }
 
     public async Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId, int suiteId)
     {
-        var testCases = await _testPlanClient.GetTestCaseListAsync(project: projectId, planId: planId, suiteId: suiteId);
+        var testCases = _testPlanClient.GetTestCaseListAsync(project: projectId, planId: planId, suiteId: suiteId).Result;
 
         return testCases;
     }
