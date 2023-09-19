@@ -66,5 +66,12 @@ jobs:
           hide_and_recreate: true
           path: code-coverage-results.md
     
+      # - name: Write to Job Summary
+      #   run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
+      - name: Create code coverage report
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          reportgenerator -reports:coverage/*/coverage.cobertura.xml -targetdir:CodeCoverage -reporttypes:'MarkdownSummaryGithub,Cobertura'
+
       - name: Write to Job Summary
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY    
+        run: cat CodeCoverage/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
