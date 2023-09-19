@@ -216,4 +216,88 @@ public class Client : IClient
 
         return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
     }
+
+    public async Task<List<BaseEntity>> GetTestLayers()
+    {
+        _logger.LogInformation("Getting test layers");
+
+        var response = await _httpClient.GetAsync($"api/rs/testlayer");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test layers. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get test layers. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var layers = JsonSerializer.Deserialize<BaseEntities>(content);
+
+        return layers.Content.ToList();
+    }
+
+    public async Task<List<BaseEntity>> GetCustomFieldNames(int projectId)
+    {
+        _logger.LogInformation("Get custom field names for project with id {ProjectId}", projectId);
+
+        var response = await _httpClient.GetAsync($"api/rs/cf?projectId={projectId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get custom field names for project with id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
+                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get custom field names for project with id {projectId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var customFields = JsonSerializer.Deserialize<List<BaseEntity>>(content);
+
+        return customFields;
+    }
+
+    public async Task<List<BaseEntity>> GetCustomFieldValues(int fieldId)
+    {
+        _logger.LogInformation("Get custom field values for field with id {FieldId}", fieldId);
+
+        var response = await _httpClient.GetAsync($"api/rs/cfv?customFieldId={fieldId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get custom field values for field with id {FieldId}. Status code: {StatusCode}. Response: {Response}",
+                fieldId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get custom field values for field with id {fieldId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var values = JsonSerializer.Deserialize<BaseEntities>(content);
+
+        return values.Content.ToList();
+    }
+
+    public async Task<List<AllureCustomField>> GetCustomFieldsFromTestCase(int testCaseId)
+    {
+        _logger.LogInformation("Get custom fields from test case with id {TestCaseId}", testCaseId);
+
+        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/cfv");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get custom fields from test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
+                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get custom fields from test case with id {testCaseId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var customFields = JsonSerializer.Deserialize<List<AllureCustomField>>(content);
+
+        return customFields;
+    }
 }

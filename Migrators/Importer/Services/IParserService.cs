@@ -8,5 +8,5 @@ public interface IParserService
     Task<Root> GetMainFile();
     Task<SharedStep> GetSharedStep(Guid guid);
     Task<TestCase> GetTestCase(Guid guid);
-    Task<Stream> GetAttachment(Guid guid, string fileName);
+    Task<FileStream> GetAttachment(Guid guid, string fileName);
 }

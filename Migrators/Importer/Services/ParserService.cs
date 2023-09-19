@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,8 @@ public class ParserService : IParserService
 {
     private readonly ILogger<ParserService> _logger;
     private readonly string _resultPath;
+
+    private const long MaxAttachmentSize = 1024 * 1024 * 1024;
 
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -86,14 +89,41 @@ public class ParserService : IParserService
         throw new ApplicationException("Test case file is empty");
     }
 
-    public Task<Stream> GetAttachment(Guid guid, string fileName)
+    public Task<FileStream> GetAttachment(Guid guid, string fileName)
     {
         var filePath = Path.Combine(_resultPath, guid.ToString(), fileName);
 
-        if (File.Exists(filePath))
-            return Task.FromResult<Stream>(new FileStream(filePath, FileMode.Open, FileAccess.Read));
+        if (!File.Exists(filePath))
+        {
+            _logger.LogError("Attachment file not found: {Path}", filePath);
+            throw new ApplicationException("Attachment file not found");
+        }
 
-        _logger.LogError("Attachment file not found: {Path}", filePath);
-        throw new ApplicationException("Attachment file not found");
+        var fileInfo = new FileInfo(filePath);
+
+        if (fileInfo.Length <= MaxAttachmentSize)
+            return Task.FromResult(new FileStream(filePath, FileMode.Open, FileAccess.Read));
+
+        _logger.LogInformation("The file {FilePath} is large: {Size}. Compressing", filePath, fileInfo.Length);
+
+        var zipName = Path.Combine(_resultPath, guid.ToString(),
+            Path.GetFileNameWithoutExtension(fileName) + ".zip");
+
+        if (File.Exists(zipName))
+            File.Delete(zipName);
+
+        using var archive =
+            ZipFile
+                .Open(zipName, ZipArchiveMode.Create);
+
+        archive.CreateEntryFromFile(
+            filePath,
+            Path.GetFileName(filePath),
+            CompressionLevel.Optimal
+        );
+
+        filePath = zipName;
+
+        return Task.FromResult(new FileStream(filePath, FileMode.Open, FileAccess.Read));
     }
 }

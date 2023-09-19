@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Constants = AllureExporter.Models.Constants;
 using Exception = System.Exception;
 
 namespace AllureExporterTests;
@@ -14,9 +15,9 @@ public class TestCaseServiceTests
     private ILogger<TestCaseService> _logger;
     private IClient _client;
     private IAttachmentService _attachmentService;
+    private IStepService _stepService;
     private const int ProjectId = 1;
-    private readonly Guid _statusAttribute = Guid.NewGuid();
-    private readonly Guid _layerAttribute = Guid.NewGuid();
+    private Dictionary<string, Guid> _attributes = new Dictionary<string, Guid>();
 
     private readonly Dictionary<int, Guid> _sectionIdMap = new()
     {
@@ -30,6 +31,26 @@ public class TestCaseServiceTests
         _logger = Substitute.For<ILogger<TestCaseService>>();
         _client = Substitute.For<IClient>();
         _attachmentService = Substitute.For<IAttachmentService>();
+        _stepService = Substitute.For<IStepService>();
+
+        _attributes = new Dictionary<string, Guid>()
+        {
+            {
+                Constants.AllureStatus, Guid.NewGuid()
+            },
+            {
+                Constants.AllureTestLayer, Guid.NewGuid()
+            },
+            {
+                "Component", Guid.NewGuid()
+            },
+            {
+                "Epic", Guid.NewGuid()
+            },
+            {
+                "Feature", Guid.NewGuid()
+            }
+        };
     }
 
     [Test]
@@ -39,11 +60,11 @@ public class TestCaseServiceTests
         _client.GetTestCaseIdsFromMainSuite(ProjectId)
             .ThrowsAsync(new Exception("Failed to get test case ids from main suite"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, _sectionIdMap));
+            await service.ConvertTestCases(ProjectId, _attributes, _sectionIdMap));
 
         // Assert
         await _client.DidNotReceive()
@@ -53,7 +74,8 @@ public class TestCaseServiceTests
         await _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
         await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _client.DidNotReceive().GetSteps(Arg.Any<int>());
+        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
+        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
     }
 
     [Test]
@@ -63,11 +85,11 @@ public class TestCaseServiceTests
         _client.GetTestCaseIdsFromSuite(ProjectId, 1)
             .ThrowsAsync(new Exception("Failed to get test case ids from suite"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>()
+            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>()
             {
                 { 1, _sectionIdMap[1] }
             }));
@@ -80,7 +102,8 @@ public class TestCaseServiceTests
         await _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
         await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _client.DidNotReceive().GetSteps(Arg.Any<int>());
+        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
+        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
     }
 
     [Test]
@@ -92,11 +115,11 @@ public class TestCaseServiceTests
         _client.GetTestCaseById(1)
             .ThrowsAsync(new Exception("Failed to get test case by id"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>
+            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
             {
                 { 1, _sectionIdMap[1] }
             }));
@@ -108,7 +131,8 @@ public class TestCaseServiceTests
             .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
         await _client.DidNotReceive().GetLinks(Arg.Any<int>());
         await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _client.DidNotReceive().GetSteps(Arg.Any<int>());
+        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
+        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
     }
 
     [Test]
@@ -123,11 +147,11 @@ public class TestCaseServiceTests
             .Returns(new List<AllureAttachment>());
         _client.GetLinks(1).ThrowsAsync(new Exception("Failed to get links"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>
+            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
             {
                 { 1, _sectionIdMap[1] }
             }));
@@ -137,7 +161,8 @@ public class TestCaseServiceTests
             .GetTestCaseIdsFromMainSuite(ProjectId);
         await _attachmentService.DidNotReceive()
             .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
-        await _client.DidNotReceive().GetSteps(Arg.Any<int>());
+        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
+        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
     }
 
     [Test]
@@ -154,11 +179,11 @@ public class TestCaseServiceTests
         _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
             .ThrowsAsync(new Exception("Failed to download attachments"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>
+            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
             {
                 { 1, _sectionIdMap[1] }
             }));
@@ -166,11 +191,12 @@ public class TestCaseServiceTests
         // Assert
         await _client.DidNotReceive()
             .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _client.DidNotReceive().GetSteps(Arg.Any<int>());
+        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
+        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
     }
 
     [Test]
-    public async Task ConvertTestCases_FailedGetSteps()
+    public async Task ConvertTestCases_FailedConvertSteps()
     {
         // Arrange
         _client.GetTestCaseIdsFromSuite(ProjectId, 1)
@@ -182,13 +208,72 @@ public class TestCaseServiceTests
         _client.GetLinks(1).Returns(new List<AllureLink>());
         _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
             .Returns(new List<string>());
-        _client.GetSteps(1).ThrowsAsync(new Exception("Failed to get steps"));
+        _stepService.ConvertSteps(1).ThrowsAsync(new Exception("Failed to convert steps"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>
+            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
+            {
+                { 1, _sectionIdMap[1] }
+            }));
+
+        // Assert
+        await _client.DidNotReceive()
+            .GetTestCaseIdsFromMainSuite(ProjectId);
+        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
+    }
+
+    [Test]
+    public async Task ConvertTestCases_FailedGetCustomFieldsFromTestCase()
+    {
+        // Arrange
+        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
+            .Returns(new List<int> { 1, 2 });
+        _client.GetTestCaseById(1)
+            .Returns(new AllureTestCase
+            {
+                Description = "Test description",
+                Id = 1,
+                Name = "Test name",
+                Status = new Status
+                {
+                    Name = "Ready"
+                },
+                Tags = new List<Tags>
+                {
+                    new()
+                    {
+                        Name = "Test tag"
+                    }
+                },
+                Layer = new TestLayer()
+                {
+                    Name = "Unit Tests"
+                }
+            });
+        _client.GetAttachments(1)
+            .Returns(new List<AllureAttachment>());
+        _client.GetLinks(1).Returns(new List<AllureLink>());
+        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
+            .Returns(new List<string>());
+        _stepService.ConvertSteps(1).Returns(new List<Step>()
+        {
+            new()
+            {
+                Action = "Test step 1",
+                Expected = "Expected result",
+                Attachments = new List<string>(),
+            }
+        });
+        _client.GetCustomFieldsFromTestCase(1).ThrowsAsync(new Exception("Failed to get custom fields from test case"));
+
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
+
+        // Act
+        Assert.ThrowsAsync<Exception>(async () =>
+            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
             {
                 { 1, _sectionIdMap[1] }
             }));
@@ -228,36 +313,53 @@ public class TestCaseServiceTests
             });
         _client.GetAttachments(1)
             .Returns(new List<AllureAttachment>());
-        _client.GetLinks(1).Returns(new List<AllureLink>());
+        _client.GetLinks(1).Returns(new List<AllureLink>()
+        {
+            new ()
+            {
+                Name = "Test link",
+                Url = "https://testlink.com"
+            }
+        });
         _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
             .Returns(new List<string>());
-        _client.GetSteps(1).Returns(new List<AllureStep>
+        _stepService.ConvertSteps(1).Returns(new List<Step>()
         {
             new()
             {
-                Keyword = "Given",
-                Name = "Test step 1",
-                Steps = new List<AllureStep>
+                Action = "Test step 1",
+                Expected = "Expected result",
+                Attachments = new List<string>(),
+            }
+        });
+        _client.GetCustomFieldsFromTestCase(1).Returns(new List<AllureCustomField>
+        {
+            new()
+            {
+                Name = "Authorization",
+                CustomField = new CustomField()
                 {
-                    new()
-                    {
-                        Keyword = "When",
-                        Name = "Test step 2",
-                        Attachments = new List<AllureAttachment>(),
-                        Steps = new List<AllureStep>()
-                    }
-                },
-                Attachments = new List<AllureAttachment>()
+                    Name = "Component"
+                }
+            },
+            new()
+            {
+                Name = "Epic01",
+                CustomField = new CustomField()
+                {
+                    Name = "Epic"
+                }
             }
         });
 
-        var service = new TestCaseService(_logger, _client, _attachmentService);
+        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
 
         // Act
-        var testcases = await service.ConvertTestCases(ProjectId, _statusAttribute, _layerAttribute, new Dictionary<int, Guid>
-        {
-            { 1, _sectionIdMap[1] }
-        });
+        var testcases = await service.ConvertTestCases(ProjectId, _attributes,
+            new Dictionary<int, Guid>
+            {
+                { 1, _sectionIdMap[1] }
+            });
 
         // Assert
         await _client.DidNotReceive()
@@ -267,9 +369,14 @@ public class TestCaseServiceTests
         Assert.That(testcases[0].State, Is.EqualTo(StateType.NotReady));
         Assert.That(testcases[0].Priority, Is.EqualTo(PriorityType.Medium));
         Assert.That(testcases[0].Tags, Is.EqualTo(new List<string> { "Test tag" }));
-        Assert.That(testcases[0].Steps[0].Action, Is.EqualTo("<p>Given</p>\n<p>Test step 1</p>\n<p>When</p>\n<p>Test step 2</p>\n"));
+        Assert.That(testcases[0].Steps[0].Action, Is.EqualTo("Test step 1"));
         Assert.That(testcases[0].Attributes[0].Value, Is.EqualTo("Ready"));
         Assert.That(testcases[0].Attributes[1].Value, Is.EqualTo("Unit Tests"));
+        Assert.That(testcases[0].Attributes[2].Value, Is.EqualTo("Authorization"));
+        Assert.That(testcases[0].Attributes[3].Value, Is.EqualTo("Epic01"));
+        Assert.That(testcases[0].Attributes[4].Value, Is.Empty);
         Assert.That(testcases[0].SectionId, Is.EqualTo(_sectionIdMap[1]));
+        Assert.That(testcases[0].Links[0].Title, Is.EqualTo("Test link"));
+        Assert.That(testcases[0].Links[0].Url, Is.EqualTo("https://testlink.com"));
     }
 }

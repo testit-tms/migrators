@@ -2,7 +2,6 @@ using AllureExporter.Client;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
-using Attribute = Models.Attribute;
 
 namespace AllureExporter.Services;
 
@@ -13,20 +12,17 @@ public class ExportService : IExportService
     private readonly IWriteService _writeService;
     private readonly ISectionService _sectionService;
     private readonly ITestCaseService _testCaseService;
-    private readonly Guid _attributeId = Guid.NewGuid();
-    private readonly Guid _layerId = Guid.NewGuid();
-
-    private const string AllureStatus = "AllureStatus";
-    private const string AllureTestLayer = "Test Layer";
+    private readonly IAttributeService _attributeService;
 
     public ExportService(ILogger<ExportService> logger, IClient client, IWriteService writeService,
-        ISectionService sectionService, ITestCaseService testCaseService)
+        ISectionService sectionService, ITestCaseService testCaseService, IAttributeService attributeService)
     {
         _logger = logger;
         _client = client;
         _writeService = writeService;
         _sectionService = sectionService;
         _testCaseService = testCaseService;
+        _attributeService = attributeService;
     }
 
     public virtual async Task ExportProject()
@@ -35,9 +31,16 @@ public class ExportService : IExportService
 
         var project = await _client.GetProjectId();
         var section = await _sectionService.ConvertSection(project.Id);
-        var testCases = await _testCaseService.ConvertTestCases(project.Id, _attributeId, _layerId, section.SectionDictionary);
+        var attributes = await _attributeService.GetCustomAttributes(project.Id);
 
-        testCases.ForEach(t => _writeService.WriteTestCase(t));
+        var customAttributes = attributes.ToDictionary(k => k.Name, v => v.Id);
+        var testCases =
+            await _testCaseService.ConvertTestCases(project.Id, customAttributes, section.SectionDictionary);
+
+        foreach (var testCase in testCases)
+        {
+            await _writeService.WriteTestCase(testCase);
+        }
 
         var mainJson = new Root
         {
@@ -45,33 +48,7 @@ public class ExportService : IExportService
             Sections = new List<Section> { section.MainSection },
             TestCases = testCases.Select(t => t.Id).ToList(),
             SharedSteps = new List<Guid>(),
-            Attributes = new List<Attribute>
-            {
-                new()
-                {
-                    Id = _attributeId,
-                    Name = AllureStatus,
-                    IsActive = true,
-                    IsRequired = true,
-                    Type = AttributeType.Options,
-                    Options = new List<string>
-                    {
-                        "Draft",
-                        "Active",
-                        "Outdated",
-                        "Review"
-                    }
-                },
-                new ()
-                {
-                    Id = _layerId,
-                    Name = AllureTestLayer,
-                    IsActive = true,
-                    IsRequired = true,
-                    Type = AttributeType.String,
-                    Options = new List<string>()
-                }
-            }
+            Attributes = attributes
         };
 
         await _writeService.WriteMainJson(mainJson);
