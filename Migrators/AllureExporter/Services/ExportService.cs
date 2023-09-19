@@ -37,7 +37,10 @@ public class ExportService : IExportService
         var testCases =
             await _testCaseService.ConvertTestCases(project.Id, customAttributes, section.SectionDictionary);
 
-        testCases.ForEach(t => _writeService.WriteTestCase(t));
+        foreach (var testCase in testCases)
+        {
+            await _writeService.WriteTestCase(testCase);
+        }
 
         var mainJson = new Root
         {
