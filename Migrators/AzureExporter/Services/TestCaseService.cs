@@ -20,11 +20,10 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task<List<TestCase>> Export()
+    public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap, Guid sectionId)
     {
         _logger.LogInformation("Export test cases");
 
-        var projectId = await _client.GetProjectId();
         var testPlans = await _client.GetTestPlansByProjectId(projectId);
 
         var workItems = new List<Microsoft.VisualStudio.Services.TestManagement.TestPlanning.WebApi.TestCase>();

@@ -52,7 +52,8 @@ public class WriteService : IWriteService
         }
 
         var existFile =
-            files.FirstOrDefault(f => string.Equals(Path.GetFileName(f), fileName, StringComparison.InvariantCultureIgnoreCase));
+            files.FirstOrDefault(f =>
+                string.Equals(Path.GetFileName(f), fileName, StringComparison.InvariantCultureIgnoreCase));
 
         if (existFile == null)
         {
@@ -85,6 +86,22 @@ public class WriteService : IWriteService
 
         await using var createStream = File.Create(filePath);
         await JsonSerializer.SerializeAsync(createStream, testCase);
+    }
+
+    public async Task WriteSharedStep(SharedStep sharedStep)
+    {
+        var fullPath = Path.Combine(_path, sharedStep.Id.ToString());
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        var filePath = Path.Combine(fullPath, Constants.TestCase);
+
+        _logger.LogInformation("Writing shared step {Id}: {Path}", sharedStep.Id, filePath);
+
+        await using var createStream = File.Create(filePath);
+        await JsonSerializer.SerializeAsync(createStream, sharedStep);
     }
 
     public async Task WriteMainJson(Root mainJson)

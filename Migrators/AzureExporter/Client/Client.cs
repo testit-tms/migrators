@@ -3,7 +3,6 @@ using System.Text.Json;
 using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
-
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.TeamFoundation.Work.WebApi;
@@ -16,6 +15,7 @@ namespace AzureExporter.Client;
 public class Client : IClient
 {
     private readonly ILogger<Client> _logger;
+
     //private readonly HttpClient _httpClient;
     private readonly ProjectHttpClient _projectClient;
     private readonly TestPlanHttpClient _testPlanClient;
@@ -64,17 +64,22 @@ public class Client : IClient
         _workClient = connection.GetClient<WorkHttpClient>();
     }
 
-    public async Task<Guid> GetProjectId()
+    public async Task<AzureProject> GetProject()
     {
         var projects = _projectClient.GetProjects().Result;
-        var project = projects.FirstOrDefault(p => p.Name.Equals(_projectName, StringComparison.InvariantCultureIgnoreCase));
+        var project = projects.FirstOrDefault(p =>
+                p.Name.Equals(_projectName, StringComparison.InvariantCultureIgnoreCase));
 
         if (project == null)
         {
             throw new ArgumentException($"Project {_projectName} is not found");
         }
 
-        return project.Id;
+        return new AzureProject
+        {
+            Id = project.Id,
+            Name = project.Name
+        };
     }
 
     public async Task<PagedList<TestPlan>> GetTestPlansByProjectId(Guid id)
@@ -91,9 +96,11 @@ public class Client : IClient
         return testSuites;
     }
 
-    public async Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId, int suiteId)
+    public async Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId,
+        int suiteId)
     {
-        var testCases = _testPlanClient.GetTestCaseListAsync(project: projectId, planId: planId, suiteId: suiteId).Result;
+        var testCases = _testPlanClient.GetTestCaseListAsync(project: projectId, planId: planId, suiteId: suiteId)
+            .Result;
 
         return testCases;
     }

@@ -1,5 +1,6 @@
 using AzureExporter.Client;
 using AzureExporter.Services;
+using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,6 +52,7 @@ namespace AzureExporter
                     services.AddSingleton<IAttachmentService, AttachmentService>();
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IStepService, StepService>();
+                    services.AddSingleton<IWriteService, WriteService>();
                 });
         }
 
