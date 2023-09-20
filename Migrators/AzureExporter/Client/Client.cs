@@ -4,13 +4,30 @@ using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.TeamFoundation.Core.WebApi;
-using Microsoft.TeamFoundation.SourceControl.WebApi;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.TeamFoundation.Work.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.TestManagement.TestPlanning.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
+using WorkItem = Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem;
 
 namespace AzureExporter.Client;
+
+// public class WorkItemsType
+// {
+//     private WorkItemsType(string value) { Value = value; }
+//
+//     public string Value { get; private set; }
+//
+//     public static WorkItemsType SharedSteps { get { return new WorkItemsType("Shared Steps"); } }
+//     public static WorkItemsType TestCases { get { return new WorkItemsType("Test Case"); } }
+//
+//     public override string ToString()
+//     {
+//         return Value;
+//     }
+// }
 
 public class Client : IClient
 {
@@ -19,7 +36,7 @@ public class Client : IClient
     //private readonly HttpClient _httpClient;
     private readonly ProjectHttpClient _projectClient;
     private readonly TestPlanHttpClient _testPlanClient;
-    private readonly WorkHttpClient _workClient;
+    private readonly WorkItemTrackingHttpClient _workItemTrackingClient;
     private readonly string _projectName;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
@@ -61,7 +78,7 @@ public class Client : IClient
         var connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, token));
         _projectClient = connection.GetClient<ProjectHttpClient>();
         _testPlanClient = connection.GetClient<TestPlanHttpClient>();
-        _workClient = connection.GetClient<WorkHttpClient>();
+        _workItemTrackingClient = connection.GetClient<WorkItemTrackingHttpClient>();
     }
 
     public async Task<AzureProject> GetProject()
@@ -105,93 +122,23 @@ public class Client : IClient
         return testCases;
     }
 
-    //public async Task<AzureTestPlans> GetTestPlans()
-    //{
-    //    using (HttpResponseMessage response = _httpClient.GetAsync(
-    //                $"{_organisationName}/{_projectName}/_apis/test/plans?api-version=5.0").Result)
-    //    {
-    //        if (!response.IsSuccessStatusCode)
-    //        {
-    //            _logger.LogError($"Failed to get test plans. Status code: {response.StatusCode}. Response: {await response.Content.ReadAsStringAsync()}");
+    public async Task<List<WorkItemReference>> GetWorkItems(string workItemType)
+    {
+        Wiql wiql = new Wiql();
+        wiql.Query = $"SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo],[System.State],[System.Tags] " +
+                     $"FROM WorkItems " +
+                     $"WHERE [System.TeamProject] = '{_projectName}' " +
+                     $"AND [System.WorkItemType] = '{workItemType}'";
 
-    //            throw new Exception($"Failed to get test plans. Status code: {response.StatusCode}");
-    //        }
+        var queryResult = _workItemTrackingClient.QueryByWiqlAsync(wiql).Result;
 
-    //        var content = await response.Content.ReadAsStringAsync();
+        return queryResult.WorkItems.ToList();
+    }
 
-    //        return JsonSerializer.Deserialize<AzureTestPlans>(content);
-    //    }
-    //}
+    public async Task<WorkItem> GetWorkItemById(int id)
+    {
+        var workItem = _workItemTrackingClient.GetWorkItemAsync(_projectName, id).Result;
 
-    //public async Task<AzureSuites> GetTestSuitesByTestPlanId(int id)
-    //{
-    //    using (HttpResponseMessage response = _httpClient.GetAsync(
-    //        $"{_organisationName}/{_projectName}/_apis/test/plans/{id}/suites?api-version=5.0").Result)
-    //    {
-    //        if (!response.IsSuccessStatusCode)
-    //        {
-    //            _logger.LogError($"Failed to get test suites. Status code: {response.StatusCode}. Response: {await response.Content.ReadAsStringAsync()}");
-
-    //            throw new Exception($"Failed to get test suites. Status code: {response.StatusCode}");
-    //        }
-
-    //        var content = await response.Content.ReadAsStringAsync();
-
-    //        return JsonSerializer.Deserialize<AzureSuites>(content);
-    //    }
-    //}
-
-    //public async Task<AzureTestPoints> GetTestCasesByTestPlanIdTestSuiteId(int planId, int suiteId)
-    //{
-    //    using (HttpResponseMessage response = _httpClient.GetAsync(
-    //        $"{_organisationName}/{_projectName}/_apis/test/Plans/{planId}/suites/{suiteId}/testcases?api-version=5.0").Result)
-    //    {
-    //        if (!response.IsSuccessStatusCode)
-    //        {
-    //            _logger.LogError($"Failed to get test cases. Status code: {response.StatusCode}. Response: {await response.Content.ReadAsStringAsync()}");
-
-    //            throw new Exception($"Failed to get test cases. Status code: {response.StatusCode}");
-    //        }
-
-    //        var content = await response.Content.ReadAsStringAsync();
-
-    //        return JsonSerializer.Deserialize<AzureTestPoints>(content);
-    //    }
-    //}
-
-    //public async Task<AzureWorkItem> GetWorkItemById(string id)
-    //{
-    //    using (HttpResponseMessage response = _httpClient.GetAsync(
-    //        $"{_organisationName}/{_projectName}/_apis/wit/workitems/{id}?api-version=5.0").Result)
-    //    {
-    //        if (!response.IsSuccessStatusCode)
-    //        {
-    //            _logger.LogError($"Failed to get work item by id {id}. Status code: {response.StatusCode}. Response: {await response.Content.ReadAsStringAsync()}");
-
-    //            throw new Exception($"Failed to get work item by id {id}. Status code: {response.StatusCode}");
-    //        }
-
-    //        var content = await response.Content.ReadAsStringAsync();
-
-    //        return JsonSerializer.Deserialize<AzureWorkItem>(content);
-    //    }
-    //}
-
-    //public async Task<string> GetAttachmentById(int id)
-    //{
-    //    using (HttpResponseMessage response = _httpClient.GetAsync(
-    //        $"{_organisationName}/{_projectName}/_apis/wit/attachments/{id}?api-version=7.0").Result)
-    //    {
-    //        if (!response.IsSuccessStatusCode)
-    //        {
-    //            _logger.LogError($"Failed to get attachment by id {id}. Status code: {response.StatusCode}. Response: {await response.Content.ReadAsStringAsync()}");
-
-    //            throw new Exception($"Failed to get attachment by id {id}. Status code: {response.StatusCode}");
-    //        }
-
-    //        var content = await response.Content.ReadAsStringAsync();
-
-    //        return content;
-    //    }
-    //}
+        return workItem;
+    }
 }

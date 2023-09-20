@@ -1,8 +1,10 @@
 //using AzureExporter.Models;
 
 using AzureExporter.Models;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.TestManagement.TestPlanning.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
+using WorkItem = Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem;
 
 namespace AzureExporter.Client;
 
@@ -12,10 +14,6 @@ public interface IClient
     Task<PagedList<TestPlan>> GetTestPlansByProjectId(Guid id);
     Task<PagedList<TestSuite>> GetTestSuitesByProjectIdAndTestPlanId(Guid projectId, int planId);
     Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId, int suiteId);
-
-    //Task<AzureTestPlans> GetTestPlans();
-    //Task<AzureSuites> GetTestSuitesByTestPlanId(int id);
-    //Task<AzureTestPoints> GetTestCasesByTestPlanIdTestSuiteId(int planId, int suiteId);
-    //Task<AzureWorkItem> GetWorkItemById(string id);
-    //Task<string> GetAttachmentById(int id);
+    Task<List<WorkItemReference>> GetWorkItems(string type);
+    Task<WorkItem> GetWorkItemById(int id);
 }

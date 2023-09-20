@@ -50,6 +50,7 @@ namespace AzureExporter
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IExportService, ExportService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<ISharedStepService, SharedStepService>();
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IStepService, StepService>();
                     services.AddSingleton<IWriteService, WriteService>();
