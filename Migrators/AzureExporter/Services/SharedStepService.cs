@@ -21,7 +21,7 @@ public class SharedStepService : ISharedStepService
         _attachmentService = attachmentService;
     }
 
-    public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(Guid projectId, Guid sectionId)
+    public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(Guid projectId, Guid sectionId, Dictionary<string, Guid> attributeMap)
     {
         _logger.LogInformation("Converting shared steps");
 
@@ -49,7 +49,7 @@ public class SharedStepService : ISharedStepService
                 Steps = steps,
                 Description = "",
                 State = StateType.Ready,
-                Priority = PriorityType.Medium,
+                Priority = ConvertPriority(sharedStep.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3),
                 Attributes = new List<CaseAttribute>(),
                 Links = new List<Link>(),
                 Attachments = new List<string>(),
@@ -63,5 +63,24 @@ public class SharedStepService : ISharedStepService
         }
 
         return sharedSteps;
+    }
+
+    private PriorityType ConvertPriority(int priority)
+    {
+        switch (priority)
+        {
+            case 1:
+                return PriorityType.Highest;
+            case 2:
+                return PriorityType.High;
+            case 3:
+                return PriorityType.Medium;
+            case 4:
+                return PriorityType.Low;
+            default:
+                _logger.LogError("Failed to convert priority {Priority}", priority);
+
+                throw new Exception($"Failed to convert priority {priority}");
+        }
     }
 }

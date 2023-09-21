@@ -20,7 +20,7 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap, Guid sectionId)
+    public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap, Guid sectionId, Dictionary<string, Guid> attributeMap)
     {
         _logger.LogInformation("Converting test cases");
 

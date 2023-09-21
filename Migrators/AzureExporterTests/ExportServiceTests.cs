@@ -19,12 +19,15 @@ public class ExportServiceTests
     private IWriteService _writeService;
     private ITestCaseService _testCaseService;
     private ISharedStepService _sharedStepService;
+    private IAttributeService _attributeService;
 
     private Dictionary<int, SharedStep> _sharedSteps;
     private AzureProject _project;
     private Section _section;
     private TestCase _testCase;
     private Root _mainJson;
+    private List<Attribute> _attributes;
+    private Dictionary<string, Guid> _attributeMap;
 
     [SetUp]
     public void Setup()
@@ -34,11 +37,33 @@ public class ExportServiceTests
         _writeService = Substitute.For<IWriteService>();
         _testCaseService = Substitute.For<ITestCaseService>();
         _sharedStepService = Substitute.For<ISharedStepService>();
+        _attributeService = Substitute.For<IAttributeService>();
 
         _project = new AzureProject
         {
             Id = Guid.NewGuid(),
             Name = "Project name"
+        };
+
+        _attributes = new List<Attribute>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Attribute 1",
+                IsActive = true,
+                IsRequired = false,
+                Type = AttributeType.Options,
+                Options = new List<string>
+                {
+                    "Option 1",
+                }
+            }
+        };
+
+        _attributeMap = new Dictionary<string, Guid>
+        {
+            { _attributes[0].Name, _attributes[0].Id }
         };
 
         _section = new Section
@@ -103,149 +128,339 @@ public class ExportServiceTests
     public async Task ExportProject_FailedGetProject()
     {
         // Arrange
-        _client.GetProject().ThrowsAsync(new Exception("Failed to get project"));
+        _client.GetProject()
+            .ThrowsAsync(new Exception("Failed to get project"));
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        await _sharedStepService.DidNotReceive().ConvertSharedSteps(Arg.Any<Guid>(), Arg.Any<Guid>());
-        await _testCaseService.DidNotReceive().ConvertTestCases(Arg.Any<Guid>(), Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>());
-        await _writeService.DidNotReceive().WriteSharedStep(Arg.Any<SharedStep>());
-        await _writeService.DidNotReceive().WriteTestCase(Arg.Any<TestCase>());
-        await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
+        await _attributeService.DidNotReceive()
+            .GetCustomAttributes(Arg.Any<Guid>());
+
+        await _sharedStepService.DidNotReceive()
+            .ConvertSharedSteps(
+                Arg.Any<Guid>(),
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<string, Guid>>()
+            );
+
+        await _testCaseService.DidNotReceive()
+            .ConvertTestCases(
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<string, Guid>>()
+            );
+
+        await _writeService.DidNotReceive()
+            .WriteSharedStep(Arg.Any<SharedStep>());
+
+        await _writeService.DidNotReceive()
+            .WriteTestCase(Arg.Any<TestCase>());
+
+        await _writeService.DidNotReceive()
+            .WriteMainJson(Arg.Any<Root>());
+    }
+
+    [Test]
+    public async Task ExportProject_FailedGetCustomAttributes()
+    {
+        // Arrange
+        _client.GetProject()
+            .Returns(_project);
+
+        _attributeService.GetCustomAttributes(_project.Id)
+            .ThrowsAsync(new Exception("Failed to get shared steps"));
+
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
+
+        // Act
+        Assert.ThrowsAsync<Exception>(async () =>
+            await service.ExportProject());
+
+        // Assert
+        await _sharedStepService.DidNotReceive()
+            .ConvertSharedSteps(
+                Arg.Any<Guid>(),
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<string, Guid>>()
+            );
+
+        await _testCaseService.DidNotReceive()
+            .ConvertTestCases(
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<string, Guid>>()
+            );
+
+        await _writeService.DidNotReceive()
+            .WriteSharedStep(Arg.Any<SharedStep>());
+
+        await _writeService.DidNotReceive()
+            .WriteTestCase(Arg.Any<TestCase>());
+
+        await _writeService.DidNotReceive()
+            .WriteMainJson(Arg.Any<Root>());
     }
 
     [Test]
     public async Task ExportProject_FailedConvertSharedSteps()
     {
         // Arrange
-        _client.GetProject().Returns(_project);
-        _sharedStepService.ConvertSharedSteps(_project.Id, Arg.Any<Guid>())
+        _client.GetProject()
+            .Returns(_project);
+
+        _attributeService.GetCustomAttributes(_project.Id)
+            .Returns(_attributes);
+
+        _sharedStepService.ConvertSharedSteps(
+                _project.Id,
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
             .ThrowsAsync(new Exception("Failed to get shared steps"));
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        await _testCaseService.DidNotReceive().ConvertTestCases(Arg.Any<Guid>(), Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>());
-        await _writeService.DidNotReceive().WriteSharedStep(Arg.Any<SharedStep>());
-        await _writeService.DidNotReceive().WriteTestCase(Arg.Any<TestCase>());
-        await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
+        await _testCaseService.DidNotReceive()
+            .ConvertTestCases(
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Any<Dictionary<string, Guid>>()
+            );
+
+        await _writeService.DidNotReceive()
+            .WriteSharedStep(Arg.Any<SharedStep>());
+
+        await _writeService.DidNotReceive()
+            .WriteTestCase(Arg.Any<TestCase>());
+
+        await _writeService.DidNotReceive()
+            .WriteMainJson(Arg.Any<Root>());
     }
 
     [Test]
     public async Task ExportProject_FailedConvertTestCases()
     {
         // Arrange
-        _client.GetProject().Returns(_project);
-        _sharedStepService.ConvertSharedSteps(_project.Id, Arg.Any<Guid>()).Returns(_sharedSteps);
-        _testCaseService.ConvertTestCases(_project.Id, Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>()).ThrowsAsync(new Exception("Failed to get attributes"));
+        _client.GetProject()
+            .Returns(_project);
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        _attributeService.GetCustomAttributes(_project.Id)
+            .Returns(_attributes);
+
+        _sharedStepService.ConvertSharedSteps(
+                _project.Id,
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(_sharedSteps);
+
+        _testCaseService.ConvertTestCases(
+                _project.Id,
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .ThrowsAsync(new Exception("Failed to get attributes"));
+
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        await _writeService.DidNotReceive().WriteSharedStep(Arg.Any<SharedStep>());
-        await _writeService.DidNotReceive().WriteTestCase(Arg.Any<TestCase>());
-        await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
+        await _writeService.DidNotReceive()
+            .WriteSharedStep(Arg.Any<SharedStep>());
+
+        await _writeService.DidNotReceive()
+            .WriteTestCase(Arg.Any<TestCase>());
+
+        await _writeService.DidNotReceive()
+            .WriteMainJson(Arg.Any<Root>());
     }
 
     [Test]
     public async Task ExportProject_FailedWriteSharedStep()
     {
         // Arrange
-        _client.GetProject().Returns(_project);
-        _sharedStepService.ConvertSharedSteps(_project.Id, Arg.Any<Guid>()).Returns(_sharedSteps);
-        _testCaseService.ConvertTestCases(_project.Id, Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>()).Returns(new List<TestCase> { _testCase });
-        _writeService.WriteSharedStep(_sharedSteps[1]).ThrowsAsync(new Exception("Failed to write shared step"));
+        _client.GetProject()
+            .Returns(_project);
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        _attributeService.GetCustomAttributes(_project.Id)
+            .Returns(_attributes);
+
+        _sharedStepService.ConvertSharedSteps(
+                _project.Id,
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(_sharedSteps);
+
+        _testCaseService.ConvertTestCases(
+                _project.Id,
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(new List<TestCase> { _testCase });
+
+        _writeService.WriteSharedStep(_sharedSteps[1])
+            .ThrowsAsync(new Exception("Failed to write shared step"));
+
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        await _writeService.DidNotReceive().WriteTestCase(Arg.Any<TestCase>());
-        await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
+        await _writeService.DidNotReceive()
+            .WriteTestCase(Arg.Any<TestCase>());
+
+        await _writeService.DidNotReceive()
+            .WriteMainJson(Arg.Any<Root>());
     }
 
     [Test]
     public async Task ExportProject_FailedWriteTestCase()
     {
         // Arrange
-        _client.GetProject().Returns(_project);
-        _sharedStepService.ConvertSharedSteps(_project.Id, Arg.Any<Guid>()).Returns(_sharedSteps);
-        _testCaseService.ConvertTestCases(_project.Id, Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>()).Returns(new List<TestCase> { _testCase });
+        _client.GetProject()
+            .Returns(_project);
 
-        _writeService.WriteTestCase(_testCase).ThrowsAsync(new Exception("Failed to write test case"));
+        _attributeService.GetCustomAttributes(_project.Id)
+            .Returns(_attributes);
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        _sharedStepService.ConvertSharedSteps(
+                _project.Id,
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(_sharedSteps);
+
+        _testCaseService.ConvertTestCases(
+                _project.Id,
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(new List<TestCase> { _testCase });
+
+        _writeService.WriteTestCase(_testCase)
+            .ThrowsAsync(new Exception("Failed to write test case"));
+
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        await _writeService.Received().WriteSharedStep(Arg.Any<SharedStep>());
-        await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
+        await _writeService.Received()
+            .WriteSharedStep(Arg.Any<SharedStep>());
+
+        await _writeService.DidNotReceive()
+            .WriteMainJson(Arg.Any<Root>());
     }
 
     [Test]
     public async Task ExportProject_FailedWriteMainJson()
     {
         // Arrange
-        _client.GetProject().Returns(_project);
-        _sharedStepService.ConvertSharedSteps(_project.Id, Arg.Any<Guid>()).Returns(_sharedSteps);
-        _testCaseService.ConvertTestCases(_project.Id, Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>()).Returns(new List<TestCase> { _testCase });
+        _client.GetProject()
+            .Returns(_project);
+
+        _attributeService.GetCustomAttributes(_project.Id)
+            .Returns(_attributes);
+
+        _sharedStepService.ConvertSharedSteps(
+                _project.Id,
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(_sharedSteps);
+
+        _testCaseService.ConvertTestCases(
+                _project.Id,
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(new List<TestCase> { _testCase });
 
         _writeService.WriteMainJson(Arg.Any<Root>())
             .ThrowsAsync(new Exception("Failed to write main json"));
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        await _writeService.Received().WriteSharedStep(Arg.Any<SharedStep>());
-        await _writeService.Received().WriteTestCase(Arg.Any<TestCase>());
+        await _writeService.Received()
+            .WriteSharedStep(Arg.Any<SharedStep>());
+
+        await _writeService.Received()
+            .WriteTestCase(Arg.Any<TestCase>());
     }
 
     [Test]
     public async Task ExportProject_Success()
     {
         // Arrange
-        _client.GetProject().Returns(_project);
-        _sharedStepService.ConvertSharedSteps(_project.Id, Arg.Any<Guid>()).Returns(_sharedSteps);
-        _testCaseService.ConvertTestCases(_project.Id, Arg.Any<Dictionary<int, Guid>>(),
-            Arg.Any<Guid>()).Returns(new List<TestCase> { _testCase });
+        _client.GetProject()
+            .Returns(_project);
 
+        _attributeService.GetCustomAttributes(_project.Id)
+            .Returns(_attributes);
 
-        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService);
+        _sharedStepService.ConvertSharedSteps(
+                _project.Id,
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(_sharedSteps);
+
+        _testCaseService.ConvertTestCases(
+                _project.Id,
+                Arg.Any<Dictionary<int, Guid>>(),
+                Arg.Any<Guid>(),
+                Arg.Is<Dictionary<string, Guid>>(d => _attributeMap.SequenceEqual(d))
+            )
+            .Returns(new List<TestCase> { _testCase });
+
+        var service = new ExportService(_logger, _client, _testCaseService, _writeService, _sharedStepService,
+            _attributeService);
 
         // Act
         await service.ExportProject();
 
         // Assert
-        await _writeService.Received().WriteTestCase(_testCase);
-        await _writeService.Received().WriteMainJson(Arg.Any<Root>());
+        await _writeService.Received()
+            .WriteTestCase(_testCase);
+
+        await _writeService.Received()
+            .WriteMainJson(Arg.Any<Root>());
     }
 }

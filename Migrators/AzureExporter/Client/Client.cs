@@ -4,6 +4,7 @@ using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.TeamFoundation.Core.WebApi;
+using Microsoft.TeamFoundation.Core.WebApi.Types;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.TeamFoundation.Work.WebApi;
@@ -37,6 +38,7 @@ public class Client : IClient
     private readonly ProjectHttpClient _projectClient;
     private readonly TestPlanHttpClient _testPlanClient;
     private readonly WorkItemTrackingHttpClient _workItemTrackingClient;
+    private readonly WorkHttpClient _workHttpClient;
     private readonly string _projectName;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
@@ -79,13 +81,14 @@ public class Client : IClient
         _projectClient = connection.GetClient<ProjectHttpClient>();
         _testPlanClient = connection.GetClient<TestPlanHttpClient>();
         _workItemTrackingClient = connection.GetClient<WorkItemTrackingHttpClient>();
+        _workHttpClient = connection.GetClient<WorkHttpClient>();
     }
 
     public async Task<AzureProject> GetProject()
     {
         var projects = _projectClient.GetProjects().Result;
         var project = projects.FirstOrDefault(p =>
-                p.Name.Equals(_projectName, StringComparison.InvariantCultureIgnoreCase));
+            p.Name.Equals(_projectName, StringComparison.InvariantCultureIgnoreCase));
 
         if (project == null)
         {
@@ -125,10 +128,11 @@ public class Client : IClient
     public async Task<List<WorkItemReference>> GetWorkItems(string workItemType)
     {
         Wiql wiql = new Wiql();
-        wiql.Query = $"SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo],[System.State],[System.Tags] " +
-                     $"FROM WorkItems " +
-                     $"WHERE [System.TeamProject] = '{_projectName}' " +
-                     $"AND [System.WorkItemType] = '{workItemType}'";
+        wiql.Query =
+            $"SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo],[System.State],[System.Tags] " +
+            $"FROM WorkItems " +
+            $"WHERE [System.TeamProject] = '{_projectName}' " +
+            $"AND [System.WorkItemType] = '{workItemType}'";
 
         var queryResult = _workItemTrackingClient.QueryByWiqlAsync(wiql).Result;
 
@@ -140,5 +144,14 @@ public class Client : IClient
         var workItem = _workItemTrackingClient.GetWorkItemAsync(_projectName, id).Result;
 
         return workItem;
+    }
+
+    public async Task<List<string>> GetIterations(Guid projectId)
+    {
+        var iterations = _workHttpClient.GetTeamIterationsAsync(new TeamContext(projectId)).Result;
+
+        return iterations
+            .Select(i => i.Name)
+            .ToList();
     }
 }

@@ -16,4 +16,5 @@ public interface IClient
     Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId, int suiteId);
     Task<List<WorkItemReference>> GetWorkItems(string type);
     Task<WorkItem> GetWorkItemById(int id);
+    Task<List<string>> GetIterations(Guid projectId);
 }

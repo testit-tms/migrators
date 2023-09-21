@@ -54,6 +54,7 @@ namespace AzureExporter
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IStepService, StepService>();
                     services.AddSingleton<IWriteService, WriteService>();
+                    services.AddSingleton<IAttributeService, AttributeService>();
                 });
         }
 

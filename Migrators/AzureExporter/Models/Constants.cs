@@ -4,4 +4,6 @@ public class Constants
 {
     public const string TestCaseType = "Test Case";
     public const string SharedStepType = "Shared Steps";
+
+    public const string IterationAttributeName = "Iteration";
 }
