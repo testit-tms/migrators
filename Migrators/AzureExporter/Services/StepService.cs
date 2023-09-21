@@ -1,11 +1,9 @@
-using AzureExporter.Client;
-using AzureExporter.Models;
-using Microsoft.Extensions.Logging;
-using System.Text;
-using Models;
 using System.Xml;
 using System.Xml.Serialization;
+using AzureExporter.Models;
+using Microsoft.Extensions.Logging;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
+using Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -20,11 +18,16 @@ public class StepService : IStepService
         _logger = logger;
     }
 
-    public List<Step> ConvertSteps(string steps)
+    public async Task<List<Step>> ConvertSteps(string? steps)
     {
-        var xmldoc = new XmlDocument();
-        xmldoc.LoadXml(steps);
-        var fromXml = JsonConvert.SerializeXmlNode(xmldoc);
+        if (string.IsNullOrEmpty(steps))
+        {
+            return new List<Step>();
+        }
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.LoadXml(steps);
+        var fromXml = JsonConvert.SerializeXmlNode(xmlDoc);
         var azureSteps = JsonConvert.DeserializeObject<AzureSteps>(fromXml);
 
         _logger.LogDebug("Found steps: {@AzureSteps}", azureSteps);

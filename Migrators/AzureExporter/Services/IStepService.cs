@@ -5,7 +5,7 @@ namespace AzureExporter.Services;
 
 public interface IStepService
 {
-    abstract List<Step> ConvertSteps(string steps);
-
     void ReadTestCaseSteps(WorkItem testCase);
+
+    Task<List<Step>> ConvertSteps(string? steps);
 }

@@ -1,6 +1,7 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
 using Models;
+using Constants = AzureExporter.Models.Constants;
 
 namespace AzureExporter.Services;
 
@@ -11,7 +12,8 @@ public class SharedStepService : ISharedStepService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
 
-    public SharedStepService(ILogger<SharedStepService> logger, IClient client, IStepService stepService, IAttachmentService attachmentService)
+    public SharedStepService(ILogger<SharedStepService> logger, IClient client, IStepService stepService,
+        IAttachmentService attachmentService)
     {
         _logger = logger;
         _client = client;
@@ -21,14 +23,46 @@ public class SharedStepService : ISharedStepService
 
     public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(Guid projectId, Guid sectionId)
     {
-        var workItems = await _client.GetWorkItems(Constants.SharedStep);
+        _logger.LogInformation("Converting shared steps");
 
-        foreach (var workItem in workItems) {
+        var workItems = await _client.GetWorkItems(Constants.SharedStepType);
+
+        _logger.LogDebug("Found {@WorkItems} shared steps", workItems.Count);
+
+        var sharedSteps = new Dictionary<int, SharedStep>();
+
+        foreach (var workItem in workItems)
+        {
+            _logger.LogDebug("Converting shared step: {Id}", workItem.Id);
+
             var sharedStep = await _client.GetWorkItemById(workItem.Id);
 
-            _stepService.ReadTestCaseSteps(sharedStep);
+            _logger.LogDebug("Found shared step: {Id}", sharedStep.Id);
+
+            var steps = await _stepService.ConvertSteps(sharedStep.Fields["Microsoft.VSTS.TCM.Steps"] as string);
+
+            _logger.LogDebug("Found {@Steps} steps", steps.Count);
+
+            var step = new SharedStep
+            {
+                Id = Guid.NewGuid(),
+                Name = sharedStep.Fields["System.Title"] as string,
+                Steps = steps,
+                Description = "",
+                State = StateType.Ready,
+                Priority = PriorityType.Medium,
+                Attributes = new List<CaseAttribute>(),
+                Links = new List<Link>(),
+                Attachments = new List<string>(),
+                SectionId = sectionId,
+                Tags = new List<string>()
+            };
+
+            _logger.LogDebug("Converted shared step: {@Step}", step);
+
+            sharedSteps.Add(workItem.Id, step);
         }
 
-        return new Dictionary<int, SharedStep>();
+        return sharedSteps;
     }
 }
