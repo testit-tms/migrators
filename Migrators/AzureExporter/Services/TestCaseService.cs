@@ -35,7 +35,14 @@ public class TestCaseService : ITestCaseService
             _logger.LogDebug("Converting test case: {Id}", workItem.Id);
 
             var testCase = await _client.GetWorkItemById(workItem.Id);
-            var steps = await _stepService.ConvertSteps(testCase.Fields["Microsoft.VSTS.TCM.Steps"] as string, sharedStepMap);
+
+            var steps = new List<Step>();
+
+            if (testCase.Fields.Keys.Contains("Microsoft.VSTS.TCM.Steps"))
+            {
+                steps = await _stepService.ConvertSteps(testCase.Fields["Microsoft.VSTS.TCM.Steps"] as string,
+                    sharedStepMap);
+            }
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
