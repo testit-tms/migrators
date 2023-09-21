@@ -12,7 +12,8 @@ public class TestCaseService : ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
 
-    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService, IAttachmentService attachmentService)
+    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
+        IAttachmentService attachmentService)
     {
         _logger = logger;
         _client = client;
@@ -20,7 +21,8 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap, Guid sectionId, Dictionary<string, Guid> attributeMap)
+    public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap,
+        Guid sectionId, Dictionary<string, Guid> attributeMap)
     {
         _logger.LogInformation("Converting test cases");
 
@@ -36,32 +38,36 @@ public class TestCaseService : ITestCaseService
 
             var testCase = await _client.GetWorkItemById(workItem.Id);
 
-            var steps = new List<Step>();
-
-            if (testCase.Fields.Keys.Contains("Microsoft.VSTS.TCM.Steps"))
-            {
-                steps = await _stepService.ConvertSteps(testCase.Fields["Microsoft.VSTS.TCM.Steps"] as string,
-                    sharedStepMap);
-            }
+            var steps = await _stepService.ConvertSteps(
+                GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"),
+                sharedStepMap
+            );
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
-            var tmsTestCase = new TestCase()
+            var tmsTestCase = new TestCase
             {
                 Id = Guid.NewGuid(),
-                Description = "",
+                Description = GetValueOfField(testCase.Fields, "System.Description"),
                 State = StateType.Ready,
-                Priority = PriorityType.Medium,
+                Priority = ConvertPriority(testCase.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3),
                 Steps = steps,
                 PreconditionSteps = new List<Step>(),
                 PostconditionSteps = new List<Step>(),
                 Duration = 10,
-                Attributes = new List<CaseAttribute>(),
+                Attributes = new List<CaseAttribute>
+                {
+                    new()
+                    {
+                        Id = attributeMap[Constants.IterationAttributeName],
+                        Value = GetValueOfField(testCase.Fields, "System.IterationPath")
+                    }
+                },
                 Tags = new List<string>(),
                 Attachments = new List<string>(),
                 Iterations = new List<Iteration>(),
                 Links = new List<Link>(),
-                Name = testCase.Fields["System.Title"] as string,
+                Name = GetValueOfField(testCase.Fields, "System.Title"),
                 SectionId = sectionId
             };
 
@@ -75,7 +81,7 @@ public class TestCaseService : ITestCaseService
         return testCases;
     }
 
-    protected PriorityType ConvertPriority(int priority)
+    private PriorityType ConvertPriority(int priority)
     {
         switch (priority)
         {
@@ -88,9 +94,19 @@ public class TestCaseService : ITestCaseService
             case 4:
                 return PriorityType.Low;
             default:
-                _logger.LogError($"Failed to convert priority {priority}");
+                _logger.LogError("Failed to convert priority {Priority}", priority);
 
                 throw new Exception($"Failed to convert priority {priority}");
         }
+    }
+
+    private static string GetValueOfField(IDictionary<string, object> fields, string key)
+    {
+        if (fields.TryGetValue(key, out var value))
+        {
+            return value as string ?? string.Empty;
+        }
+
+        return string.Empty;
     }
 }
