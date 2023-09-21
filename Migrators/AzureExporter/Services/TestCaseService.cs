@@ -38,10 +38,14 @@ public class TestCaseService : ITestCaseService
 
             var testCase = await _client.GetWorkItemById(workItem.Id);
 
-            var steps = await _stepService.ConvertSteps(
-                GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"),
-                sharedStepMap
-            );
+            var steps = testCase.Fields.Keys.Any(item => item == "Microsoft.VSTS.TCM.Steps") ?
+                await _stepService.ConvertSteps(
+                    GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"),
+                    sharedStepMap
+                    ) : new List<Step>();
+
+            var tags = testCase.Fields.Keys.Any(item => item == "System.Tags") ?
+                testCase.Fields["System.Tags"].ToString().Split("; ").ToList() : new List<string>();
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
@@ -67,7 +71,7 @@ public class TestCaseService : ITestCaseService
                         Value = GetValueOfField(testCase.Fields, "System.IterationPath")
                     }
                 },
-                Tags = new List<string>(),
+                Tags = tags,
                 Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
                 Links = new List<Link>(),
