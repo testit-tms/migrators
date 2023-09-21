@@ -1,11 +1,9 @@
-using System.Xml;
-using System.Xml.Serialization;
 using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
+using System.Text.RegularExpressions;
 using Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Xml.Serialization;
+using Microsoft.TeamFoundation.Common;
 
 namespace AzureExporter.Services;
 
@@ -18,46 +16,57 @@ public class StepService : IStepService
         _logger = logger;
     }
 
-    public async Task<List<Step>> ConvertSteps(string? steps)
+    public async Task<List<Step>> ConvertSteps(string stepsContent, Dictionary<int, Guid> sharedStepMap)
     {
-        if (string.IsNullOrEmpty(steps))
+        _logger.LogDebug("Found steps: {@AzureSteps}", stepsContent);
+
+        var azureSteps = ReadTestCaseStepsFromXmlContent(stepsContent);
+
+        var steps = azureSteps.Steps.Select(azureStep => ConvertStep(azureStep)).ToList();
+
+        foreach (var sharedStep in azureSteps.SharedSteps)
         {
-            return new List<Step>();
+            if (!sharedStepMap.IsNullOrEmpty())
+            {
+                steps.Add(
+                    new Step
+                    {
+                        SharedStepId = sharedStepMap[int.Parse(sharedStep.Id)]
+                    }
+                );
+            }
+
+            steps.AddRange(sharedStep.Steps.Select(azureStep => ConvertStep(azureStep)).ToList());
         }
 
-        var xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(steps);
-        var fromXml = JsonConvert.SerializeXmlNode(xmlDoc);
-        var azureSteps = JsonConvert.DeserializeObject<AzureSteps>(fromXml);
-
-        _logger.LogDebug("Found steps: {@AzureSteps}", azureSteps);
-
-        return azureSteps.Steps.Select(azureStep =>
-        {
-            var step = new Step
-            {
-                Action = azureStep.Values[0],
-                Expected = azureStep.Values[1]
-            };
-            return step;
-        })
-            .ToList();
+        return steps;
     }
 
-    public void ReadTestCaseSteps(WorkItem testCase)
+    private Step ConvertStep(AzureStep azureStep)
     {
-        var b = testCase.Fields.OfType<JObject>();
-        foreach (var field in testCase.Fields.OfType<JObject>())
+        return new Step
         {
-            var stepsContent = ((JValue)((JContainer)field.First).First).Value.ToString();
+            Action = StripHTML(azureStep.Values[0]),
+            Expected = StripHTML(azureStep.Values[1])
+        };
+    }
 
-            using (TextReader stepsReader = new StringReader(stepsContent))
-            {
-                var serializer = new XmlSerializer(typeof(steps));
-                var steps = (steps)serializer.Deserialize(stepsReader);
+    private AzureSteps ReadTestCaseStepsFromXmlContent(string stepsContent)
+    {
+        var azureSteps = new AzureSteps();
 
-                var a = 1;
-            }
+        using (TextReader stepsReader = new StringReader(stepsContent))
+        {
+            var serializer = new XmlSerializer(typeof(AzureSteps));
+            azureSteps = (AzureSteps)serializer.Deserialize(stepsReader);
         }
+
+        return azureSteps;
+    }
+
+    private string StripHTML(string text)
+    {
+        return Regex.Replace(text, "<.*?>", String.Empty);
     }
 }
+
