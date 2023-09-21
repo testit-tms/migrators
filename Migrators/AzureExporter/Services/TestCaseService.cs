@@ -1,6 +1,5 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
-using Microsoft.TeamFoundation.Build.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 using Models;
 using Constants = AzureExporter.Models.Constants;

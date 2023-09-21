@@ -1,4 +1,3 @@
-using AzureExporter.Models;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 
 namespace AzureExporter.Services;

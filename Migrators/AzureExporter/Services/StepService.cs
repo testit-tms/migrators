@@ -1,6 +1,5 @@
 using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
 using Models;
 using System.Xml.Serialization;
 using Microsoft.TeamFoundation.Common;
