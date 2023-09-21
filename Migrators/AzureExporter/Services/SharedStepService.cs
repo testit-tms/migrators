@@ -36,9 +36,6 @@ public class SharedStepService : ISharedStepService
             _logger.LogDebug("Converting shared step: {Id}", workItem.Id);
 
             var sharedStep = await _client.GetWorkItemById(workItem.Id);
-
-            _logger.LogDebug("Found shared step: {Id}", sharedStep.Id);
-
             var steps = await _stepService.ConvertSteps(sharedStep.Fields["Microsoft.VSTS.TCM.Steps"] as string);
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);

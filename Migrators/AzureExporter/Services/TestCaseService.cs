@@ -1,8 +1,7 @@
 using AzureExporter.Client;
-using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
-using Constants = Models.Constants;
+using Constants = AzureExporter.Models.Constants;
 
 namespace AzureExporter.Services;
 
@@ -23,14 +22,45 @@ public class TestCaseService : ITestCaseService
 
     public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap, Guid sectionId)
     {
-        _logger.LogInformation("Export test cases");
+        _logger.LogInformation("Converting test cases");
 
-        var workItems = await _client.GetWorkItems(Constants.TestCase);
+        var workItems = await _client.GetWorkItems(Constants.TestCaseType);
+
+        _logger.LogDebug("Found {@WorkItems} test cases", workItems.Count);
+
+        var testCases = new List<TestCase>();
 
         foreach (var workItem in workItems) {
-            var testCase = await _client.GetWorkItemById(workItem.Id);
 
-            _stepService.ReadTestCaseSteps(testCase);
+            _logger.LogDebug("Converting test case: {Id}", workItem.Id);
+
+            var testCase = await _client.GetWorkItemById(workItem.Id);
+            var steps = await _stepService.ConvertSteps(testCase.Fields["Microsoft.VSTS.TCM.Steps"] as string);
+
+            _logger.LogDebug("Found {@Steps} steps", steps.Count);
+
+            var tmsTestCase = new TestCase()
+            {
+                Id = Guid.NewGuid(),
+                Description = "",
+                State = StateType.Ready,
+                Priority = PriorityType.Medium,
+                Steps = steps,
+                PreconditionSteps = new List<Step>(),
+                PostconditionSteps = new List<Step>(),
+                Duration = 10,
+                Attributes = new List<CaseAttribute>(),
+                Tags = new List<string>(),
+                Attachments = new List<string>(),
+                Iterations = new List<Iteration>(),
+                Links = new List<Link>(),
+                Name = testCase.Fields["System.Title"] as string,
+                SectionId = sectionId
+            };
+
+            _logger.LogDebug("Converted test case: {@TestCase}", tmsTestCase);
+
+            testCases.Add(tmsTestCase);
         }
 
         /*var testPlans = await _client.GetTestPlansByProjectId(projectId);
@@ -85,9 +115,7 @@ public class TestCaseService : ITestCaseService
             testCases.Add(await this.ConvertTestCase(azureWorkItem));
         }*/
 
-        _logger.LogInformation("Exported test cases");
-
-        return new List<TestCase>();
+        return testCases;
     }
 
     /*protected async Task<TestCase> ConvertTestCase(AzureWorkItem azureTestCase)
