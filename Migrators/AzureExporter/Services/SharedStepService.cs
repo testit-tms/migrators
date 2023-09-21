@@ -21,7 +21,8 @@ public class SharedStepService : ISharedStepService
         _attachmentService = attachmentService;
     }
 
-    public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(Guid projectId, Guid sectionId, Dictionary<string, Guid> attributeMap)
+    public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(Guid projectId, Guid sectionId,
+        Dictionary<string, Guid> attributeMap)
     {
         _logger.LogInformation("Converting shared steps");
 
@@ -38,19 +39,28 @@ public class SharedStepService : ISharedStepService
             _logger.LogDebug("Found shared step: {Id}", sharedStep.Id);
 
             var steps = await _stepService.ConvertSteps(
-                sharedStep.Fields["Microsoft.VSTS.TCM.Steps"] as string, new Dictionary<int, Guid>());
+                GetValueOfField(sharedStep.Fields, "Microsoft.VSTS.TCM.Steps"),
+                new Dictionary<int, Guid>()
+            );
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
             var step = new SharedStep
             {
                 Id = Guid.NewGuid(),
-                Name = sharedStep.Fields["System.Title"] as string,
+                Name = GetValueOfField(sharedStep.Fields, "System.Title"),
                 Steps = steps,
-                Description = "",
+                Description = GetValueOfField(sharedStep.Fields, "System.Description"),
                 State = StateType.Ready,
                 Priority = ConvertPriority(sharedStep.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3),
-                Attributes = new List<CaseAttribute>(),
+                Attributes = new List<CaseAttribute>
+                {
+                    new()
+                    {
+                        Id = attributeMap[Constants.IterationAttributeName],
+                        Value = GetValueOfField(sharedStep.Fields, "System.IterationPath")
+                    }
+                },
                 Links = new List<Link>(),
                 Attachments = new List<string>(),
                 SectionId = sectionId,
@@ -82,5 +92,15 @@ public class SharedStepService : ISharedStepService
 
                 throw new Exception($"Failed to convert priority {priority}");
         }
+    }
+
+    private static string GetValueOfField(IDictionary<string, object> fields, string key)
+    {
+        if (fields.TryGetValue(key, out var value))
+        {
+            return value as string ?? string.Empty;
+        }
+
+        return string.Empty;
     }
 }
