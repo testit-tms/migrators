@@ -141,7 +141,7 @@ public class Client : IClient
 
     public async Task<WorkItem> GetWorkItemById(int id)
     {
-        var workItem = _workItemTrackingClient.GetWorkItemAsync(_projectName, id).Result;
+        var workItem = _workItemTrackingClient.GetWorkItemAsync(_projectName, id, expand: WorkItemExpand.All).Result;
 
         return workItem;
     }
@@ -153,5 +153,26 @@ public class Client : IClient
         return iterations
             .Select(i => i.Name)
             .ToList();
+    }
+
+    public async Task<byte[]> GetAttachmentById(Guid id)
+    {
+        var attachStream = _workItemTrackingClient.GetAttachmentContentAsync(id).Result;
+
+        return UseStreamDotReadMethod(attachStream);
+    }
+
+    private byte[] UseStreamDotReadMethod(Stream stream)
+    {
+        byte[] bytes;
+        List<byte> totalStream = new();
+        byte[] buffer = new byte[32];
+        int read;
+        while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            totalStream.AddRange(buffer.Take(read));
+        }
+        bytes = totalStream.ToArray();
+        return bytes;
     }
 }

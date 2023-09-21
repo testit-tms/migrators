@@ -46,8 +46,8 @@ public class StepService : IStepService
     {
         return new Step
         {
-            Action = StripHTML(azureStep.Values[0]),
-            Expected = StripHTML(azureStep.Values[1])
+            Action = azureStep.Values[0],
+            Expected = azureStep.Values[1]
         };
     }
 
@@ -64,9 +64,9 @@ public class StepService : IStepService
         return azureSteps;
     }
 
-    private string StripHTML(string text)
-    {
-        return Regex.Replace(text, "<.*?>", String.Empty);
-    }
+    // private string StripHTML(string text)
+    // {
+    //     return Regex.Replace(text, "<.*?>", String.Empty);
+    // }
 }
 

@@ -45,9 +45,13 @@ public class SharedStepService : ISharedStepService
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
+            var sharedStepGuid = Guid.NewGuid();
+            var tmsAttachments = await _attachmentService.DownloadAttachments(
+                sharedStep.Relations.ToList(), sharedStepGuid);
+
             var step = new SharedStep
             {
-                Id = Guid.NewGuid(),
+                Id = sharedStepGuid,
                 Name = GetValueOfField(sharedStep.Fields, "System.Title"),
                 Steps = steps,
                 Description = GetValueOfField(sharedStep.Fields, "System.Description"),
@@ -62,7 +66,7 @@ public class SharedStepService : ISharedStepService
                     }
                 },
                 Links = new List<Link>(),
-                Attachments = new List<string>(),
+                Attachments = tmsAttachments,
                 SectionId = sectionId,
                 Tags = new List<string>()
             };

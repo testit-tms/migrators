@@ -45,9 +45,13 @@ public class TestCaseService : ITestCaseService
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
+            var testCaseGuid = Guid.NewGuid();
+            var tmsAttachments = await _attachmentService.DownloadAttachments(
+                testCase.Relations.ToList(), testCaseGuid);
+
             var tmsTestCase = new TestCase
             {
-                Id = Guid.NewGuid(),
+                Id = testCaseGuid,
                 Description = GetValueOfField(testCase.Fields, "System.Description"),
                 State = StateType.Ready,
                 Priority = ConvertPriority(testCase.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3),
@@ -64,7 +68,7 @@ public class TestCaseService : ITestCaseService
                     }
                 },
                 Tags = new List<string>(),
-                Attachments = new List<string>(),
+                Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
                 Links = new List<Link>(),
                 Name = GetValueOfField(testCase.Fields, "System.Title"),
