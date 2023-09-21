@@ -1,5 +1,7 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.TeamFoundation.Build.WebApi;
+using Microsoft.VisualStudio.Services.WebApi;
 using Models;
 using Constants = AzureExporter.Models.Constants;
 
@@ -40,7 +42,7 @@ public class TestCaseService : ITestCaseService
 
             var steps = testCase.Fields.Keys.Any(item => item == "Microsoft.VSTS.TCM.Steps") ?
                 await _stepService.ConvertSteps(
-                    GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"),
+                    testCase.Fields["Microsoft.VSTS.TCM.Steps"] as string,
                     sharedStepMap
                     ) : new List<Step>();
 
@@ -74,7 +76,7 @@ public class TestCaseService : ITestCaseService
                 Tags = tags,
                 Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
-                Links = new List<Link>(),
+                Links = await ConvertLinks(testCase.Links.Links),
                 Name = GetValueOfField(testCase.Fields, "System.Title"),
                 SectionId = sectionId
             };
@@ -106,6 +108,24 @@ public class TestCaseService : ITestCaseService
 
                 throw new Exception($"Failed to convert priority {priority}");
         }
+    }
+
+    private async Task<List<Link>> ConvertLinks(IReadOnlyDictionary<string, object> azureLinks)
+    {
+        var links = new List<Link>();
+
+        foreach (var key in azureLinks.Keys)
+        {
+            var azureLink = azureLinks[key] as ReferenceLink;
+
+            links.Add(new Link
+            {
+                Url = azureLink.Href,
+                Title = key
+            });
+        }
+
+        return links;
     }
 
     private static string GetValueOfField(IDictionary<string, object> fields, string key)
