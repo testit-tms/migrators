@@ -71,7 +71,7 @@ public class TestCaseService : ITestCaseService
                 Tags = ConvertTags(GetValueOfField(testCase.Fields, "System.Tags")),
                 Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
-                Links = ConvertLinks(testCase.Relations.ToList()),
+                Links = new List<Link>(),//ConvertLinks(testCase.Relations.ToList()),
                 Name = GetValueOfField(testCase.Fields, "System.Title"),
                 SectionId = sectionId
             };

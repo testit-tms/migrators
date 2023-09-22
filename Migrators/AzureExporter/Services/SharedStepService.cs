@@ -67,7 +67,7 @@ public class SharedStepService : ISharedStepService
                         Value = GetValueOfField(sharedStep.Fields, "System.IterationPath")
                     }
                 },
-                Links = ConvertLinks(sharedStep.Relations.ToList()),
+                Links = new List<Link>(),//ConvertLinks(sharedStep.Relations.ToList()),
                 Attachments = tmsAttachments,
                 SectionId = sectionId,
                 Tags = ConvertTags(GetValueOfField(sharedStep.Fields, "System.Tags")),
