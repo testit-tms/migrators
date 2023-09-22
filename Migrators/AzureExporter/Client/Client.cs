@@ -125,18 +125,19 @@ public class Client : IClient
         return testCases;
     }
 
-    public async Task<List<WorkItemReference>> GetWorkItems(string workItemType)
+    public async Task<List<int>> GetWorkItems(string workItemType)
     {
-        Wiql wiql = new Wiql();
-        wiql.Query =
-            $"SELECT [System.Id],[System.WorkItemType],[System.Title],[System.AssignedTo],[System.State],[System.Tags] " +
-            $"FROM WorkItems " +
-            $"WHERE [System.TeamProject] = '{_projectName}' " +
-            $"AND [System.WorkItemType] = '{workItemType}'";
+        var wiql = new Wiql
+        {
+            Query = "SELECT [System.Id] " +
+                    "FROM WorkItems " +
+                    $"WHERE [System.TeamProject] = '{_projectName}' " +
+                    $"AND [System.WorkItemType] = '{workItemType}'"
+        };
 
         var queryResult = _workItemTrackingClient.QueryByWiqlAsync(wiql).Result;
 
-        return queryResult.WorkItems.ToList();
+        return queryResult.WorkItems.Select(w => w.Id).ToList();
     }
 
     public async Task<WorkItem> GetWorkItemById(int id)
@@ -162,17 +163,16 @@ public class Client : IClient
         return UseStreamDotReadMethod(attachStream);
     }
 
-    private byte[] UseStreamDotReadMethod(Stream stream)
+    private static byte[] UseStreamDotReadMethod(Stream stream)
     {
-        byte[] bytes;
         List<byte> totalStream = new();
-        byte[] buffer = new byte[32];
+        var buffer = new byte[32];
         int read;
         while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
         {
             totalStream.AddRange(buffer.Take(read));
         }
-        bytes = totalStream.ToArray();
-        return bytes;
+
+        return totalStream.ToArray();
     }
 }

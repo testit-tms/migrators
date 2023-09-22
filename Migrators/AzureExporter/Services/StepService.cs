@@ -1,8 +1,7 @@
+using System.Xml.Serialization;
 using AzureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
-using System.Xml.Serialization;
-using Microsoft.TeamFoundation.Common;
 
 namespace AzureExporter.Services;
 

@@ -29,17 +29,17 @@ public class TestCaseService : ITestCaseService
     {
         _logger.LogInformation("Converting test cases");
 
-        var workItems = await _client.GetWorkItems(Constants.TestCaseType);
+        var workItemsIds = await _client.GetWorkItems(Constants.TestCaseType);
 
-        _logger.LogDebug("Found {@WorkItems} test cases", workItems.Count);
+        _logger.LogDebug("Found {@WorkItems} test cases", workItemsIds.Count);
 
         var testCases = new List<TestCase>();
 
-        foreach (var workItem in workItems)
+        foreach (var workItemId in workItemsIds)
         {
-            _logger.LogDebug("Converting test case: {Id}", workItem.Id);
+            _logger.LogDebug("Converting test case: {Id}", workItemId);
 
-            var testCase = await _client.GetWorkItemById(workItem.Id);
+            var testCase = await _client.GetWorkItemById(workItemId);
 
             var steps = _stepService.ConvertSteps(
                 GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"), sharedStepMap);
@@ -71,7 +71,7 @@ public class TestCaseService : ITestCaseService
                 Tags = ConvertTags(GetValueOfField(testCase.Fields, "System.Tags")),
                 Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
-                Links = new List<Link>(),//ConvertLinks(testCase.Relations.ToList()),
+                Links = new List<Link>(), //ConvertLinks(testCase.Relations.ToList()),
                 Name = GetValueOfField(testCase.Fields, "System.Title"),
                 SectionId = sectionId
             };

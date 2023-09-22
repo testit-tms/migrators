@@ -13,7 +13,7 @@ public interface IClient
     Task<PagedList<TestPlan>> GetTestPlansByProjectId(Guid id);
     Task<PagedList<TestSuite>> GetTestSuitesByProjectIdAndTestPlanId(Guid projectId, int planId);
     Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId, int suiteId);
-    Task<List<WorkItemReference>> GetWorkItems(string type);
+    Task<List<int>> GetWorkItems(string type);
     Task<WorkItem> GetWorkItemById(int id);
     Task<List<string>> GetIterations(Guid projectId);
     Task<byte[]> GetAttachmentById(Guid id);
