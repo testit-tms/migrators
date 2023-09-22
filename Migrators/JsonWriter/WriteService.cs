@@ -96,7 +96,7 @@ public class WriteService : IWriteService
             Directory.CreateDirectory(fullPath);
         }
 
-        var filePath = Path.Combine(fullPath, Constants.TestCase);
+        var filePath = Path.Combine(fullPath, Constants.SharedStep);
 
         _logger.LogInformation("Writing shared step {Id}: {Path}", sharedStep.Id, filePath);
 
