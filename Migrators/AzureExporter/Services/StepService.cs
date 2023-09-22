@@ -15,18 +15,18 @@ public class StepService : IStepService
         _logger = logger;
     }
 
-    public async Task<List<Step>> ConvertSteps(string stepsContent, Dictionary<int, Guid> sharedStepMap)
+    public List<Step> ConvertSteps(string stepsContent, Dictionary<int, Guid> sharedStepMap)
     {
         _logger.LogDebug("Found steps: {@AzureSteps}", stepsContent);
 
-        if (string.IsNullOrEmpty(stepsContent))
+        if (string.IsNullOrWhiteSpace(stepsContent))
         {
             return new List<Step>();
         }
 
-        var azureSteps = ReadTestCaseStepsFromXmlContent(stepsContent);
+        var azureSteps = ParseStepsFromXmlContent(stepsContent);
 
-        var steps = azureSteps.Steps.Select(azureStep => ConvertStep(azureStep)).ToList();
+        var steps = azureSteps.Steps.Select(ConvertStep).ToList();
 
         foreach (var sharedStep in azureSteps.SharedSteps)
         {
@@ -35,35 +35,37 @@ public class StepService : IStepService
                 steps.Add(
                     new Step
                     {
-                        SharedStepId = sharedStepMap[int.Parse(sharedStep.Id)]
+                        SharedStepId = sharedStepMap[int.Parse(sharedStep.Id)],
+                        Attachments = new List<string>(),
+                        Action = string.Empty,
+                        Expected = string.Empty
                     }
                 );
             }
 
-            steps.AddRange(sharedStep.Steps.Select(azureStep => ConvertStep(azureStep)).ToList());
+            steps.AddRange(sharedStep.Steps.Select(ConvertStep).ToList());
         }
+
+        _logger.LogDebug("Converted steps: {@Steps}", steps);
 
         return steps;
     }
 
-    private Step ConvertStep(AzureStep azureStep)
+    private static Step ConvertStep(AzureStep azureStep)
     {
         return new Step
         {
             Action = azureStep.Values[0],
-            Expected = azureStep.Values[1]
+            Expected = azureStep.Values[1],
+            Attachments = new List<string>()
         };
     }
 
-    private AzureSteps ReadTestCaseStepsFromXmlContent(string stepsContent)
+    private static AzureSteps ParseStepsFromXmlContent(string stepsContent)
     {
-        var azureSteps = new AzureSteps();
-
-        using (TextReader stepsReader = new StringReader(stepsContent))
-        {
-            var serializer = new XmlSerializer(typeof(AzureSteps));
-            azureSteps = (AzureSteps)serializer.Deserialize(stepsReader);
-        }
+        using TextReader stepsReader = new StringReader(stepsContent);
+        var serializer = new XmlSerializer(typeof(AzureSteps));
+        var azureSteps = (AzureSteps)serializer.Deserialize(stepsReader)!;
 
         return azureSteps;
     }
@@ -73,4 +75,3 @@ public class StepService : IStepService
     //     return Regex.Replace(text, "<.*?>", String.Empty);
     // }
 }
-

@@ -40,7 +40,7 @@ public class SharedStepService : ISharedStepService
 
             _logger.LogDebug("Found shared step: {Id}", sharedStep.Id);
 
-            var steps = await _stepService.ConvertSteps(
+            var steps = _stepService.ConvertSteps(
                 GetValueOfField(sharedStep.Fields, "Microsoft.VSTS.TCM.Steps"),
                 new Dictionary<int, Guid>()
             );
