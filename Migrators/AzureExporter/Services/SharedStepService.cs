@@ -1,7 +1,9 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Models;
 using Constants = AzureExporter.Models.Constants;
+using Link = Models.Link;
 
 namespace AzureExporter.Services;
 
@@ -65,10 +67,10 @@ public class SharedStepService : ISharedStepService
                         Value = GetValueOfField(sharedStep.Fields, "System.IterationPath")
                     }
                 },
-                Links = new List<Link>(),
+                Links = ConvertLinks(sharedStep.Relations.ToList()),
                 Attachments = tmsAttachments,
                 SectionId = sectionId,
-                Tags = new List<string>()
+                Tags = ConvertTags(GetValueOfField(sharedStep.Fields, "System.Tags")),
             };
 
             _logger.LogDebug("Converted shared step: {@Step}", step);
@@ -96,6 +98,37 @@ public class SharedStepService : ISharedStepService
 
                 throw new Exception($"Failed to convert priority {priority}");
         }
+    }
+
+    private List<Link> ConvertLinks(List<WorkItemRelation> relations)
+    {
+        var links = new List<Link>();
+
+        foreach (var relation in relations)
+        {
+            if (relation.Rel.Equals("ArtifactLink"))
+            {
+                links.Add(
+                    new Link
+                    {
+                        Url = relation.Url,
+                        Description = relation.Attributes["name"] as string
+                    }
+                );
+            }
+        }
+
+        return links;
+    }
+
+    private List<string> ConvertTags(string tagsContent)
+    {
+        if (string.IsNullOrEmpty(tagsContent))
+        {
+            return new List<string>();
+        }
+
+        return tagsContent.Split("; ").ToList();
     }
 
     private static string GetValueOfField(IDictionary<string, object> fields, string key)

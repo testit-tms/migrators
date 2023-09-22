@@ -1,8 +1,10 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.WebApi;
 using Models;
 using Constants = AzureExporter.Models.Constants;
+using Link = Models.Link;
 
 namespace AzureExporter.Services;
 
@@ -39,14 +41,8 @@ public class TestCaseService : ITestCaseService
 
             var testCase = await _client.GetWorkItemById(workItem.Id);
 
-            var steps = testCase.Fields.Keys.Any(item => item == "Microsoft.VSTS.TCM.Steps") ?
-                await _stepService.ConvertSteps(
-                    testCase.Fields["Microsoft.VSTS.TCM.Steps"] as string,
-                    sharedStepMap
-                    ) : new List<Step>();
-
-            var tags = testCase.Fields.Keys.Any(item => item == "System.Tags") ?
-                testCase.Fields["System.Tags"].ToString().Split("; ").ToList() : new List<string>();
+            var steps = await _stepService.ConvertSteps(
+                GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"), sharedStepMap);
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
@@ -72,10 +68,10 @@ public class TestCaseService : ITestCaseService
                         Value = GetValueOfField(testCase.Fields, "System.IterationPath")
                     }
                 },
-                Tags = tags,
+                Tags = ConvertTags(GetValueOfField(testCase.Fields, "System.Tags")),
                 Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
-                Links = await ConvertLinks(testCase.Links.Links),
+                Links = ConvertLinks(testCase.Relations.ToList()),
                 Name = GetValueOfField(testCase.Fields, "System.Title"),
                 SectionId = sectionId
             };
@@ -109,22 +105,35 @@ public class TestCaseService : ITestCaseService
         }
     }
 
-    private async Task<List<Link>> ConvertLinks(IReadOnlyDictionary<string, object> azureLinks)
+    private List<Link> ConvertLinks(List<WorkItemRelation> relations)
     {
         var links = new List<Link>();
 
-        foreach (var key in azureLinks.Keys)
+        foreach (var relation in relations)
         {
-            var azureLink = azureLinks[key] as ReferenceLink;
-
-            links.Add(new Link
+            if (relation.Rel.Equals("ArtifactLink"))
             {
-                Url = azureLink.Href,
-                Title = key
-            });
+                links.Add(
+                    new Link
+                    {
+                        Url = relation.Url,
+                        Description = relation.Attributes["name"] as string
+                    }
+                );
+            }
         }
 
         return links;
+    }
+
+    private List<string> ConvertTags(string tagsContent)
+    {
+        if (string.IsNullOrEmpty(tagsContent))
+        {
+            return new List<string>();
+        }
+
+        return tagsContent.Split("; ").ToList();
     }
 
     private static string GetValueOfField(IDictionary<string, object> fields, string key)

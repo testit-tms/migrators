@@ -19,6 +19,11 @@ public class StepService : IStepService
     {
         _logger.LogDebug("Found steps: {@AzureSteps}", stepsContent);
 
+        if (string.IsNullOrEmpty(stepsContent))
+        {
+            return new List<Step>();
+        }
+
         var azureSteps = ReadTestCaseStepsFromXmlContent(stepsContent);
 
         var steps = azureSteps.Steps.Select(azureStep => ConvertStep(azureStep)).ToList();
