@@ -30,17 +30,20 @@ public class StepService : IStepService
 
         foreach (var sharedStep in azureSteps.SharedSteps)
         {
-            if (!sharedStepMap.IsNullOrEmpty())
+            if (sharedStepMap.TryGetValue(sharedStep.Id, out var sharedStepId))
             {
-                steps.Add(
-                    new Step
+                steps.Add(new Step
                     {
-                        SharedStepId = sharedStepMap[int.Parse(sharedStep.Id)],
+                        SharedStepId = sharedStepId,
                         Attachments = new List<string>(),
                         Action = string.Empty,
                         Expected = string.Empty
                     }
                 );
+            }
+            else
+            {
+                throw new ApplicationException("Shared step not found in map");
             }
 
             steps.AddRange(sharedStep.Steps.Select(ConvertStep).ToList());

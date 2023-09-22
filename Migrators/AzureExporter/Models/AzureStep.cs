@@ -21,7 +21,7 @@ public class AzureStep
 public class AzureSharedStep
 {
     [XmlAttribute("ref")]
-    public string Id { get; set; }
+    public int Id { get; set; }
 
     [XmlElement("step")]
     public List<AzureStep> Steps { get; set; }

@@ -1,6 +1,5 @@
 using AzureExporter.Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.TeamFoundation.Build.WebApi;
 using Models;
 using NSubstitute;
 
@@ -71,7 +70,7 @@ public class StepServiceTests
     {
         // Arrange
         var stepService = new StepService(_logger);
-        var context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+        const string context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
 <steps id=""0"" last=""4"">
     <step id=""1"" type=""ValidateStep"">
         <parameterizedString isformatted=""true"">&lt;DIV&gt;&lt;P&gt;Step01&lt;/P&gt;&lt;/DIV&gt;</parameterizedString>
@@ -122,7 +121,7 @@ public class StepServiceTests
     {
         // Arrange
         var stepService = new StepService(_logger);
-        var context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+        const string context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
 <steps id=""0"" last=""4"">
     <step id=""1"" type=""ValidateStep"">
         <parameterizedString isformatted=""true"">&lt;DIV&gt;&lt;P&gt;Step01&lt;/P&gt;&lt;/DIV&gt;</parameterizedString>
@@ -177,7 +176,7 @@ public class StepServiceTests
         // Arrange
         var stepService = new StepService(_logger);
         var sharedStepId = Guid.NewGuid();
-        var context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+        const string context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
 <steps id=""0"" last=""7"">
     <step id=""2"" type=""ValidateStep"">
         <parameterizedString isformatted=""true"">&lt;DIV&gt;&lt;P&gt;Step01&lt;/P&gt;&lt;/DIV&gt;</parameterizedString>
@@ -260,8 +259,7 @@ public class StepServiceTests
     {
         // Arrange
         var stepService = new StepService(_logger);
-        var sharedStepId = Guid.NewGuid();
-        var context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
+        const string context = @"<?xml version=""1.0"" encoding=""UTF-8"" standalone=""no""?>
 <steps id=""0"" last=""7"">
     <step id=""2"" type=""ValidateStep"">
         <parameterizedString isformatted=""true"">&lt;DIV&gt;&lt;P&gt;Step01&lt;/P&gt;&lt;/DIV&gt;</parameterizedString>
@@ -284,6 +282,6 @@ public class StepServiceTests
 ";
 
         // Act
-        Assert.Throws<Exception>(() => stepService.ConvertSteps(context, new Dictionary<int, Guid>()));
+        Assert.Throws<ApplicationException>(() => stepService.ConvertSteps(context, new Dictionary<int, Guid>()));
     }
 }
