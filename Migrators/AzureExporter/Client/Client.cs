@@ -12,26 +12,10 @@ using Microsoft.VisualStudio.Services.WebApi;
 
 namespace AzureExporter.Client;
 
-// public class WorkItemsType
-// {
-//     private WorkItemsType(string value) { Value = value; }
-//
-//     public string Value { get; private set; }
-//
-//     public static WorkItemsType SharedSteps { get { return new WorkItemsType("Shared Steps"); } }
-//     public static WorkItemsType TestCases { get { return new WorkItemsType("Test Case"); } }
-//
-//     public override string ToString()
-//     {
-//         return Value;
-//     }
-// }
-
 public class Client : IClient
 {
     private readonly ILogger<Client> _logger;
 
-    //private readonly HttpClient _httpClient;
     private readonly ProjectHttpClient _projectClient;
     private readonly TestPlanHttpClient _testPlanClient;
     private readonly WorkItemTrackingHttpClient _workItemTrackingClient;

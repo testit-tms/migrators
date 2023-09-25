@@ -15,6 +15,7 @@ public class SharedStepSeriveTests
     private IClient _client;
     private IStepService _stepService;
     private IAttachmentService _attachmentService;
+    private ILinkService _linkService;
     private List<int> _workItemIds;
     private AzureWorkItem _workItem;
     private List<AzureAttachment> _azureAttachments;
@@ -23,6 +24,8 @@ public class SharedStepSeriveTests
     private Dictionary<string, Guid> _attributes;
     private SharedStep _sharedStep;
     private Guid _sectionId;
+    private List<AzureLink> _azureLinks;
+    private List<Link> _links;
 
     [SetUp]
     public void Setup()
@@ -31,6 +34,7 @@ public class SharedStepSeriveTests
         _client = Substitute.For<IClient>();
         _stepService = Substitute.For<IStepService>();
         _attachmentService = Substitute.For<IAttachmentService>();
+        _linkService = Substitute.For<ILinkService>();
 
         _sectionId = Guid.NewGuid();
 
@@ -59,6 +63,24 @@ public class SharedStepSeriveTests
             "Test Attachment"
         };
 
+        _azureLinks = new List<AzureLink>
+        {
+            new()
+            {
+                Title = "Test Link",
+                Url = "https://www.google.com"
+            }
+        };
+
+        _links = new List<Link>
+        {
+            new()
+            {
+                Title = "Test Link",
+                Url = "https://www.google.com"
+            }
+        };
+
         _workItem = new AzureWorkItem
         {
             Id = 1,
@@ -67,14 +89,7 @@ public class SharedStepSeriveTests
             Steps = "Test Case Steps",
             Attachments = _azureAttachments,
             IterationPath = "Test Iteration Path",
-            Links = new List<AzureLink>
-            {
-                new()
-                {
-                    Title = "Test Link",
-                    Url = "https://www.google.com"
-                }
-            },
+            Links = _azureLinks,
             State = "Active",
             Priority = 1,
             Tags = "Test Tag"
@@ -136,7 +151,7 @@ public class SharedStepSeriveTests
         _client.GetWorkItemIds(Constants.SharedStepType)
             .ThrowsAsync(new Exception("Failed to get work items"));
 
-        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService);
+        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService, _linkService);
 
         // Act
         Assert.ThrowsAsync<Exception>(() =>
@@ -149,6 +164,9 @@ public class SharedStepSeriveTests
 
         _stepService.DidNotReceive()
             .ConvertSteps(Arg.Any<string>(), Arg.Any<Dictionary<int, Guid>>());
+
+        _linkService.DidNotReceive()
+            .CovertLinks(Arg.Any<List<AzureLink>>());
 
         await _attachmentService.DidNotReceive()
             .DownloadAttachments(Arg.Any<List<AzureAttachment>>(), Arg.Any<Guid>());
@@ -164,7 +182,7 @@ public class SharedStepSeriveTests
         _client.GetWorkItemById(Arg.Any<int>())
             .ThrowsAsync(new Exception("Failed to get work item by id"));
 
-        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService);
+        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService, _linkService);
 
         // Act
         Assert.ThrowsAsync<Exception>(() =>
@@ -174,6 +192,9 @@ public class SharedStepSeriveTests
         // Assert
         _stepService.DidNotReceive()
             .ConvertSteps(Arg.Any<string>(), Arg.Any<Dictionary<int, Guid>>());
+
+        _linkService.DidNotReceive()
+            .CovertLinks(Arg.Any<List<AzureLink>>());
 
         await _attachmentService.DidNotReceive()
             .DownloadAttachments(Arg.Any<List<AzureAttachment>>(), Arg.Any<Guid>());
@@ -192,13 +213,16 @@ public class SharedStepSeriveTests
         _stepService.ConvertSteps(Arg.Any<string>(), Arg.Any<Dictionary<int, Guid>>())
             .Throws(new Exception("Failed to convert steps"));
 
-        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService);
+        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService, _linkService);
 
         // Act
         Assert.ThrowsAsync<Exception>(() =>
             sharedStepService.ConvertSharedSteps(Guid.NewGuid(), _sectionId, new Dictionary<string, Guid>()));
 
         // Assert
+        _linkService.DidNotReceive()
+            .CovertLinks(Arg.Any<List<AzureLink>>());
+
         await _attachmentService.DidNotReceive()
             .DownloadAttachments(Arg.Any<List<AzureAttachment>>(), Arg.Any<Guid>());
     }
@@ -219,12 +243,42 @@ public class SharedStepSeriveTests
         _attachmentService.DownloadAttachments(Arg.Any<List<AzureAttachment>>(), Arg.Any<Guid>())
             .Throws(new Exception("Failed to download attachments"));
 
-        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService);
+        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService, _linkService);
 
         // Act
         Assert.ThrowsAsync<Exception>(() =>
             sharedStepService.ConvertSharedSteps(Guid.NewGuid(),
                 Guid.NewGuid(), new Dictionary<string, Guid>()));
+
+        // Assert
+        _linkService.DidNotReceive()
+            .CovertLinks(Arg.Any<List<AzureLink>>());
+    }
+
+    [Test]
+    public async Task ConvertSharedSteps_FailedConvertLinks_ReturnsEmptyList()
+    {
+        // Arrange
+        _client.GetWorkItemIds(Constants.SharedStepType)
+            .Returns(_workItemIds);
+
+        _client.GetWorkItemById(1)
+            .Returns(_workItem);
+
+        _stepService.ConvertSteps(_workItem.Steps, Arg.Any<Dictionary<int, Guid>>())
+            .Returns(_steps);
+
+        _attachmentService.DownloadAttachments(_azureAttachments, Arg.Any<Guid>())
+            .Returns(_attachments);
+
+        _linkService.CovertLinks(Arg.Any<List<AzureLink>>())
+            .Throws(new Exception("Failed to convert links"));
+
+        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService, _linkService);
+
+        // Act
+        Assert.ThrowsAsync<Exception>(() =>
+            sharedStepService.ConvertSharedSteps(Guid.NewGuid(), _sectionId, new Dictionary<string, Guid>()));
     }
 
     [Test]
@@ -243,7 +297,10 @@ public class SharedStepSeriveTests
         _attachmentService.DownloadAttachments(_azureAttachments, Arg.Any<Guid>())
             .Returns(_attachments);
 
-        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService);
+        _linkService.CovertLinks(_azureLinks)
+            .Returns(_links);
+
+        var sharedStepService = new SharedStepService(_logger, _client, _stepService, _attachmentService, _linkService);
 
         // Act
         var sharedSteps = await sharedStepService.ConvertSharedSteps(Guid.NewGuid(),
@@ -253,8 +310,8 @@ public class SharedStepSeriveTests
         Assert.That(sharedSteps, Has.Count.EqualTo(1));
         Assert.That(sharedSteps[1].Name, Is.EqualTo(_sharedStep.Name));
         Assert.That(sharedSteps[1].Description, Is.EqualTo(_sharedStep.Description));
-        // Assert.That(testCases[0].Links[0].Title, Is.EqualTo(_testCase.Links[0].Title));
-        // Assert.That(testCases[0].Links[0].Url, Is.EqualTo(_testCase.Links[0].Url));
+        Assert.That(sharedSteps[1].Links[0].Title, Is.EqualTo(_sharedStep.Links[0].Title));
+        Assert.That(sharedSteps[1].Links[0].Url, Is.EqualTo(_sharedStep.Links[0].Url));
         Assert.That(sharedSteps[1].State, Is.EqualTo(_sharedStep.State));
         Assert.That(sharedSteps[1].Priority, Is.EqualTo(_sharedStep.Priority));
         Assert.That(sharedSteps[1].Tags, Is.EqualTo(_sharedStep.Tags));

@@ -7,20 +7,22 @@ using Link = Models.Link;
 
 namespace AzureExporter.Services;
 
-public class SharedStepService : ISharedStepService
+public class SharedStepService : WorkItemBaseService, ISharedStepService
 {
     private readonly ILogger<SharedStepService> _logger;
     private readonly IClient _client;
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
+    private readonly ILinkService _linkService;
 
     public SharedStepService(ILogger<SharedStepService> logger, IClient client, IStepService stepService,
-        IAttachmentService attachmentService)
+        IAttachmentService attachmentService, ILinkService linkService)
     {
         _logger = logger;
         _client = client;
         _stepService = stepService;
         _attachmentService = attachmentService;
+        _linkService = linkService;
     }
 
     public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(Guid projectId, Guid sectionId,
@@ -46,6 +48,7 @@ public class SharedStepService : ISharedStepService
 
             var sharedStepGuid = Guid.NewGuid();
             var tmsAttachments = await _attachmentService.DownloadAttachments(sharedStep.Attachments, sharedStepGuid);
+            var links = _linkService.CovertLinks(sharedStep.Links);
 
             var step = new SharedStep
             {
@@ -68,7 +71,7 @@ public class SharedStepService : ISharedStepService
                         Value = sharedStep.State
                     }
                 },
-                Links = new List<Link>(), //ConvertLinks(sharedStep.Relations.ToList()),
+                Links = links,
                 Attachments = tmsAttachments,
                 SectionId = sectionId,
                 Tags = ConvertTags(sharedStep.Tags)
@@ -80,25 +83,6 @@ public class SharedStepService : ISharedStepService
         }
 
         return sharedSteps;
-    }
-
-    private PriorityType ConvertPriority(int priority)
-    {
-        switch (priority)
-        {
-            case 1:
-                return PriorityType.Highest;
-            case 2:
-                return PriorityType.High;
-            case 3:
-                return PriorityType.Medium;
-            case 4:
-                return PriorityType.Low;
-            default:
-                _logger.LogError("Failed to convert priority {Priority}", priority);
-
-                throw new Exception($"Failed to convert priority {priority}");
-        }
     }
 
     private List<Link> ConvertLinks(List<WorkItemRelation> relations)
@@ -120,15 +104,5 @@ public class SharedStepService : ISharedStepService
         }
 
         return links;
-    }
-
-    private List<string> ConvertTags(string tagsContent)
-    {
-        if (string.IsNullOrEmpty(tagsContent))
-        {
-            return new List<string>();
-        }
-
-        return tagsContent.Split("; ").ToList();
     }
 }
