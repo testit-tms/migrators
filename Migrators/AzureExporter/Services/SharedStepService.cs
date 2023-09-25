@@ -56,7 +56,7 @@ public class SharedStepService : WorkItemBaseService, ISharedStepService
                 Name = sharedStep.Title,
                 Steps = steps,
                 Description = sharedStep.Description,
-                State = StateType.Ready,
+                State = StateType.NotReady,
                 Priority = ConvertPriority(sharedStep.Priority),
                 Attributes = new List<CaseAttribute>
                 {

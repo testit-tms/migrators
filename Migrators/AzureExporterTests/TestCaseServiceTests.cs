@@ -111,7 +111,7 @@ public class TestCaseServiceTests
             Id = Guid.NewGuid(),
             Name = "Test Case",
             Description = "Test Case Description",
-            State = StateType.Ready,
+            State = StateType.NotReady,
             Priority = PriorityType.Highest,
             PreconditionSteps = new List<Step>(),
             PostconditionSteps = new List<Step>(),

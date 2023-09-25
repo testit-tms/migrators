@@ -53,7 +53,7 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
             {
                 Id = testCaseGuid,
                 Description = testCase.Description,
-                State = StateType.Ready,
+                State = StateType.NotReady,
                 Priority = ConvertPriority(testCase.Priority),
                 Steps = steps,
                 PreconditionSteps = new List<Step>(),

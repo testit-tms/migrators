@@ -111,7 +111,7 @@ public class SharedStepSeriveTests
             Id = Guid.NewGuid(),
             Name = "Test Case",
             Description = "Test Case Description",
-            State = StateType.Ready,
+            State = StateType.NotReady,
             Priority = PriorityType.Highest,
             Attributes = new List<CaseAttribute>
             {
