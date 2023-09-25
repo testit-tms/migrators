@@ -55,6 +55,8 @@ public class LinkService : ILinkService
                 Title = link.Title
             };
 
+            _logger.LogDebug("Converted link {@OldLink}: {@Link}", link, convertedLink);
+
             convertedLinks.Add(convertedLink);
         }
 
