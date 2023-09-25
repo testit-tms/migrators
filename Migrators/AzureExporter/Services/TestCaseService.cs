@@ -1,7 +1,6 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
-using Microsoft.VisualStudio.Services.WebApi;
 using Models;
 using Constants = AzureExporter.Models.Constants;
 using Link = Models.Link;
@@ -29,7 +28,7 @@ public class TestCaseService : ITestCaseService
     {
         _logger.LogInformation("Converting test cases");
 
-        var workItemsIds = await _client.GetWorkItems(Constants.TestCaseType);
+        var workItemsIds = await _client.GetWorkItemIds(Constants.TestCaseType);
 
         _logger.LogDebug("Found {@WorkItems} test cases", workItemsIds.Count);
 
@@ -40,22 +39,19 @@ public class TestCaseService : ITestCaseService
             _logger.LogDebug("Converting test case: {Id}", workItemId);
 
             var testCase = await _client.GetWorkItemById(workItemId);
-
-            var steps = _stepService.ConvertSteps(
-                GetValueOfField(testCase.Fields, "Microsoft.VSTS.TCM.Steps"), sharedStepMap);
+            var steps = _stepService.ConvertSteps(testCase.Steps, sharedStepMap);
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
             var testCaseGuid = Guid.NewGuid();
-            var tmsAttachments = await _attachmentService.DownloadAttachments(
-                testCase.Relations.ToList(), testCaseGuid);
+            var tmsAttachments = await _attachmentService.DownloadAttachments(testCase.Attachments, testCaseGuid);
 
             var tmsTestCase = new TestCase
             {
                 Id = testCaseGuid,
-                Description = GetValueOfField(testCase.Fields, "System.Description"),
+                Description = testCase.Description,
                 State = StateType.Ready,
-                Priority = ConvertPriority(testCase.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3),
+                Priority = ConvertPriority(testCase.Priority),
                 Steps = steps,
                 PreconditionSteps = new List<Step>(),
                 PostconditionSteps = new List<Step>(),
@@ -65,14 +61,19 @@ public class TestCaseService : ITestCaseService
                     new()
                     {
                         Id = attributeMap[Constants.IterationAttributeName],
-                        Value = GetValueOfField(testCase.Fields, "System.IterationPath")
+                        Value = testCase.IterationPath
+                    },
+                    new()
+                    {
+                        Id = attributeMap[Constants.StateAttributeName],
+                        Value = testCase.State
                     }
                 },
-                Tags = ConvertTags(GetValueOfField(testCase.Fields, "System.Tags")),
+                Tags = ConvertTags(testCase.Tags),
                 Attachments = tmsAttachments,
                 Iterations = new List<Iteration>(),
                 Links = new List<Link>(), //ConvertLinks(testCase.Relations.ToList()),
-                Name = GetValueOfField(testCase.Fields, "System.Title"),
+                Name = testCase.Title,
                 SectionId = sectionId
             };
 
@@ -128,21 +129,6 @@ public class TestCaseService : ITestCaseService
 
     private List<string> ConvertTags(string tagsContent)
     {
-        if (string.IsNullOrEmpty(tagsContent))
-        {
-            return new List<string>();
-        }
-
-        return tagsContent.Split("; ").ToList();
-    }
-
-    private static string GetValueOfField(IDictionary<string, object> fields, string key)
-    {
-        if (fields.TryGetValue(key, out var value))
-        {
-            return value as string ?? string.Empty;
-        }
-
-        return string.Empty;
+        return string.IsNullOrEmpty(tagsContent) ? new List<string>() : tagsContent.Split("; ").ToList();
     }
 }

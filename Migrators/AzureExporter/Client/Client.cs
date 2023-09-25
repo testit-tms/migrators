@@ -1,17 +1,14 @@
-using System.Net.Http.Headers;
-using System.Text.Json;
 using AzureExporter.Models;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.TeamFoundation.Core.WebApi.Types;
+using Microsoft.TeamFoundation.Work.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
-using Microsoft.TeamFoundation.Work.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.TestManagement.TestPlanning.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
-using WorkItem = Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models.WorkItem;
 
 namespace AzureExporter.Client;
 
@@ -125,7 +122,7 @@ public class Client : IClient
         return testCases;
     }
 
-    public async Task<List<int>> GetWorkItems(string workItemType)
+    public async Task<List<int>> GetWorkItemIds(string workItemType)
     {
         var wiql = new Wiql
         {
@@ -140,11 +137,39 @@ public class Client : IClient
         return queryResult.WorkItems.Select(w => w.Id).ToList();
     }
 
-    public async Task<WorkItem> GetWorkItemById(int id)
+    public async Task<AzureWorkItem> GetWorkItemById(int id)
     {
         var workItem = _workItemTrackingClient.GetWorkItemAsync(_projectName, id, expand: WorkItemExpand.All).Result;
 
-        return workItem;
+        var result = new AzureWorkItem()
+        {
+            Id = workItem.Id!.Value,
+            Title = GetValueOfField(workItem.Fields, "System.Title"),
+            Description = GetValueOfField(workItem.Fields, "System.Description"),
+            State = GetValueOfField(workItem.Fields, "System.State"),
+            Priority = workItem.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3,
+            Steps = GetValueOfField(workItem.Fields, "Microsoft.VSTS.TCM.Steps"),
+            IterationPath = GetValueOfField(workItem.Fields, "System.IterationPath"),
+            Tags = GetValueOfField(workItem.Fields, "System.Tags"),
+            Links = workItem.Relations
+                .Where(r => r.Rel == "ArtifactLink")
+                .Select(r => new AzureLink
+                {
+                    Title = GetValueOfField(r.Attributes, "name"),
+                    Url = r.Url
+                })
+                .ToList(),
+            Attachments = workItem.Relations
+                .Where(r => r.Rel == "AttachedFile")
+                .Select(r => new AzureAttachment
+                {
+                    Id = new Guid(r.Url[^36..]),
+                    Name = GetValueOfField(r.Attributes, "name"),
+                })
+                .ToList()
+        };
+
+        return result;
     }
 
     public async Task<List<string>> GetIterations(Guid projectId)
@@ -174,5 +199,15 @@ public class Client : IClient
         }
 
         return totalStream.ToArray();
+    }
+
+    private static string GetValueOfField(IDictionary<string, object> fields, string key)
+    {
+        if (fields.TryGetValue(key, out var value))
+        {
+            return value as string ?? string.Empty;
+        }
+
+        return string.Empty;
     }
 }

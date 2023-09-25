@@ -19,17 +19,15 @@ public class AttachmentService : IAttachmentService
         _writeService = writeService;
     }
 
-    public async Task<List<string>> DownloadAttachments(List<WorkItemRelation> relations, Guid workItemId)
+    public async Task<List<string>> DownloadAttachments(List<AzureAttachment> attachments, Guid workItemId)
     {
         _logger.LogInformation("Downloading attachments");
-
-        var attachments = await ConvertAttachments(relations);
 
         var names = new List<string>();
 
         foreach (var attachment in attachments)
         {
-            _logger.LogDebug("Downloading attachment: {Name}", attachment);
+            _logger.LogDebug("Downloading attachment: {Name}", attachment.Name);
 
             var bytes = await _client.GetAttachmentById(attachment.Id);
             var name = await _writeService.WriteAttachment(workItemId, bytes, attachment.Name);
@@ -39,31 +37,5 @@ public class AttachmentService : IAttachmentService
         _logger.LogDebug("Ending downloading attachments: {@Names}", names);
 
         return names;
-    }
-
-    private async Task<List<AzureAttachment>> ConvertAttachments(List<WorkItemRelation> relations)
-    {
-        var attachments = new List<AzureAttachment>();
-
-        foreach (var relation in relations)
-        {
-            if (relation.Rel.Equals("AttachedFile"))
-            {
-                attachments.Add(
-                    new AzureAttachment
-                        {
-                            Name = relation.Attributes["name"] as string,
-                            Id = await GetGuidFromUrl(relation.Url)
-                        }
-                    );
-            }
-        }
-
-        return attachments;
-    }
-
-    private async Task<Guid> GetGuidFromUrl(string url)
-    {
-        return new Guid(url.Substring(url.Length - 36));
     }
 }

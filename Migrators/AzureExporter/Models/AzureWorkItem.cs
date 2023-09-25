@@ -1,15 +1,24 @@
-using System.Text.Json.Serialization;
-
 namespace AzureExporter.Models;
 
 public class AzureWorkItem
 {
-    [JsonPropertyName("id")]
     public int Id { get; set; }
 
-    [JsonPropertyName("fields")]
-    public Dictionary<string, dynamic> Fields { get; set; }
+    public string Title { get; set; }
 
-    //[JsonPropertyName("_links")]
-    //public List<AzureLink> Links { get; set; }
+    public string Description { get; set; }
+
+    public string State { get; set; }
+
+    public int Priority { get; set; }
+
+    public string Steps { get; set; }
+
+    public string IterationPath { get; set; }
+
+    public string Tags { get; set; }
+
+    public List<AzureLink> Links { get; set; }
+
+    public List<AzureAttachment> Attachments { get; set; }
 }

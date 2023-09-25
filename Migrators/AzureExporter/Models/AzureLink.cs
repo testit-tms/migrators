@@ -1,9 +1,7 @@
-using System.Text.Json.Serialization;
-
 namespace AzureExporter.Models;
 
 public class AzureLink
 {
-    [JsonPropertyName("href")]
-    public string Link { get; set; }
+    public string Url { get; set; }
+    public string Title { get; set; }
 }

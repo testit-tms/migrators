@@ -17,7 +17,6 @@ public class AttributeService : IAttributeService
         _client = client;
     }
 
-
     public async Task<List<Attribute>> GetCustomAttributes(Guid projectId)
     {
         _logger.LogInformation("Getting custom attributes");
@@ -36,15 +35,21 @@ public class AttributeService : IAttributeService
             Options = iterations
         });
 
-        // attributes.Add(new Attribute()
-        // {
-        //     Id = Guid.NewGuid(),
-        //     Name = "Test Case State",
-        //     Type = AttributeType.Options,
-        //     IsActive = true,
-        //     IsRequired = false,
-        //     Options = iterations
-        // });
+        attributes.Add(new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = Constants.StateAttributeName,
+            Type = AttributeType.Options,
+            IsActive = true,
+            IsRequired = false,
+            Options = new List<string>
+            {
+                "Active",
+                "Closed",
+                "Design",
+                "Ready"
+            }
+        });
 
         return attributes;
     }

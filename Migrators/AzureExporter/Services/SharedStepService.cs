@@ -28,7 +28,7 @@ public class SharedStepService : ISharedStepService
     {
         _logger.LogInformation("Converting shared steps");
 
-        var workItemIds = await _client.GetWorkItems(Constants.SharedStepType);
+        var workItemIds = await _client.GetWorkItemIds(Constants.SharedStepType);
 
         _logger.LogDebug("Found {@WorkItems} shared steps", workItemIds.Count);
 
@@ -40,37 +40,38 @@ public class SharedStepService : ISharedStepService
 
             _logger.LogDebug("Found shared step: {Id}", sharedStep.Id);
 
-            var steps = _stepService.ConvertSteps(
-                GetValueOfField(sharedStep.Fields, "Microsoft.VSTS.TCM.Steps"),
-                new Dictionary<int, Guid>()
-            );
+            var steps = _stepService.ConvertSteps(sharedStep.Steps, new Dictionary<int, Guid>());
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);
 
             var sharedStepGuid = Guid.NewGuid();
-            var tmsAttachments = await _attachmentService.DownloadAttachments(
-                sharedStep.Relations.ToList(), sharedStepGuid);
+            var tmsAttachments = await _attachmentService.DownloadAttachments(sharedStep.Attachments, sharedStepGuid);
 
             var step = new SharedStep
             {
                 Id = sharedStepGuid,
-                Name = GetValueOfField(sharedStep.Fields, "System.Title"),
+                Name = sharedStep.Title,
                 Steps = steps,
-                Description = GetValueOfField(sharedStep.Fields, "System.Description"),
+                Description = sharedStep.Description,
                 State = StateType.Ready,
-                Priority = ConvertPriority(sharedStep.Fields["Microsoft.VSTS.Common.Priority"] as int? ?? 3),
+                Priority = ConvertPriority(sharedStep.Priority),
                 Attributes = new List<CaseAttribute>
                 {
                     new()
                     {
                         Id = attributeMap[Constants.IterationAttributeName],
-                        Value = GetValueOfField(sharedStep.Fields, "System.IterationPath")
+                        Value = sharedStep.IterationPath
+                    },
+                    new()
+                    {
+                        Id = attributeMap[Constants.StateAttributeName],
+                        Value = sharedStep.State
                     }
                 },
-                Links = new List<Link>(),//ConvertLinks(sharedStep.Relations.ToList()),
+                Links = new List<Link>(), //ConvertLinks(sharedStep.Relations.ToList()),
                 Attachments = tmsAttachments,
                 SectionId = sectionId,
-                Tags = ConvertTags(GetValueOfField(sharedStep.Fields, "System.Tags")),
+                Tags = ConvertTags(sharedStep.Tags)
             };
 
             _logger.LogDebug("Converted shared step: {@Step}", step);
@@ -129,15 +130,5 @@ public class SharedStepService : ISharedStepService
         }
 
         return tagsContent.Split("; ").ToList();
-    }
-
-    private static string GetValueOfField(IDictionary<string, object> fields, string key)
-    {
-        if (fields.TryGetValue(key, out var value))
-        {
-            return value as string ?? string.Empty;
-        }
-
-        return string.Empty;
     }
 }

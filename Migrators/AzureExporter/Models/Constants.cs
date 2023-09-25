@@ -6,4 +6,5 @@ public class Constants
     public const string SharedStepType = "Shared Steps";
 
     public const string IterationAttributeName = "Iteration";
+    public const string StateAttributeName = "Azure DevOps State";
 }
