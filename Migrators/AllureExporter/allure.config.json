@@ -3,6 +3,7 @@
   "allure" : {
     "url" : "https://allure.ru/",
     "token" : "49a1238b-b0a6-4ebb-a47c-acb2b7a9c4e9",
-    "projectName" : "ProjectName"
+    "projectName" : "ProjectName",
+    "migrateAutotests": false
   }
 }
