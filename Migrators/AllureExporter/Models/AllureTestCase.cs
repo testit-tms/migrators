@@ -2,14 +2,30 @@ using System.Text.Json.Serialization;
 
 namespace AllureExporter.Models;
 
-public class AllureTestCase
+
+public class AllureTestCases
+{
+    [JsonPropertyName("content")]
+    public List<AllureTestCaseBase> Content { get; set; }
+}
+
+public class AllureTestCaseBase
 {
     [JsonPropertyName("id")]
     public int Id { get; set; }
+
+    [JsonPropertyName("automated")]
+    public bool Automated { get; set; }
+}
+
+public class AllureTestCase : AllureTestCaseBase
+{
     [JsonPropertyName("name")]
     public string Name { get; set; }
+
     [JsonPropertyName("description")]
     public string Description { get; set; }
+
     [JsonPropertyName("tags")]
     public List<Tags> Tags { get; set; }
 

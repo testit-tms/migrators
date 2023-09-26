@@ -11,6 +11,7 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
     private readonly string _projectName;
+    private readonly bool _migrateAutotests;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
     {
@@ -30,10 +31,13 @@ public class Client : IClient
         }
 
         var projectName = tmsSection["projectName"];
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(projectName))
         {
             throw new ArgumentException("TMS private token is not specified");
         }
+
+        var migrateAutotests = tmsSection["migrateAutotests"];
+        _migrateAutotests = !string.IsNullOrEmpty(migrateAutotests) && bool.Parse(migrateAutotests);
 
         _projectName = projectName;
         _httpClient = new HttpClient();
@@ -82,9 +86,14 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var testCases = JsonSerializer.Deserialize<BaseEntities>(content);
+        var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
 
-        return testCases is { Content.Count: 0 } ? new List<int>() : testCases.Content.Select(t => t.Id).ToList();
+        return testCases is { Content.Count: 0 }
+            ? new List<int>()
+            : testCases.Content
+                .Where(t => _migrateAutotests || t.Automated == false)
+                .Select(t => t.Id)
+                .ToList();
     }
 
     public async Task<List<int>> GetTestCaseIdsFromSuite(int projectId, int suiteId)
@@ -104,9 +113,14 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var testCases = JsonSerializer.Deserialize<BaseEntities>(content);
+        var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
 
-        return testCases is { Content.Count: 0 } ? new List<int>() : testCases.Content.Select(t => t.Id).ToList();
+        return testCases is { Content.Count: 0 }
+            ? new List<int>()
+            : testCases.Content
+                .Where(t => _migrateAutotests || t.Automated == false)
+                .Select(t => t.Id)
+                .ToList();
     }
 
     public async Task<AllureTestCase> GetTestCaseById(int testCaseId)
