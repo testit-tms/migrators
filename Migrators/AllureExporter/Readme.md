@@ -16,7 +16,8 @@ You can download the latest version of the AllureExporter from the [releases](ht
     "allure": {
         "url": "https://allure.ru/",
         "token": "49a1238b-b0a6-4ebb-a47c-acb2b7a9c4e9",
-        "projectName": "ProjectName"
+        "projectName": "ProjectName",
+        "migrateAutotests": true
     }
 }
 ```
@@ -27,6 +28,7 @@ Where:
 - allure.url - url to the Allure server
 - allure.token - token for access to the Allure server
 - allure.projectName - name of the project in the Allure server
+- allure.migrateAutotests - flag for migration of autotests
 
 2. Run the exporter with the following command:
 
