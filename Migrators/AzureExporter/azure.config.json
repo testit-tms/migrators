@@ -1,8 +1,8 @@
 {
   "resultPath" : "/Users/user01/Documents/importer",
   "azure": {
-    "url": "https://dev.azure.com/pavelbutuzov",
-    "token": "yle4eflg6xoxso3wrdjlkmurwcfjq2a7zspagcutgd5d3ckk773q",
-    "projectName": "TestProjectAzure"
+    "url": "https://dev.azure.com/testit",
+    "token": "ovequpv4qsgi5fv7tb5eysqddodkux2cwp3faileved56qandckq",
+    "projectName": "ProjectName"
   }
 }
