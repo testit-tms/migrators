@@ -10,6 +10,7 @@ jobs:
       matrix:
         project: [
           ./Migrators/AllureExporter,
+          ./Migrators/AzureExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -33,6 +34,7 @@ jobs:
       matrix:
         project: [
           ./Migrators/AllureExporterTests,
+          ./Migrators/AzureExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:
