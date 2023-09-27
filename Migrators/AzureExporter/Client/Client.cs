@@ -50,14 +50,6 @@ public class Client : IClient
 
         _projectName = projectName;
 
-        //_httpClient = new HttpClient();
-        //_httpClient.BaseAddress = new Uri(url);
-        //_httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
-        //            Convert.ToBase64String(
-        //                System.Text.ASCIIEncoding.ASCII.GetBytes(
-        //                    string.Format("{0}:{1}", "", token))));
-
         var connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, token));
         _projectClient = connection.GetClient<ProjectHttpClient>();
         _testPlanClient = connection.GetClient<TestPlanHttpClient>();
@@ -150,7 +142,12 @@ public class Client : IClient
                     Id = new Guid(r.Url[^36..]),
                     Name = GetValueOfField(r.Attributes, "name"),
                 })
-                .ToList()
+                .ToList(),
+            Parameters = new AzureParameters
+            {
+                Keys = GetValueOfField(workItem.Fields, "Microsoft.VSTS.TCM.Parameters"),
+                Values = GetValueOfField(workItem.Fields, "Microsoft.VSTS.TCM.LocalDataSource")
+            }
         };
 
         return result;

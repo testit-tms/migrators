@@ -1,9 +1,7 @@
 using AzureExporter.Client;
 using Microsoft.Extensions.Logging;
-using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Models;
 using Constants = AzureExporter.Models.Constants;
-using Link = Models.Link;
 
 namespace AzureExporter.Services;
 
@@ -14,15 +12,17 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
     private readonly ILinkService _linkService;
+    private readonly IParameterService _parameterService;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
-        IAttachmentService attachmentService, ILinkService linkService)
+        IAttachmentService attachmentService, ILinkService linkService, IParameterService parameterService)
     {
         _logger = logger;
         _client = client;
         _stepService = stepService;
         _attachmentService = attachmentService;
         _linkService = linkService;
+        _parameterService = parameterService;
     }
 
     public async Task<List<TestCase>> ConvertTestCases(Guid projectId, Dictionary<int, Guid> sharedStepMap,
@@ -48,6 +48,25 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
             var testCaseGuid = Guid.NewGuid();
             var tmsAttachments = await _attachmentService.DownloadAttachments(testCase.Attachments, testCaseGuid);
             var links = _linkService.CovertLinks(testCase.Links);
+            var parameters = _parameterService.ConvertParameters(testCase.Parameters);
+            var iterations = parameters
+                .Select(p =>
+                    new Iteration
+                    {
+                        Parameters = p.Select(pair => new Parameter
+                            {
+                                Name = pair.Key,
+                                Value = pair.Value
+                            })
+                            .ToList()
+                    }
+                )
+                .ToList();
+
+            if (iterations.Count > 0)
+            {
+                steps = AddParametersToSteps(steps, parameters[0].Keys);
+            }
 
             var tmsTestCase = new TestCase
             {
@@ -74,8 +93,8 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
                 },
                 Tags = ConvertTags(testCase.Tags),
                 Attachments = tmsAttachments,
-                Iterations = new List<Iteration>(),
-                Links = links, //ConvertLinks(testCase.Relations.ToList()),
+                Iterations = iterations,
+                Links = links,
                 Name = testCase.Title,
                 SectionId = sectionId
             };
@@ -90,24 +109,17 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
         return testCases;
     }
 
-    private List<Link> ConvertLinks(List<WorkItemRelation> relations)
+    private static List<Step> AddParametersToSteps(List<Step> steps, IEnumerable<string> parameters)
     {
-        var links = new List<Link>();
-
-        foreach (var relation in relations)
+        foreach (var parameter in parameters)
         {
-            if (relation.Rel.Equals("ArtifactLink"))
+            steps.ForEach(s =>
             {
-                links.Add(
-                    new Link
-                    {
-                        Url = relation.Url,
-                        Description = relation.Attributes["name"] as string
-                    }
-                );
-            }
+                s.Action = s.Action.Replace($"@{parameter}", $"<<<{parameter}>>>");
+                s.Expected = s.Expected.Replace($"@{parameter}", $"<<<{parameter}>>>");
+            });
         }
 
-        return links;
+        return steps;
     }
 }

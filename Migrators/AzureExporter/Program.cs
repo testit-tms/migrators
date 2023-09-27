@@ -61,6 +61,7 @@ namespace AzureExporter
                     services.AddSingleton<IWriteService, WriteService>();
                     services.AddSingleton<IAttributeService, AttributeService>();
                     services.AddSingleton<ILinkService, LinkService>();
+                    services.AddSingleton<IParameterService, ParameterService>();
                 });
         }
 

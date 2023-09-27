@@ -21,4 +21,6 @@ public class AzureWorkItem
     public List<AzureLink> Links { get; set; }
 
     public List<AzureAttachment> Attachments { get; set; }
+
+    public AzureParameters Parameters { get; set; }
 }

@@ -84,25 +84,4 @@ public class SharedStepService : WorkItemBaseService, ISharedStepService
 
         return sharedSteps;
     }
-
-    private List<Link> ConvertLinks(List<WorkItemRelation> relations)
-    {
-        var links = new List<Link>();
-
-        foreach (var relation in relations)
-        {
-            if (relation.Rel.Equals("ArtifactLink"))
-            {
-                links.Add(
-                    new Link
-                    {
-                        Url = relation.Url,
-                        Description = relation.Attributes["name"] as string
-                    }
-                );
-            }
-        }
-
-        return links;
-    }
 }
