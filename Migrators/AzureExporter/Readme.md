@@ -24,7 +24,7 @@ You can download the latest version of the AzureExporter from the [releases](htt
 Where:
 
 - resultPath - path to the folder where the results will be saved
-- azure.url - url to the Azure server
+- azure.url - url to the Azure server with organization name
 - azure.token - token for access to the Azure server
 - azure.projectName - name of the project in the Azure server
 
