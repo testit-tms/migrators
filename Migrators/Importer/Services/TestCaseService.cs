@@ -127,7 +127,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         };
     }
 
-    private string AddParameter(string line, IEnumerable<TmsParameter> parameters)
+    private static string AddParameter(string line, IEnumerable<TmsParameter> parameters)
     {
         if (string.IsNullOrEmpty(line)) return line;
 

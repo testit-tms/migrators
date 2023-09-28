@@ -1,0 +1,8 @@
+{
+  "resultPath" : "/Users/user01/Documents/importer",
+  "azure": {
+    "url": "https://dev.azure.com/testit",
+    "token": "ovequpv4qsgi5fv7tb5eysqddodkux2cwp3faileved56qandckq",
+    "projectName": "ProjectName"
+  }
+}
