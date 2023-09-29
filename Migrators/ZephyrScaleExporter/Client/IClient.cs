@@ -8,4 +8,5 @@ public interface IClient
     Task<List<ZephyrStatus>> GetStatuses();
     Task<List<ZephyrPriority>> GetPriorities();
     Task<List<ZephyrFolder>> GetFolders();
+    Task<List<ZephyrTestCase>> GetTestCases(int folderId);
 }

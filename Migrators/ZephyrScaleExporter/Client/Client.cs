@@ -124,8 +124,30 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var folders = JsonSerializer.Deserialize<ZephyrFolders>(content);
 
-        _logger.LogDebug("Got priorities {@Folders}", folders);
+        _logger.LogDebug("Got folders {@Folders}", folders);
 
         return folders.Folders;
+    }
+
+    public async Task<List<ZephyrTestCase>> GetTestCases(int folderId)
+    {
+        _logger.LogInformation("Getting test cases for folder {FolderId}", folderId);
+
+        var response = await _httpClient.GetAsync($"testcases?projectKey={_projectName}&folderId={folderId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test cases for folder {FolderId}. Status code: {StatusCode}. Response: {Response}",
+                folderId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test cases for folder {folderId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testCases = JsonSerializer.Deserialize<ZephyrTestCases>(content);
+
+        _logger.LogDebug("Got test cases {@TestCases}", testCases);
+
+        return testCases.TestCases;
     }
 }
