@@ -6,4 +6,5 @@ public interface IClient
 {
     Task<ZephyrProject> GetProject();
     Task<List<ZephyrStatus>> GetStatuses();
+    Task<List<ZephyrPriority>> GetPriorities();
 }

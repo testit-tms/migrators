@@ -20,6 +20,7 @@ public class ExportService : IExportService
 
         var project = await _client.GetProject();
         var statuses = await _client.GetStatuses();
+        var priorities = await _client.GetPriorities();
 
         _logger.LogInformation("Export complete");
     }

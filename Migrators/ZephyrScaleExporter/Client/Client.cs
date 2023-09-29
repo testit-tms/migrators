@@ -86,4 +86,25 @@ public class Client : IClient
 
         return statuses.Statuses;
     }
+
+    public async Task<List<ZephyrPriority>> GetPriorities()
+    {
+        _logger.LogInformation("Getting priorities");
+
+        var response = await _httpClient.GetAsync($"priorities?projectKey={_projectName}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get priorities. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get priorities. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var priorities = JsonSerializer.Deserialize<ZephyrPriorities>(content);
+
+        _logger.LogDebug("Got priorities {@Priorities}", priorities);
+
+        return priorities.Priorities;
+    }
 }
