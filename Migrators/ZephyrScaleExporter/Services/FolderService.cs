@@ -31,7 +31,9 @@ public class FolderService : IFolderService
             {
                 Id = Guid.NewGuid(),
                 Name = folder.Name,
-                Sections = GetChildrenSections(folder.Id, folders)
+                Sections = GetChildrenSections(folder.Id, folders),
+                PostconditionSteps = new List<Step>(),
+                PreconditionSteps = new List<Step>()
             };
 
             sections.Add(section);
@@ -67,7 +69,9 @@ public class FolderService : IFolderService
             {
                 Id = Guid.NewGuid(),
                 Name = zephyrFolder.Name,
-                Sections = GetChildrenSections(zephyrFolder.Id, zephyrFolders)
+                Sections = GetChildrenSections(zephyrFolder.Id, zephyrFolders),
+                PostconditionSteps = new List<Step>(),
+                PreconditionSteps = new List<Step>()
             };
 
             sections.Add(section);
