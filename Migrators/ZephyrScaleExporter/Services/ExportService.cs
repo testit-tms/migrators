@@ -19,6 +19,7 @@ public class ExportService : IExportService
         _logger.LogInformation("Exporting project...");
 
         var project = await _client.GetProject();
+        var statuses = await _client.GetStatuses();
 
         _logger.LogInformation("Export complete");
     }

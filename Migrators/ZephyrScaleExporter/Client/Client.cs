@@ -65,4 +65,25 @@ public class Client : IClient
 
         throw new Exception("Project not found");
     }
+
+    public async Task<List<ZephyrStatus>> GetStatuses()
+    {
+        _logger.LogInformation("Getting statuses");
+
+        var response = await _httpClient.GetAsync($"statuses?projectKey={_projectName}&statusType=TEST_CASE");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get statuses. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get statuses. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var statuses = JsonSerializer.Deserialize<ZephyrStatuses>(content);
+
+        _logger.LogDebug("Got statuses {@Statuses}", statuses);
+
+        return statuses.Statuses;
+    }
 }
