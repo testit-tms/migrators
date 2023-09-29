@@ -107,4 +107,25 @@ public class Client : IClient
 
         return priorities.Priorities;
     }
+
+    public async Task<List<ZephyrFolder>> GetFolders()
+    {
+        _logger.LogInformation("Getting folders");
+
+        var response = await _httpClient.GetAsync($"folders?projectKey={_projectName}&folderType=TEST_CASE");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get folders. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get folders. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var folders = JsonSerializer.Deserialize<ZephyrFolders>(content);
+
+        _logger.LogDebug("Got priorities {@Folders}", folders);
+
+        return folders.Folders;
+    }
 }
