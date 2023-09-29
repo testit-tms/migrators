@@ -17,26 +17,26 @@ public class Client : IClient
     {
         _logger = logger;
 
-        var tmsSection = configuration.GetSection("allure");
-        var url = tmsSection["url"];
+        var section = configuration.GetSection("allure");
+        var url = section["url"];
         if (string.IsNullOrEmpty(url))
         {
-            throw new ArgumentException("TMS url is not specified");
+            throw new ArgumentException("Url is not specified");
         }
 
-        var token = tmsSection["token"];
+        var token = section["token"];
         if (string.IsNullOrEmpty(token))
         {
-            throw new ArgumentException("TMS private token is not specified");
+            throw new ArgumentException("Token is not specified");
         }
 
-        var projectName = tmsSection["projectName"];
+        var projectName = section["projectName"];
         if (string.IsNullOrEmpty(projectName))
         {
-            throw new ArgumentException("TMS private token is not specified");
+            throw new ArgumentException("Project name is not specified");
         }
 
-        var migrateAutotests = tmsSection["migrateAutotests"];
+        var migrateAutotests = section["migrateAutotests"];
         _migrateAutotests = !string.IsNullOrEmpty(migrateAutotests) && bool.Parse(migrateAutotests);
 
         _projectName = projectName;

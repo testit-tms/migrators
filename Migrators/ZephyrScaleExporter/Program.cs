@@ -5,6 +5,8 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
+using ZephyrScaleExporter.Client;
+using ZephyrScaleExporter.Services;
 
 namespace ZephyrScaleExporter
 {
@@ -49,6 +51,8 @@ namespace ZephyrScaleExporter
                 {
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
+                    services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<IExportService, ExportService>();
 
                 });
         }
