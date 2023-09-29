@@ -150,4 +150,26 @@ public class Client : IClient
 
         return testCases.TestCases;
     }
+
+    public async Task<List<ZephyrStep>> GetSteps(string testCaseKey)
+    {
+        _logger.LogInformation("Getting steps for test case {TestCaseKey}", testCaseKey);
+
+        var response = await _httpClient.GetAsync($"testcases/{testCaseKey}/teststeps");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get steps for test case {TestCaseKey}. Status code: {StatusCode}. Response: {Response}",
+                testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get steps for test case {testCaseKey}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var steps = JsonSerializer.Deserialize<ZephyrSteps>(content);
+
+        _logger.LogDebug("Got steps {@Steps}", steps);
+
+        return steps.Steps;
+    }
 }
