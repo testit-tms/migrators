@@ -53,6 +53,7 @@ namespace ZephyrScaleExporter
                     services.AddSingleton(SetupConfiguration());
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IExportService, ExportService>();
+                    services.AddSingleton<IFolderService, FolderService>();
 
                 });
         }

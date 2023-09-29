@@ -5,11 +5,13 @@ namespace ZephyrScaleExporter.Services;
 
 public class ExportService : IExportService
 {
+    private readonly IFolderService _folderService;
     private readonly ILogger<ExportService> _logger;
     private readonly IClient _client;
 
-    public ExportService(ILogger<ExportService> logger, IClient client)
+    public ExportService(ILogger<ExportService> logger, IClient client, IFolderService folderService)
     {
+        _folderService = folderService;
         _logger = logger;
         _client = client;
     }
@@ -21,6 +23,8 @@ public class ExportService : IExportService
         var project = await _client.GetProject();
         var statuses = await _client.GetStatuses();
         var priorities = await _client.GetPriorities();
+
+        var folders = await _folderService.ConvertSections();
 
         _logger.LogInformation("Export complete");
     }
