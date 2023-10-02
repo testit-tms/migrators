@@ -172,4 +172,26 @@ public class Client : IClient
 
         return steps.Steps;
     }
+
+    public async Task<ZephyrTestScript> GetTestScript(string testCaseKey)
+    {
+        _logger.LogInformation("Getting test script for test case {TestCaseKey}", testCaseKey);
+
+        var response = await _httpClient.GetAsync($"testcases/{testCaseKey}/testscript");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test script for test case {TestCaseKey}. Status code: {StatusCode}. Response: {Response}",
+                testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test script for test case {testCaseKey}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testScript = JsonSerializer.Deserialize<ZephyrTestScript>(content);
+
+        _logger.LogDebug("Got test script {@TestScript}", testScript);
+
+        return testScript;
+    }
 }

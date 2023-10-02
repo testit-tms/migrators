@@ -27,6 +27,9 @@ public class ZephyrTestCase
 
     [JsonPropertyName("links")]
     public Links Links { get; set; }
+
+    [JsonPropertyName("testScript")]
+    public TestScript TestScript { get; set; }
 }
 
 public class Priority
@@ -70,3 +73,10 @@ public class ZephyrTestCases
     [JsonPropertyName("values")]
     public List<ZephyrTestCase> TestCases { get; set; }
 }
+
+public class TestScript
+{
+    [JsonPropertyName("self")]
+    public string Self { get; set; }
+}
+

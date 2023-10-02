@@ -18,6 +18,9 @@ public class Inline
 
     [JsonPropertyName("expectedResult")]
     public string ExpectedResult { get; set; }
+
+    [JsonPropertyName("customFields")]
+    public object CustomFields { get; set; }
 }
 
 public class ZephyrSteps : BaseModel

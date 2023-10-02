@@ -16,4 +16,7 @@ public class Step
 
     [JsonPropertyName("attachments")]
     public List<string> Attachments { get; set; }
+
+    [JsonPropertyName("testData")]
+    public string TestData { get; set; }
 }

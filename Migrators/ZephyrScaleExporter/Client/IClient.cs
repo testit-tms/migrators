@@ -10,4 +10,5 @@ public interface IClient
     Task<List<ZephyrFolder>> GetFolders();
     Task<List<ZephyrTestCase>> GetTestCases(int folderId);
     Task<List<ZephyrStep>> GetSteps(string testCaseKey);
+    Task<ZephyrTestScript> GetTestScript(string testCaseKey);
 }
