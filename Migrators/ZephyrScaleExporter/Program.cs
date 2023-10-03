@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using JsonWriter;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -55,7 +56,9 @@ namespace ZephyrScaleExporter
                     services.AddSingleton<IExportService, ExportService>();
                     services.AddSingleton<IFolderService, FolderService>();
                     services.AddSingleton<IStepService, StepService>();
-
+                    services.AddSingleton<IAttributeService, AttributeService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<IWriteService, WriteService>();
                 });
         }
 

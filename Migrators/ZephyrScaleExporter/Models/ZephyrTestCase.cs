@@ -16,6 +16,9 @@ public class ZephyrTestCase
     [JsonPropertyName("objective")]
     public string Description { get; set; }
 
+    [JsonPropertyName("precondition")]
+    public string Precondition { get; set; }
+
     [JsonPropertyName("labels")]
     public List<string> Labels { get; set; }
 
