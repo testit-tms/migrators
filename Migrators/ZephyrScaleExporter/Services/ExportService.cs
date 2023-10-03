@@ -41,6 +41,8 @@ public class ExportService : IExportService
             await _writeService.WriteTestCase(testCase);
         }
 
+        attributes.Attributes.AddRange(testCases.Attributes);
+
         var root = new Root
         {
             ProjectName = project.Key,

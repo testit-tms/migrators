@@ -12,12 +12,14 @@ public class TestCaseService : ITestCaseService
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IStepService _stepService;
+    private Dictionary<string, Attribute> _attributeMap;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService)
     {
         _logger = logger;
         _client = client;
         _stepService = stepService;
+        _attributeMap = new Dictionary<string, Attribute>();
     }
 
     public async Task<TestCaseData> ConvertTestCases(Dictionary<int, Guid> sectionMap,
@@ -34,6 +36,24 @@ public class TestCaseService : ITestCaseService
 
             foreach (var zephyrTestCase in cases)
             {
+                if (_attributeMap.Count == 0 && zephyrTestCase.CustomFields.Count > 0)
+                {
+                    foreach (var keyValuePair in zephyrTestCase.CustomFields)
+                    {
+                        var attribute = new Attribute
+                        {
+                            Id = Guid.NewGuid(),
+                            Name = keyValuePair.Key,
+                            Type = AttributeType.String,
+                            IsActive = true,
+                            IsRequired = false,
+                            Options = new List<string>()
+                        };
+
+                        _attributeMap.Add(keyValuePair.Key, attribute);
+                    }
+                }
+
                 var steps = await _stepService.ConvertSteps(zephyrTestCase.Key, zephyrTestCase.TestScript.Self);
 
                 var testCase = new TestCase
@@ -78,6 +98,7 @@ public class TestCaseService : ITestCaseService
                     SectionId = section.Value
                 };
 
+                testCase.Attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields));
                 testCases.Add(testCase);
             }
         }
@@ -85,7 +106,7 @@ public class TestCaseService : ITestCaseService
         return new TestCaseData
         {
             TestCases = testCases,
-            Attributes = new List<Attribute>()
+            Attributes = _attributeMap.Values.ToList()
         };
     }
 
@@ -117,5 +138,19 @@ public class TestCaseService : ITestCaseService
         );
 
         return newLinks;
+    }
+
+
+    private List<CaseAttribute> ConvertAttributes(Dictionary<string, object> fields)
+    {
+        return fields
+            .Select(field =>
+                new CaseAttribute
+                {
+                    Id = _attributeMap[field.Key].Id,
+                    Value = field.Value == null ? string.Empty : field.Value.ToString()
+                }
+            )
+            .ToList();
     }
 }

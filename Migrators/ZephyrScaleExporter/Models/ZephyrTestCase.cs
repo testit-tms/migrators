@@ -33,6 +33,9 @@ public class ZephyrTestCase
 
     [JsonPropertyName("testScript")]
     public TestScript TestScript { get; set; }
+
+    [JsonPropertyName("customFields")]
+    public Dictionary<string, object> CustomFields { get; set; }
 }
 
 public class Priority
