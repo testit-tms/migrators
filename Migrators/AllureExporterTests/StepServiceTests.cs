@@ -104,15 +104,15 @@ public class StepServiceTests
         Assert.AreEqual(3, steps.Count);
         Assert.AreEqual("<p>When</p>\n<p>Test step 1</p>\n<p>Test step 1.1</p>\n<p>And</p>\n<p>Test step 1.2</p>\n", steps[0].Action);
         Assert.AreEqual("Expected result", steps[0].Expected);
-        Assert.AreEqual(3, steps[0].Attachments.Count);
-        Assert.AreEqual("image.png", steps[0].Attachments[0]);
-        Assert.AreEqual("image2.png", steps[0].Attachments[1]);
-        Assert.AreEqual("image3.png", steps[0].Attachments[2]);
+        Assert.AreEqual(3, steps[0].ActionAttachments.Count);
+        Assert.AreEqual("image.png", steps[0].ActionAttachments[0]);
+        Assert.AreEqual("image2.png", steps[0].ActionAttachments[1]);
+        Assert.AreEqual("image3.png", steps[0].ActionAttachments[2]);
         Assert.AreEqual("<p></p>\n", steps[1].Action);
         Assert.IsNull(steps[1].Expected);
-        Assert.AreEqual(0, steps[1].Attachments.Count);
+        Assert.AreEqual(0, steps[1].ActionAttachments.Count);
         Assert.AreEqual("<p>Test step 3</p>\n", steps[2].Action);
         Assert.IsNull(steps[2].Expected);
-        Assert.AreEqual(0, steps[2].Attachments.Count);
+        Assert.AreEqual(0, steps[2].ActionAttachments.Count);
     }
 }

@@ -28,7 +28,7 @@ public class StepService : IStepService
                 Action = step.Inline.Description,
                 Expected = step.Inline.ExpectedResult,
                 TestData = step.Inline.TestData + "\n\n" + step.Inline.CustomFields,
-                Attachments = new List<string>()
+                ActionAttachments = new List<string>()
             }).ToList();
         }
 
@@ -41,7 +41,7 @@ public class StepService : IStepService
                 Action = script.Text,
                 Expected = string.Empty,
                 TestData = string.Empty,
-                Attachments = new List<string>()
+                ActionAttachments = new List<string>()
             }
         };
     }

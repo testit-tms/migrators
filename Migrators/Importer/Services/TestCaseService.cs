@@ -98,7 +98,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         tmsTestCase.Steps.ToList().ForEach(
             s =>
             {
-                s.Attachments.ForEach(a =>
+                s.ActionAttachments.ForEach(a =>
                 {
                     if (IsImage(a))
                     {

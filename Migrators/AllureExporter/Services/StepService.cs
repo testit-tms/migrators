@@ -36,13 +36,13 @@ public class StepService : IStepService
                 var step = new Step
                 {
                     Action = GetStepAction(allureStep),
-                    Attachments = allureStep.Attachments != null
+                    ActionAttachments = allureStep.Attachments != null
                         ? allureStep.Attachments.Select(a => a.Name).ToList()
                         : new List<string>(),
                     Expected = allureStep.ExpectedResult
                 };
 
-                step.Attachments.AddRange(attachments);
+                step.ActionAttachments.AddRange(attachments);
 
                 return step;
             })

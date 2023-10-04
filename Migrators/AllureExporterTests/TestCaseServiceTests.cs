@@ -264,7 +264,7 @@ public class TestCaseServiceTests
             {
                 Action = "Test step 1",
                 Expected = "Expected result",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
             }
         });
         _client.GetCustomFieldsFromTestCase(1).ThrowsAsync(new Exception("Failed to get custom fields from test case"));
@@ -329,7 +329,7 @@ public class TestCaseServiceTests
             {
                 Action = "Test step 1",
                 Expected = "Expected result",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
             }
         });
         _client.GetCustomFieldsFromTestCase(1).Returns(new List<AllureCustomField>

@@ -71,7 +71,7 @@ public class TestCaseService : ITestCaseService
                             {
                                 Action = zephyrTestCase.Precondition,
                                 Expected = string.Empty,
-                                Attachments = new List<string>(),
+                                ActionAttachments = new List<string>(),
                                 TestData = string.Empty
                             }
                         },
