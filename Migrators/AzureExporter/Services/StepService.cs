@@ -35,6 +35,8 @@ public class StepService : IStepService
                     {
                         SharedStepId = sharedStepId,
                         ActionAttachments = new List<string>(),
+                        ExpectedAttachments = new List<string>(),
+                        TestDataAttachments = new List<string>(),
                         Action = string.Empty,
                         Expected = string.Empty
                     }
@@ -59,7 +61,9 @@ public class StepService : IStepService
         {
             Action = azureStep.Values[0],
             Expected = azureStep.Values[1],
-            ActionAttachments = new List<string>()
+            ActionAttachments = new List<string>(),
+            ExpectedAttachments = new List<string>(),
+            TestDataAttachments = new List<string>(),
         };
     }
 

@@ -287,7 +287,8 @@ public class Client : IClient
                     {
                         Action = s.Action,
                         Expected = s.Expected,
-                        WorkItemId = s.SharedStepId
+                        WorkItemId = s.SharedStepId,
+                        TestData = s.TestData
                     }).ToList(),
                 Attributes = testCase.Attributes
                     .ToDictionary(keySelector: a => a.Id.ToString(),

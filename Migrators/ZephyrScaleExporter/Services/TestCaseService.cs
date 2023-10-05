@@ -12,13 +12,16 @@ public class TestCaseService : ITestCaseService
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IStepService _stepService;
-    private Dictionary<string, Attribute> _attributeMap;
+    private readonly IAttachmentService _attachmentService;
+    private readonly Dictionary<string, Attribute> _attributeMap;
 
-    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService)
+    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
+        IAttachmentService attachmentService)
     {
         _logger = logger;
         _client = client;
         _stepService = stepService;
+        _attachmentService = attachmentService;
         _attributeMap = new Dictionary<string, Attribute>();
     }
 
@@ -54,12 +57,40 @@ public class TestCaseService : ITestCaseService
                     }
                 }
 
-                var steps = await _stepService.ConvertSteps(zephyrTestCase.Key, zephyrTestCase.TestScript.Self);
+                var attachments = new List<string>();
+
+                var testCaseId = Guid.NewGuid();
+                var steps = await _stepService.ConvertSteps(testCaseId, zephyrTestCase.Key,
+                    zephyrTestCase.TestScript.Self);
+
+                steps.ForEach(s =>
+                {
+                    attachments.AddRange(s.ActionAttachments);
+                    attachments.AddRange(s.ExpectedAttachments);
+                    attachments.AddRange(s.TestDataAttachments);
+                });
+
+                var description = Utils.ExtractAttachments(zephyrTestCase.Description);
+
+                foreach (var attachment in description.Attachments)
+                {
+                    var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
+                    attachments.Add(fileName);
+                }
+
+                var precondition = Utils.ExtractAttachments(zephyrTestCase.Precondition);
+                var preconditionAttachments = new List<string>();
+                foreach (var attachment in precondition.Attachments)
+                {
+                    var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
+                    preconditionAttachments.Add(fileName);
+                    attachments.Add(fileName);
+                }
 
                 var testCase = new TestCase
                 {
-                    Id = Guid.NewGuid(),
-                    Description = zephyrTestCase.Description,
+                    Id = testCaseId,
+                    Description = description.Description,
                     State = StateType.NotReady,
                     Priority = PriorityType.Medium,
                     Steps = steps,
@@ -69,10 +100,12 @@ public class TestCaseService : ITestCaseService
                         {
                             new()
                             {
-                                Action = zephyrTestCase.Precondition,
+                                Action = precondition.Description,
                                 Expected = string.Empty,
-                                ActionAttachments = new List<string>(),
-                                TestData = string.Empty
+                                ActionAttachments = preconditionAttachments,
+                                TestData = string.Empty,
+                                TestDataAttachments = new List<string>(),
+                                ExpectedAttachments = new List<string>()
                             }
                         },
                     PostconditionSteps = new List<Step>(),
@@ -91,7 +124,7 @@ public class TestCaseService : ITestCaseService
                         }
                     },
                     Tags = zephyrTestCase.Labels,
-                    Attachments = new List<string>(),
+                    Attachments = attachments,
                     Iterations = new List<Iteration>(),
                     Links = ConvertLinks(zephyrTestCase.Links),
                     Name = zephyrTestCase.Name,

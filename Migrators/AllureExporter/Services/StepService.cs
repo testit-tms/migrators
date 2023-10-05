@@ -39,6 +39,8 @@ public class StepService : IStepService
                     ActionAttachments = allureStep.Attachments != null
                         ? allureStep.Attachments.Select(a => a.Name).ToList()
                         : new List<string>(),
+                    ExpectedAttachments = new List<string>(),
+                    TestDataAttachments = new List<string>(),
                     Expected = allureStep.ExpectedResult
                 };
 

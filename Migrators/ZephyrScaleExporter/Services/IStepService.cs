@@ -4,5 +4,5 @@ namespace ZephyrScaleExporter.Services;
 
 public interface IStepService
 {
-    Task<List<Step>> ConvertSteps(string testCaseName, string testScript);
+    Task<List<Step>> ConvertSteps(Guid testCaseId, string testCaseName, string testScript);
 }

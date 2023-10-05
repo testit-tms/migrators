@@ -32,7 +32,7 @@ public class AttributeService : IAttributeService
             Type = AttributeType.Options,
             IsActive = true,
             IsRequired = false,
-            Options = iterations
+            Options = ConvertIterations(iterations)
         });
 
         attributes.Add(new Attribute
@@ -52,5 +52,27 @@ public class AttributeService : IAttributeService
         });
 
         return attributes;
+    }
+
+    private static List<string> ConvertIterations(IEnumerable<string> iterations)
+    {
+        var iterationList = new List<string>();
+
+        foreach (var iteration in iterations)
+        {
+            var iter = iteration.Split('\\');
+            if (iter.Length == 1)
+            {
+                iterationList.Add(iteration);
+                continue;
+            }
+
+            for (var i = iter.Length; i > 1; i--)
+            {
+                iterationList.Add(string.Join("\\", iter.Take(i)));
+            }
+        }
+
+        return iterationList;
     }
 }
