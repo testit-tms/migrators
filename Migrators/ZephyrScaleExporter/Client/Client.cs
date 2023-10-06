@@ -184,7 +184,8 @@ public class Client : IClient
                 "Failed to get test script for test case {TestCaseKey}. Status code: {StatusCode}. Response: {Response}",
                 testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get test script for test case {testCaseKey}. Status code: {response.StatusCode}");
+            throw new Exception(
+                $"Failed to get test script for test case {testCaseKey}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -193,5 +194,12 @@ public class Client : IClient
         _logger.LogDebug("Got test script {@TestScript}", testScript);
 
         return testScript;
+    }
+
+    public async Task<byte[]> DownloadAttachment(string url)
+    {
+        var httpClient = new HttpClient();
+
+        return await httpClient.GetByteArrayAsync(url);
     }
 }

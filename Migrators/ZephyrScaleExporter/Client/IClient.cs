@@ -11,4 +11,5 @@ public interface IClient
     Task<List<ZephyrTestCase>> GetTestCases(int folderId);
     Task<List<ZephyrStep>> GetSteps(string testCaseKey);
     Task<ZephyrTestScript> GetTestScript(string testCaseKey);
+    Task<byte[]> DownloadAttachment(string url);
 }
