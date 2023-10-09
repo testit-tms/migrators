@@ -92,4 +92,41 @@ public class FolderServiceTests
         Assert.That(sectionData.Sections[0].Sections[1].Name, Is.EqualTo("SubFolder 2"));
         Assert.That(sectionData.Sections[1].Name, Is.EqualTo("Folder 2"));
     }
+
+    [Test]
+    public async Task ConvertSections_OneLayer_Success()
+    {
+        // Arrange
+        var folders = new List<ZephyrFolder>
+        {
+            new()
+            {
+                Id = 1,
+                Name = "Folder 1",
+                ParentId = null
+            },
+            new()
+            {
+                Id = 2,
+                Name = "Folder 2",
+                ParentId = null
+            }
+        };
+
+        _client.GetFolders()
+            .Returns(folders);
+
+        var service = new FolderService(_logger, _client);
+
+        // Act
+        var sectionData = await service.ConvertSections();
+
+        // Assert
+        Assert.That(sectionData.Sections, Has.Count.EqualTo(2));
+        Assert.That(sectionData.SectionMap, Has.Count.EqualTo(2));
+        Assert.That(sectionData.Sections[0].Sections, Is.Empty);
+        Assert.That(sectionData.Sections[1].Sections, Is.Empty);
+        Assert.That(sectionData.Sections[0].Name, Is.EqualTo("Folder 1"));
+        Assert.That(sectionData.Sections[1].Name, Is.EqualTo("Folder 2"));
+    }
 }

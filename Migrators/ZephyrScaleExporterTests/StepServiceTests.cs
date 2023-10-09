@@ -28,9 +28,12 @@ public class StepServiceTests
                 Inline = new Inline
                 {
                     CustomFields = null,
-                    Description = "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" />some data 01",
-                    ExpectedResult = "Expected 1",
-                    TestData = "Test Data 1"
+                    Description =
+                        "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" /> Action",
+                    ExpectedResult =
+                        "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" /> Expected",
+                    TestData =
+                        "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" /> Test Data"
                 }
             }
         };
@@ -130,12 +133,49 @@ public class StepServiceTests
 
         // Assert
         Assert.That(steps, Has.Count.EqualTo(1));
-        Assert.That(steps[0].Action, Is.EqualTo("<<<picture.jpg>>>some data 01"));
-        Assert.That(steps[0].Expected, Is.EqualTo("Expected 1"));
-        Assert.That(steps[0].TestData, Is.EqualTo("Test Data 1<br><p></p>"));
+        Assert.That(steps[0].Action, Is.EqualTo("<<<picture.jpg>>> Action"));
+        Assert.That(steps[0].Expected, Is.EqualTo("<<<picture.jpg>>> Expected"));
+        Assert.That(steps[0].TestData, Is.EqualTo("<<<picture.jpg>>> Test Data<br><p></p>"));
         Assert.That(steps[0].ActionAttachments, Has.Count.EqualTo(1));
         Assert.That(steps[0].ActionAttachments[0], Is.EqualTo("picture.jpg"));
-        Assert.That(steps[0].ExpectedAttachments, Has.Count.EqualTo(0));
-        Assert.That(steps[0].TestDataAttachments, Has.Count.EqualTo(0));
+        Assert.That(steps[0].ExpectedAttachments, Has.Count.EqualTo(1));
+        Assert.That(steps[0].ExpectedAttachments[0], Is.EqualTo("picture.jpg"));
+        Assert.That(steps[0].TestDataAttachments, Has.Count.EqualTo(1));
+        Assert.That(steps[0].TestDataAttachments[0], Is.EqualTo("picture.jpg"));
+    }
+
+    [Test]
+    public async Task ConvertSteps_GetTestScript_Success()
+    {
+        // Arrange
+        var testCaseId = Guid.NewGuid();
+        var testCaseName = "Test Case Name";
+        var testScript = "testscript";
+
+        _client.GetTestScript(testCaseName)
+            .Returns(new ZephyrTestScript
+            {
+                Text = "teststeps"
+            });
+
+        var stepService = new StepService(_logger, _client, _attachmentService);
+
+        // Act
+        var result = await stepService.ConvertSteps(testCaseId, testCaseName, testScript);
+
+        // Assert
+        await _client.DidNotReceive()
+            .GetSteps(Arg.Any<string>());
+
+        await _attachmentService.DidNotReceive()
+            .DownloadAttachment(Arg.Any<Guid>(), Arg.Any<ZephyrAttachment>());
+
+        Assert.That(result, Has.Count.EqualTo(1));
+        Assert.That(result[0].Action, Is.EqualTo("teststeps"));
+        Assert.That(result[0].Expected, Is.Empty);
+        Assert.That(result[0].TestData, Is.Empty);
+        Assert.That(result[0].ActionAttachments, Has.Count.EqualTo(0));
+        Assert.That(result[0].ExpectedAttachments, Has.Count.EqualTo(0));
+        Assert.That(result[0].TestDataAttachments, Has.Count.EqualTo(0));
     }
 }

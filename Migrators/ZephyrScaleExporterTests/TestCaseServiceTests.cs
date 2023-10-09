@@ -40,8 +40,12 @@ public class TestCaseServiceTests
             new()
             {
                 Id = 1,
-                CustomFields = new Dictionary<string, object>(),
-                Description = "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" />some data 01",
+                CustomFields = new Dictionary<string, object>
+                {
+                    { "CustomField", 321 }
+                },
+                Description =
+                    "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" />some data 01",
                 Labels = new List<string>(),
                 Priority = new Priority
                 {
@@ -51,13 +55,27 @@ public class TestCaseServiceTests
                 {
                     Id = 321
                 },
-                Precondition = "Test",
+                Precondition =
+                    "<img src=\"https://example.test/picture.jpg\" style=\"width:300px\" class=\"fr-fil fr-dib\" />some data 01",
                 Key = "Test",
                 Name = "Test",
                 Links = new Links
                 {
-                    Issues = new List<Issues>(),
-                    WebLinks = new List<WebLinks>()
+                    Issues = new List<Issues>
+                    {
+                        new()
+                        {
+                            Target = "https://example.test/issue/1"
+                        }
+                    },
+                    WebLinks = new List<WebLinks>
+                    {
+                        new ()
+                        {
+                            Description = "Test",
+                            Url = "https://example.test"
+                        }
+                    }
                 },
                 TestScript = new TestScript
                 {
@@ -197,10 +215,11 @@ public class TestCaseServiceTests
         Assert.That(testCaseData.TestCases[0].Name, Is.EqualTo(_zephyrTestCases[0].Name));
         Assert.That(testCaseData.TestCases[0].Description, Is.EqualTo("<<<picture.jpg>>>some data 01"));
         Assert.That(testCaseData.TestCases[0].PreconditionSteps, Has.Count.EqualTo(1));
+        Assert.That(testCaseData.TestCases[0].PreconditionSteps[0].Action, Is.EqualTo("<<<picture.jpg>>>some data 01"));
         Assert.That(testCaseData.TestCases[0].Priority, Is.EqualTo(PriorityType.Medium));
         Assert.That(testCaseData.TestCases[0].State, Is.EqualTo(StateType.NotReady));
         Assert.That(testCaseData.TestCases[0].Tags, Is.Empty);
-        Assert.That(testCaseData.TestCases[0].Attributes, Has.Count.EqualTo(2));
+        Assert.That(testCaseData.TestCases[0].Attributes, Has.Count.EqualTo(3));
         Assert.That(testCaseData.TestCases[0].Attributes[0].Id, Is.EqualTo(_attributeMap[Constants.StateAttribute]));
         Assert.That(testCaseData.TestCases[0].Attributes[0].Value, Is.EqualTo(_statusMap[321]));
         Assert.That(testCaseData.TestCases[0].Attributes[1].Id, Is.EqualTo(_attributeMap[Constants.PriorityAttribute]));
@@ -212,8 +231,14 @@ public class TestCaseServiceTests
         Assert.That(testCaseData.TestCases[0].Steps[0].ActionAttachments, Is.Empty);
         Assert.That(testCaseData.TestCases[0].Steps[0].ExpectedAttachments, Is.Empty);
         Assert.That(testCaseData.TestCases[0].Steps[0].TestDataAttachments, Is.Empty);
-        Assert.That(testCaseData.TestCases[0].Attachments, Has.Count.EqualTo(1));
+        Assert.That(testCaseData.TestCases[0].Attachments, Has.Count.EqualTo(2));
         Assert.That(testCaseData.TestCases[0].Attachments[0], Is.EqualTo("picture.jpg"));
         Assert.That(testCaseData.TestCases[0].SectionId, Is.EqualTo(_sectionMap[1]));
+        Assert.That(testCaseData.Attributes, Has.Count.EqualTo(1));
+        Assert.That(testCaseData.TestCases[0].Links, Has.Count.EqualTo(2));
+        Assert.That(testCaseData.TestCases[0].Links[0].Title, Is.EqualTo("Test"));
+        Assert.That(testCaseData.TestCases[0].Links[0].Url, Is.EqualTo("https://example.test"));
+        Assert.That(testCaseData.TestCases[0].Links[1].Title, Is.Null);
+        Assert.That(testCaseData.TestCases[0].Links[1].Url, Is.EqualTo("https://example.test/issue/1"));
     }
 }
