@@ -105,7 +105,7 @@ public class TestCaseServiceTests
             {
                 Action = "Test Action",
                 Expected = "Test Expected",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             }
         };
@@ -446,7 +446,7 @@ public class TestCaseServiceTests
         Assert.That(testCases[0].Attributes[1].Value, Is.EqualTo(_testCase.Attributes[1].Value));
         Assert.That(testCases[0].Steps[0].Action, Is.EqualTo(_testCase.Steps[0].Action));
         Assert.That(testCases[0].Steps[0].Expected, Is.EqualTo(_testCase.Steps[0].Expected));
-        Assert.That(testCases[0].Steps[0].Attachments, Is.EqualTo(_testCase.Steps[0].Attachments));
+        Assert.That(testCases[0].Steps[0].ActionAttachments, Is.EqualTo(_testCase.Steps[0].ActionAttachments));
 
     }
 }

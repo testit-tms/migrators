@@ -34,7 +34,9 @@ public class StepService : IStepService
                 steps.Add(new Step
                     {
                         SharedStepId = sharedStepId,
-                        Attachments = new List<string>(),
+                        ActionAttachments = new List<string>(),
+                        ExpectedAttachments = new List<string>(),
+                        TestDataAttachments = new List<string>(),
                         Action = string.Empty,
                         Expected = string.Empty
                     }
@@ -59,7 +61,9 @@ public class StepService : IStepService
         {
             Action = azureStep.Values[0],
             Expected = azureStep.Values[1],
-            Attachments = new List<string>()
+            ActionAttachments = new List<string>(),
+            ExpectedAttachments = new List<string>(),
+            TestDataAttachments = new List<string>(),
         };
     }
 
@@ -71,9 +75,4 @@ public class StepService : IStepService
 
         return azureSteps;
     }
-
-    // private string StripHTML(string text)
-    // {
-    //     return Regex.Replace(text, "<.*?>", String.Empty);
-    // }
 }

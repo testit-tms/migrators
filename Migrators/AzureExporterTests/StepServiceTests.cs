@@ -90,14 +90,14 @@ public class StepServiceTests
             {
                 Action = "<DIV><P>Step01</P></DIV>",
                 Expected = "<P>ExpectedResult01</P>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             },
             new()
             {
                 Action = "<DIV><DIV><P>Step02</P></DIV></DIV>",
                 Expected = "<P>ExpectedResult02</P>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             }
         };
@@ -108,11 +108,11 @@ public class StepServiceTests
         // Assert
         Assert.That(result[0].Action, Is.EqualTo(expectedSteps[0].Action));
         Assert.That(result[0].Expected, Is.EqualTo(expectedSteps[0].Expected));
-        Assert.That(result[0].Attachments, Is.EqualTo(expectedSteps[0].Attachments));
+        Assert.That(result[0].ActionAttachments, Is.EqualTo(expectedSteps[0].ActionAttachments));
         Assert.That(result[0].SharedStepId, Is.EqualTo(expectedSteps[0].SharedStepId));
         Assert.That(result[1].Action, Is.EqualTo(expectedSteps[1].Action));
         Assert.That(result[1].Expected, Is.EqualTo(expectedSteps[1].Expected));
-        Assert.That(result[1].Attachments, Is.EqualTo(expectedSteps[1].Attachments));
+        Assert.That(result[1].ActionAttachments, Is.EqualTo(expectedSteps[1].ActionAttachments));
         Assert.That(result[1].SharedStepId, Is.EqualTo(expectedSteps[1].SharedStepId));
     }
 
@@ -141,14 +141,14 @@ public class StepServiceTests
             {
                 Action = "<DIV><P>Step01</P></DIV>",
                 Expected = "<P>ExpectedResult01</P>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             },
             new()
             {
                 Action = "<DIV><DIV><P>Step02</P></DIV></DIV>",
                 Expected = "<P>ExpectedResult02</P>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             }
         };
@@ -162,11 +162,11 @@ public class StepServiceTests
         // Assert
         Assert.That(result[0].Action, Is.EqualTo(expectedSteps[0].Action));
         Assert.That(result[0].Expected, Is.EqualTo(expectedSteps[0].Expected));
-        Assert.That(result[0].Attachments, Is.EqualTo(expectedSteps[0].Attachments));
+        Assert.That(result[0].ActionAttachments, Is.EqualTo(expectedSteps[0].ActionAttachments));
         Assert.That(result[0].SharedStepId, Is.EqualTo(expectedSteps[0].SharedStepId));
         Assert.That(result[1].Action, Is.EqualTo(expectedSteps[1].Action));
         Assert.That(result[1].Expected, Is.EqualTo(expectedSteps[1].Expected));
-        Assert.That(result[1].Attachments, Is.EqualTo(expectedSteps[1].Attachments));
+        Assert.That(result[1].ActionAttachments, Is.EqualTo(expectedSteps[1].ActionAttachments));
         Assert.That(result[1].SharedStepId, Is.EqualTo(expectedSteps[1].SharedStepId));
     }
 
@@ -203,28 +203,28 @@ public class StepServiceTests
             {
                 Action = "<DIV><P>Step01</P></DIV>",
                 Expected = "<DIV><P>ExpectedResult01</P></DIV>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             },
             new()
             {
                 Action = string.Empty,
                 Expected = string.Empty,
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = sharedStepId
             },
             new()
             {
                 Action = "<DIV><P>Step03</P></DIV>",
                 Expected = "<DIV><P>ExpectedResult03</P></DIV>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             },
             new()
             {
                 Action = "<P>Step04</P>",
                 Expected = "<DIV><P><BR/></P></DIV>",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             }
         };
@@ -238,19 +238,19 @@ public class StepServiceTests
         // Assert
         Assert.That(result[0].Action, Is.EqualTo(expectedSteps[0].Action));
         Assert.That(result[0].Expected, Is.EqualTo(expectedSteps[0].Expected));
-        Assert.That(result[0].Attachments, Is.EqualTo(expectedSteps[0].Attachments));
+        Assert.That(result[0].ActionAttachments, Is.EqualTo(expectedSteps[0].ActionAttachments));
         Assert.That(result[0].SharedStepId, Is.EqualTo(expectedSteps[0].SharedStepId));
         Assert.That(result[1].Action, Is.EqualTo(expectedSteps[1].Action));
         Assert.That(result[1].Expected, Is.EqualTo(expectedSteps[1].Expected));
-        Assert.That(result[1].Attachments, Is.EqualTo(expectedSteps[1].Attachments));
+        Assert.That(result[1].ActionAttachments, Is.EqualTo(expectedSteps[1].ActionAttachments));
         Assert.That(result[1].SharedStepId, Is.EqualTo(expectedSteps[1].SharedStepId));
         Assert.That(result[2].Action, Is.EqualTo(expectedSteps[2].Action));
         Assert.That(result[2].Expected, Is.EqualTo(expectedSteps[2].Expected));
-        Assert.That(result[2].Attachments, Is.EqualTo(expectedSteps[2].Attachments));
+        Assert.That(result[2].ActionAttachments, Is.EqualTo(expectedSteps[2].ActionAttachments));
         Assert.That(result[2].SharedStepId, Is.EqualTo(expectedSteps[2].SharedStepId));
         Assert.That(result[3].Action, Is.EqualTo(expectedSteps[3].Action));
         Assert.That(result[3].Expected, Is.EqualTo(expectedSteps[3].Expected));
-        Assert.That(result[3].Attachments, Is.EqualTo(expectedSteps[3].Attachments));
+        Assert.That(result[3].ActionAttachments, Is.EqualTo(expectedSteps[3].ActionAttachments));
         Assert.That(result[3].SharedStepId, Is.EqualTo(expectedSteps[3].SharedStepId));
     }
 

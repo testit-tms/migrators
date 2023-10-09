@@ -11,6 +11,7 @@ jobs:
         project: [
           ./Migrators/AllureExporter,
           ./Migrators/AzureExporter,
+          ./Migrators/ZephyrScaleExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -35,6 +36,7 @@ jobs:
         project: [
           ./Migrators/AllureExporterTests,
           ./Migrators/AzureExporterTests,
+          ./Migrators/ZephyrScaleExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:

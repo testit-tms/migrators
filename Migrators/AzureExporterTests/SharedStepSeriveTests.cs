@@ -101,7 +101,7 @@ public class SharedStepSeriveTests
             {
                 Action = "Test Action",
                 Expected = "Test Expected",
-                Attachments = new List<string>(),
+                ActionAttachments = new List<string>(),
                 SharedStepId = null
             }
         };
@@ -322,6 +322,6 @@ public class SharedStepSeriveTests
         Assert.That(sharedSteps[1].Attributes[1].Value, Is.EqualTo(_sharedStep.Attributes[1].Value));
         Assert.That(sharedSteps[1].Steps[0].Action, Is.EqualTo(_sharedStep.Steps[0].Action));
         Assert.That(sharedSteps[1].Steps[0].Expected, Is.EqualTo(_sharedStep.Steps[0].Expected));
-        Assert.That(sharedSteps[1].Steps[0].Attachments, Is.EqualTo(_sharedStep.Steps[0].Attachments));
+        Assert.That(sharedSteps[1].Steps[0].ActionAttachments, Is.EqualTo(_sharedStep.Steps[0].ActionAttachments));
     }
 }

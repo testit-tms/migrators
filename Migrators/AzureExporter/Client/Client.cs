@@ -158,7 +158,7 @@ public class Client : IClient
         var iterations = _workHttpClient.GetTeamIterationsAsync(new TeamContext(projectId)).Result;
 
         return iterations
-            .Select(i => i.Name)
+            .Select(i => i.Path)
             .ToList();
     }
 
