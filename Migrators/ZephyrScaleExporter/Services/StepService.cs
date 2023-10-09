@@ -10,6 +10,8 @@ public class StepService : IStepService
     private readonly IClient _client;
     private readonly IAttachmentService _attachmentService;
 
+    private const string TestSteps = "teststeps";
+
     public StepService(ILogger<StepService> logger, IClient client, IAttachmentService attachmentService)
     {
         _logger = logger;
@@ -19,9 +21,9 @@ public class StepService : IStepService
 
     public async Task<List<Step>> ConvertSteps(Guid testCaseId, string testCaseName, string testScript)
     {
-        _logger.LogInformation("Converting steps for test case {testCaseName}", testCaseName);
+        _logger.LogInformation("Converting steps for test case {TestCaseName}", testCaseName);
 
-        if (testScript.Contains("teststeps"))
+        if (testScript.Contains(TestSteps))
         {
             var steps = await _client.GetSteps(testCaseName);
 
@@ -72,6 +74,8 @@ public class StepService : IStepService
 
                 stepList.Add(newStep);
             }
+
+            _logger.LogDebug("Steps: {@StepList}", stepList);
 
             return stepList;
         }
