@@ -9,11 +9,13 @@ public class TestCaseService : ITestCaseService
 {
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
+    private readonly IStepService _stepService;
 
-    public TestCaseService(ILogger<TestCaseService> logger, IClient client)
+    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService)
     {
         _logger = logger;
         _client = client;
+        _stepService = stepService;
     }
 
     public async Task<List<TestCase>> ConvertTestCases(Dictionary<string, ZephyrSection> sectionMap)
@@ -28,6 +30,8 @@ public class TestCaseService : ITestCaseService
 
             foreach (var execution in executions)
             {
+                var steps = await _stepService.ConvertSteps(execution.Execution.IssueId.ToString());
+
                 var testCase = new TestCase()
                 {
                     Id = Guid.NewGuid(),
@@ -35,7 +39,7 @@ public class TestCaseService : ITestCaseService
                     Description = execution.IssueDescription,
                     State = StateType.NotReady,
                     Priority = PriorityType.Medium,
-                    Steps = new List<Step>(),
+                    Steps = steps,
                     Tags = string.IsNullOrEmpty(execution.IssueLabel)
                         ? new List<string>()
                         : execution.IssueLabel.Split(",").ToList(),
