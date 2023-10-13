@@ -6,6 +6,7 @@ using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
 using ZephyrSquadExporter.Client;
+using ZephyrSquadExporter.Services;
 
 namespace ZephyrSquadExporter
 {
@@ -51,13 +52,12 @@ namespace ZephyrSquadExporter
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
                     services.AddSingleton<TokenManager>();
-                    services.AddSingleton<Client.Client>();
-                    // services.AddSingleton<IClient, Client.Client>();
-                    // services.AddSingleton<IExportService, ExportService>();
-                    // services.AddSingleton<IFolderService, FolderService>();
+                    services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<IExportService, ExportService>();
+                    services.AddSingleton<IFolderService, FolderService>();
                     // services.AddSingleton<IStepService, StepService>();
                     // services.AddSingleton<IAttributeService, AttributeService>();
-                    // services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
                     // services.AddSingleton<IWriteService, WriteService>();
                     // services.AddSingleton<IAttachmentService, AttachmentService>();
                 });

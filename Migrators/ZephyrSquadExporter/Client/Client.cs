@@ -13,6 +13,8 @@ public class Client : IClient
     private readonly string _projectId;
     private readonly string _accessKey;
 
+    private const string Section = "/connect";
+
     public Client(ILogger<Client> logger, TokenManager tokenManager, IConfiguration configuration)
     {
         _logger = logger;
@@ -37,7 +39,7 @@ public class Client : IClient
             throw new ArgumentException("Access key is not specified");
         }
 
-        _baseUrl = url.Trim('/') + "/connect";
+        _baseUrl = url.Trim('/');
         _projectId = projectId;
         _accessKey = accessKey;
     }
@@ -51,13 +53,13 @@ public class Client : IClient
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(url);
+        var response = await client.GetAsync(Section + url);
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to cycles. Status code: {StatusCode}. Response: {Response}",
+            _logger.LogError("Failed to get cycles. Status code: {StatusCode}. Response: {Response}",
                 response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to cycles. Status code: {response.StatusCode}");
+            throw new Exception($"Failed to get cycles. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -72,12 +74,12 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting folders for cycle {CycleId}", cycleId);
 
-        var url = $"/public/rest/api/1.0/cycles/search?projectId={_projectId}&cycleId={cycleId}&versionId=-1";
+        var url = $"/public/rest/api/1.0/folders?cycleId={cycleId}&projectId={_projectId}&versionId=-1";
         var token = _tokenManager.GetToken("GET", url);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(url);
+        var response = await client.GetAsync(Section + url);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to folders for cycle {CycleId}. Status code: {StatusCode}. Response: {Response}",
@@ -94,27 +96,25 @@ public class Client : IClient
         return folders;
     }
 
-    public async Task<List<ZephyrExecution>> GetTestCases(string storageId, bool isFolder = false)
+    public async Task<List<ZephyrExecution>> GetTestCasesFromCycle(string cycleId)
     {
-        var storage = isFolder ? "folder" : "cycle";
-
-        _logger.LogInformation("Getting executions for storage {StorageId} wit type {Type}", storageId, storage);
+        _logger.LogInformation("Getting executions from cycle {CycleId}", cycleId);
 
         var url =
-            $"/public/rest/api/2.0/executions/search/{storage}/{storageId}?projectId={_projectId}&size=50&offset=0&versionId=-1";
+            $"/public/rest/api/2.0/executions/search/cycle/{cycleId}?offset=0&projectId={_projectId}&size=50&versionId=-1";
 
         var token = _tokenManager.GetToken("GET", url);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(url);
+        var response = await client.GetAsync(Section + url);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
-                "Failed to executions for storage {StorageId}. Status code: {StatusCode}. Response: {Response}",
-                storageId, response.StatusCode, await response.Content.ReadAsStringAsync());
+                "Failed to executions from cycle {CycleId}. Status code: {StatusCode}. Response: {Response}",
+                cycleId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to executions for storage {storageId}. Status code: {response.StatusCode}");
+            throw new Exception($"Failed to executions from cycle {cycleId}. Status code: {response.StatusCode}");
         }
 
         var listExecutions = new List<ZephyrExecution>();
@@ -130,19 +130,78 @@ public class Client : IClient
         while (listExecutions.Count < executions?.SearchResult?.TotalCount)
         {
             url =
-                $"/public/rest/api/2.0/executions/search/{storage}/{storageId}?projectId={_projectId}&size=50&offset={executions?.SearchResult?.CurrentOffset}&versionId=-1";
+                $"/public/rest/api/2.0/executions/search/cycle/{cycleId}?offset={executions?.SearchResult?.CurrentOffset}&projectId={_projectId}&size=50&versionId=-1";
             token = _tokenManager.GetToken("GET", url);
             client = GetClient(token);
 
-            response = await client.GetAsync(url);
+            response = await client.GetAsync(Section + url);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
-                    "Failed to executions for storage {StorageId}. Status code: {StatusCode}. Response: {Response}",
-                    storageId, response.StatusCode, await response.Content.ReadAsStringAsync());
+                    "Failed to executions from cycle {CycleId}. Status code: {StatusCode}. Response: {Response}",
+                    cycleId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
                 throw new Exception(
-                    $"Failed to executions for storage {storageId}. Status code: {response.StatusCode}");
+                    $"Failed to executions from cycle {cycleId}. Status code: {response.StatusCode}");
+            }
+
+            content = await response.Content.ReadAsStringAsync();
+            executions = JsonSerializer.Deserialize<ZephyrExecutions>(content);
+            listExecutions.AddRange(executions?.SearchResult.Executions);
+        }
+
+        _logger.LogDebug("Found {Count} executions: {Executions}", listExecutions?.Count, listExecutions);
+
+        return listExecutions;
+    }
+
+    public async Task<List<ZephyrExecution>> GetTestCasesFromFolder(string cycleId, string folderId)
+    {
+        _logger.LogInformation("Getting executions from folder {FolderId}", folderId);
+
+        var url =
+            $"/public/rest/api/2.0/executions/search/folder/{folderId}?cycleId={cycleId}&offset=0&projectId={_projectId}&size=50&versionId=-1";
+
+        var token = _tokenManager.GetToken("GET", url);
+
+        var client = GetClient(token);
+
+        var response = await client.GetAsync(Section + url);
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to executions from folder {FolderId}. Status code: {StatusCode}. Response: {Response}",
+                folderId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to executions from folder {folderId}. Status code: {response.StatusCode}");
+        }
+
+        var listExecutions = new List<ZephyrExecution>();
+
+        var content = await response.Content.ReadAsStringAsync();
+        var executions = JsonSerializer.Deserialize<ZephyrExecutions>(content);
+
+        if (executions?.SearchResult?.Executions != null)
+        {
+            listExecutions.AddRange(executions.SearchResult.Executions);
+        }
+
+        while (listExecutions.Count < executions?.SearchResult?.TotalCount)
+        {
+            url =
+                $"/public/rest/api/2.0/executions/search/folder/{folderId}?cycleId={cycleId}&offset={executions?.SearchResult?.CurrentOffset}&projectId={_projectId}&size=50&versionId=-1";
+            token = _tokenManager.GetToken("GET", url);
+            client = GetClient(token);
+
+            response = await client.GetAsync(Section + url);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to executions from folder {FolderId}. Status code: {StatusCode}. Response: {Response}",
+                    folderId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception(
+                    $"Failed to executions from folder {folderId}. Status code: {response.StatusCode}");
             }
 
             content = await response.Content.ReadAsStringAsync();
@@ -164,7 +223,7 @@ public class Client : IClient
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(url);
+        var response = await client.GetAsync(Section + url);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to steps for issue {IssueId}. Status code: {StatusCode}. Response: {Response}",

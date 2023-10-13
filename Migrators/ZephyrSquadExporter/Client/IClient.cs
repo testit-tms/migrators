@@ -6,6 +6,7 @@ public interface IClient
 {
     Task<List<ZephyrCycle>> GetCycles();
     Task<List<ZephyrFolder>> GetFolders(string cycleId);
-    Task<List<ZephyrExecution>> GetTestCases(string storageId, bool isFolder = false);
+    Task<List<ZephyrExecution>> GetTestCasesFromCycle(string cycleId);
+    Task<List<ZephyrExecution>> GetTestCasesFromFolder(string cycleId, string folderId);
     Task<List<ZephyrStep>> GetSteps(string issueId);
 }
