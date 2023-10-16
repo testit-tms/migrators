@@ -10,12 +10,15 @@ public class TestCaseService : ITestCaseService
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IStepService _stepService;
+    private readonly IAttachmentService _attachmentService;
 
-    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService)
+    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
+        IAttachmentService attachmentService)
     {
         _logger = logger;
         _client = client;
         _stepService = stepService;
+        _attachmentService = attachmentService;
     }
 
     public async Task<List<TestCase>> ConvertTestCases(Dictionary<string, ZephyrSection> sectionMap)
@@ -30,11 +33,17 @@ public class TestCaseService : ITestCaseService
 
             foreach (var execution in executions)
             {
-                var steps = await _stepService.ConvertSteps(execution.Execution.IssueId.ToString());
+                var testCaseId = Guid.NewGuid();
 
-                var testCase = new TestCase()
+                var steps = await _stepService.ConvertSteps(testCaseId, execution.Execution.IssueId.ToString());
+
+                var attachments = await _attachmentService.GetAttachmentsFromExecution(testCaseId,
+                    execution.Execution.IssueId.ToString(),
+                    execution.Execution.Id);
+
+                var testCase = new TestCase
                 {
-                    Id = Guid.NewGuid(),
+                    Id = testCaseId,
                     Name = execution.IssueKey,
                     Description = execution.IssueDescription,
                     State = StateType.NotReady,
@@ -47,7 +56,7 @@ public class TestCaseService : ITestCaseService
                     PostconditionSteps = new List<Step>(),
                     Duration = 10,
                     Attributes = new List<CaseAttribute>(),
-                    Attachments = new List<string>(),
+                    Attachments = attachments,
                     Iterations = new List<Iteration>(),
                     Links = new List<Link>(),
                     SectionId = section.Value.Guid

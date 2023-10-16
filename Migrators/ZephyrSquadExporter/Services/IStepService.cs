@@ -4,5 +4,5 @@ namespace ZephyrSquadExporter.Services;
 
 public interface IStepService
 {
-    Task<List<Step>> ConvertSteps(string issueId);
+    Task<List<Step>> ConvertSteps(Guid testCaseId, string issueId);
 }

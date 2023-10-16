@@ -235,9 +235,52 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var steps = JsonSerializer.Deserialize<ZephyrSteps>(content);
 
-        _logger.LogDebug("Found {Count} folders: {Folders}", steps?.Steps.Count, steps?.Steps);
+        _logger.LogDebug("Found {Count} steps: {Steps}", steps?.Steps.Count, steps?.Steps);
 
         return steps?.Steps;
+    }
+
+    public async Task<List<ZephyrAttachment>> GetAttachmentsFromExecution(string issueId, string entityId)
+    {
+        _logger.LogInformation("Getting attachments for issue {IssueId}", issueId);
+
+        var url =
+            $"/public/rest/api/1.0/attachment/search/execution?entityId={entityId}&issueId={issueId}&projectId={_projectId}";
+        var token = _tokenManager.GetToken("GET", url);
+
+        var client = GetClient(token);
+
+        var response = await client.GetAsync(Section + url);
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to attachments for issue {IssueId}. Status code: {StatusCode}. Response: {Response}",
+                issueId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to attachments for issue {issueId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var attachments = JsonSerializer.Deserialize<Dictionary<string, List<ZephyrAttachment>>>(content);
+
+        _logger.LogDebug("Found {Count} attachments: {Attachments}", attachments?.Count, attachments);
+
+        return attachments?.FirstOrDefault().Value;
+    }
+
+    public async Task<byte[]> GetAttachmentFromExecution(string issueId, string entityId)
+    {
+        _logger.LogInformation("Getting attachment for issue {IssueId}", issueId);
+
+        var url =
+            $"/public/rest/api/1.0/attachment/{entityId}?issueId={issueId}&projectId={_projectId}";
+        var token = _tokenManager.GetToken("GET", url);
+
+        var client = GetClient(token);
+
+        var response = await client.GetByteArrayAsync(Section + url);
+
+        return response;
     }
 
     private HttpClient GetClient(string token)

@@ -42,4 +42,7 @@ public class Execution
 {
     [JsonPropertyName("issueId")]
     public int IssueId { get; set; }
+
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
 }

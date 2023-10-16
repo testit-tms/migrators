@@ -4,6 +4,9 @@ namespace ZephyrSquadExporter.Models;
 
 public class ZephyrStep
 {
+    [JsonPropertyName("id")]
+    public string Id { get; set; }
+
     [JsonPropertyName("step")]
     public string Step { get; set; }
 
@@ -22,13 +25,4 @@ public class ZephyrSteps
 {
     [JsonPropertyName("testSteps")]
     public List<ZephyrStep> Steps { get; set; }
-}
-
-public class ZephyrAttachment
-{
-    [JsonPropertyName("id")] public string Id { get; set; }
-
-    [JsonPropertyName("name")] public string Name { get; set; }
-
-    [JsonPropertyName("fileExtension")] public string FileExtension { get; set; }
 }
