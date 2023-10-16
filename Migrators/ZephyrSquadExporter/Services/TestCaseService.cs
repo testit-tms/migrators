@@ -41,6 +41,13 @@ public class TestCaseService : ITestCaseService
                     execution.Execution.IssueId.ToString(),
                     execution.Execution.Id);
 
+                steps.ForEach(s =>
+                {
+                    attachments.AddRange(s.ActionAttachments);
+                    attachments.AddRange(s.ExpectedAttachments);
+                    attachments.AddRange(s.TestDataAttachments);
+                });
+
                 var testCase = new TestCase
                 {
                     Id = testCaseId,
