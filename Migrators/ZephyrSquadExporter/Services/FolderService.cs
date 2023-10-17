@@ -53,7 +53,7 @@ public class FolderService : IFolderService
                 cycleSection.Sections.Add(section);
                 _sectionMap.Add(folder.Id, new ZephyrSection
                 {
-                    Guid = section.Id,
+                    Id = section.Id,
                     IsFolder = true,
                     CycleId = cycle.Id
                 });
@@ -61,7 +61,7 @@ public class FolderService : IFolderService
 
             _sectionMap.Add(cycle.Id, new ZephyrSection
             {
-                Guid = cycleSection.Id,
+                Id = cycleSection.Id,
                 IsFolder = false,
                 CycleId = cycle.Id
             });

@@ -58,7 +58,7 @@ public class TestCaseService : ITestCaseService
                     Steps = steps,
                     Tags = string.IsNullOrEmpty(execution.IssueLabel)
                         ? new List<string>()
-                        : execution.IssueLabel.Split(",").ToList(),
+                        : execution.IssueLabel.Split(",").Select(t => t.Trim()).ToList(),
                     PreconditionSteps = new List<Step>(),
                     PostconditionSteps = new List<Step>(),
                     Duration = 10,
@@ -66,7 +66,7 @@ public class TestCaseService : ITestCaseService
                     Attachments = attachments,
                     Iterations = new List<Iteration>(),
                     Links = new List<Link>(),
-                    SectionId = section.Value.Guid
+                    SectionId = section.Value.Id
                 };
 
                 testCases.Add(testCase);
