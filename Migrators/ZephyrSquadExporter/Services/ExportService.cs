@@ -1,4 +1,5 @@
 using JsonWriter;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
 using Attribute = Models.Attribute;
@@ -11,14 +12,24 @@ public class ExportService : IExportService
     private readonly IFolderService _folderService;
     private readonly ITestCaseService _testCaseService;
     private readonly IWriteService _writeService;
+    private readonly string _projectName;
 
     public ExportService(ILogger<ExportService> logger, IFolderService folderService, ITestCaseService testCaseService,
-        IWriteService writeService)
+        IWriteService writeService, IConfiguration configuration)
     {
         _logger = logger;
         _folderService = folderService;
         _testCaseService = testCaseService;
         _writeService = writeService;
+
+        var section = configuration.GetSection("zephyr");
+        var projectName = section["projectName"];
+        if (string.IsNullOrEmpty(projectName))
+        {
+            throw new ArgumentException("Project name is not specified");
+        }
+
+        _projectName = projectName;
     }
 
     public async Task ExportProject()
@@ -35,7 +46,7 @@ public class ExportService : IExportService
 
         var root = new Root
         {
-            ProjectName = "Zephyr Squad Export",
+            ProjectName = _projectName,
             TestCases = testCases.Select(t => t.Id).ToList(),
             SharedSteps = new List<Guid>(),
             Attributes = new List<Attribute>(),

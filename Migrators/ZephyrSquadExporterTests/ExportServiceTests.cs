@@ -1,4 +1,5 @@
 using JsonWriter;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
 using NSubstitute;
@@ -14,6 +15,7 @@ public class ExportServiceTests
     private IFolderService _folderService;
     private ITestCaseService _testCaseService;
     private IWriteService _writeService;
+    private IConfiguration _configuration;
 
     private SectionData _sectionData;
     private List<TestCase> _testCases;
@@ -25,6 +27,14 @@ public class ExportServiceTests
         _folderService = Substitute.For<IFolderService>();
         _testCaseService = Substitute.For<ITestCaseService>();
         _writeService = Substitute.For<IWriteService>();
+
+        var inMemorySettings = new Dictionary<string, string> {
+            {"zephyr:projectName", "ProjectName"}
+        };
+
+        _configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(inMemorySettings!)
+            .Build();
 
         _sectionData = new SectionData
         {
@@ -69,7 +79,7 @@ public class ExportServiceTests
         _folderService.GetSections()
             .Throws(new Exception("Failed to get sections"));
 
-        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService);
+        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService, _configuration);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () => await service.ExportProject());
@@ -95,7 +105,7 @@ public class ExportServiceTests
         _testCaseService.ConvertTestCases(_sectionData.SectionMap)
             .Throws(new Exception("Failed to convert test cases"));
 
-        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService);
+        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService, _configuration);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () => await service.ExportProject());
@@ -121,7 +131,7 @@ public class ExportServiceTests
         _writeService.WriteTestCase(_testCases[0])
             .Throws(new Exception("Failed to write test case"));
 
-        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService);
+        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService, _configuration);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () => await service.ExportProject());
@@ -148,7 +158,7 @@ public class ExportServiceTests
         _writeService.WriteMainJson(Arg.Any<Root>())
             .Throws(new Exception("Failed to write main json"));
 
-        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService);
+        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService, _configuration);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () => await service.ExportProject());
@@ -164,7 +174,7 @@ public class ExportServiceTests
         _testCaseService.ConvertTestCases(_sectionData.SectionMap)
             .Returns(_testCases);
 
-        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService);
+        var service = new ExportService(_logger, _folderService, _testCaseService, _writeService, _configuration);
 
         // Act
         await service.ExportProject();
