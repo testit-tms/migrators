@@ -32,6 +32,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrScaleExporter", "Zeph
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrScaleExporterTests", "ZephyrScaleExporterTests\ZephyrScaleExporterTests.csproj", "{78FCEE88-896E-4370-9CC0-8EFEA9CBFCA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrSquadExporter", "ZephyrSquadExporter\ZephyrSquadExporter.csproj", "{FFC6A8BF-B227-4568-8368-569862426E41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrSquadExporterTests", "ZephyrSquadExporterTests\ZephyrSquadExporterTests.csproj", "{C2B65002-89C3-4FD6-A945-87379D552098}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +82,14 @@ Global
 		{78FCEE88-896E-4370-9CC0-8EFEA9CBFCA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78FCEE88-896E-4370-9CC0-8EFEA9CBFCA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78FCEE88-896E-4370-9CC0-8EFEA9CBFCA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFC6A8BF-B227-4568-8368-569862426E41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFC6A8BF-B227-4568-8368-569862426E41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFC6A8BF-B227-4568-8368-569862426E41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFC6A8BF-B227-4568-8368-569862426E41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2B65002-89C3-4FD6-A945-87379D552098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2B65002-89C3-4FD6-A945-87379D552098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2B65002-89C3-4FD6-A945-87379D552098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2B65002-89C3-4FD6-A945-87379D552098}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

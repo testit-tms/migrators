@@ -1,0 +1,11 @@
+{
+  "resultPath" : "/Users/user01/Documents/importer",
+  "zephyr" : {
+    "url" : "https://prod-api.zephyr4jiracloud.com/",
+    "accessKey" : "MmEwMjd4OWYtNGMxMC0zYjhkLWExMmUtNTZjYmY0OTE0MGExIDcxMjAyMCUzQTNjOWYwMzJkLWVlZWEtNGRjMC04NjIyLTliMGY2ODQzZWMzNCBVU0VSX0RFRkFVTFRfTkFNRQ",
+    "secretKey" : "GkxCBle-7ib1mBOf9Oeiy8HZjJDw4ESnTZzYh3rz1Og",
+    "accountId" : "712021:3c9f032d-eeea-4dc0-8622-9b0f6843ec34",
+    "projectId" : 10000,
+    "projectName": "ProjectName"
+  }
+}

@@ -10,6 +10,7 @@ env:
   ALLURE_DIR: ./Migrators/AllureExporter
   AZURE_DIR: ./Migrators/AzureExporter
   ZEPHYR_SCALE_DIR: ./Migrators/ZephyrScaleExporter
+  ZEPHYR_SQUAD_DIR: ./Migrators/ZephyrSquadExporter
 
 jobs:
   importer_build:
@@ -199,3 +200,50 @@ jobs:
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
           overwrite: true        
+
+  zephyr_squad_build:
+    needs: zephyr_scale_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrSquadExporter.exe
+            asset_name: ZephyrSquadExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: ZephyrSquadExporter
+            asset_name: ZephyrSquadExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: ZephyrSquadExporter
+            asset_name: ZephyrSquadExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SQUAD_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SQUAD_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true                  
