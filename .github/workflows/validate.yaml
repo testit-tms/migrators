@@ -12,6 +12,7 @@ jobs:
           ./Migrators/AllureExporter,
           ./Migrators/AzureExporter,
           ./Migrators/ZephyrScaleExporter,
+          ./Migrators/ZephyrSquadExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -37,6 +38,7 @@ jobs:
           ./Migrators/AllureExporterTests,
           ./Migrators/AzureExporterTests,
           ./Migrators/ZephyrScaleExporterTests,
+          ./Migrators/ZephyrSquadExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:
