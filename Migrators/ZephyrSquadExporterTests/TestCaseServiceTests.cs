@@ -126,7 +126,7 @@ public class TestCaseServiceTests
             .Returns(_executions);
 
         _stepService.ConvertSteps(Arg.Any<Guid>(), _executions[0].Execution.IssueId.ToString())
-            .Returns(_steps);
+            .Throws(new Exception("Failed to convert steps"));
 
         var testCaseService = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
