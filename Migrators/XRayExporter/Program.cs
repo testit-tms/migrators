@@ -5,6 +5,8 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
+using XRayExporter.Client;
+using XRayExporter.Services;
 
 namespace XRayExporter
 {
@@ -49,10 +51,9 @@ namespace XRayExporter
                 {
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    // services.AddSingleton<TokenManager>();
-                    // services.AddSingleton<IClient, Client.Client>();
-                    // services.AddSingleton<IExportService, ExportService>();
-                    // services.AddSingleton<IFolderService, FolderService>();
+                    services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<IExportService, ExportService>();
+                    services.AddSingleton<ISectionService, SectionService>();
                     // services.AddSingleton<IStepService, StepService>();
                     // // services.AddSingleton<IAttributeService, AttributeService>();
                     // services.AddSingleton<ITestCaseService, TestCaseService>();
@@ -65,7 +66,7 @@ namespace XRayExporter
         {
             return new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("zephyr.config.json")
+                .AddJsonFile("xray.config.json")
                 .AddEnvironmentVariables()
                 .Build();
         }
