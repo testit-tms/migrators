@@ -16,6 +16,11 @@ public class Fields
     [JsonPropertyName("attachment")]
     public List<Attachment> Attachments { get; set; }
 
+    [JsonPropertyName("summary")]
+    public string Summary { get; set; }
+
+    [JsonPropertyName("labels")]
+    public List<string> Labels { get; set; }
 }
 
 public class Attachment

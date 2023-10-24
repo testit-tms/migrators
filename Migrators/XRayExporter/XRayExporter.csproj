@@ -26,6 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\JsonWriter\JsonWriter.csproj" />
       <ProjectReference Include="..\Models\Models.csproj" />
     </ItemGroup>
     

@@ -108,7 +108,7 @@ public class Client : IClient
         return tests!.Tests;
     }
 
-    public async Task<XRayTestFull> GetTest(int testKey)
+    public async Task<XRayTestFull> GetTest(string testKey)
     {
         _logger.LogInformation("Getting test {TestKey}", testKey);
 
@@ -149,5 +149,13 @@ public class Client : IClient
         var item = JsonSerializer.Deserialize<JiraItem>(content);
 
         return item;
+    }
+
+    public async Task<byte[]> DownloadAttachment(string link)
+    {
+        _logger.LogInformation("Downloading attachment {Link}", link);
+
+        return
+            await _httpClient.GetByteArrayAsync(link.Split(_httpClient.BaseAddress.ToString())[1]);
     }
 }

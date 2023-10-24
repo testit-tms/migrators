@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using JsonWriter;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -54,11 +55,9 @@ namespace XRayExporter
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IExportService, ExportService>();
                     services.AddSingleton<ISectionService, SectionService>();
-                    // services.AddSingleton<IStepService, StepService>();
-                    // // services.AddSingleton<IAttributeService, AttributeService>();
-                    // services.AddSingleton<ITestCaseService, TestCaseService>();
-                    // services.AddSingleton<IWriteService, WriteService>();
-                    // services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<IWriteService, WriteService>();
+                    services.AddSingleton<IAttachmentService, AttachmentService>();
                 });
         }
 
