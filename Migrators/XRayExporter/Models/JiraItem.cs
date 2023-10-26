@@ -21,6 +21,9 @@ public class Fields
 
     [JsonPropertyName("labels")]
     public List<string> Labels { get; set; }
+
+    [JsonPropertyName("issuelinks")]
+    public List<JiraLink> IssueLinks { get; set; }
 }
 
 public class Attachment

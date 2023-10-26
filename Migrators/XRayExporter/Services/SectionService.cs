@@ -57,7 +57,7 @@ public class SectionService : ISectionService
             {
                 Id = Guid.NewGuid(),
                 Name = child.Name,
-                Sections = ConvertSections(xrayFolders),
+                Sections = ConvertSections(child.Folders),
                 PostconditionSteps = new List<Step>(),
                 PreconditionSteps = new List<Step>()
             };
