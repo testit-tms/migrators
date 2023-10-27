@@ -13,6 +13,7 @@ jobs:
           ./Migrators/AzureExporter,
           ./Migrators/ZephyrScaleExporter,
           ./Migrators/ZephyrSquadExporter,
+          ./Migrators/XRayExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -39,6 +40,7 @@ jobs:
           ./Migrators/AzureExporterTests,
           ./Migrators/ZephyrScaleExporterTests,
           ./Migrators/ZephyrSquadExporterTests,
+          ./Migrators/XRayExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:
