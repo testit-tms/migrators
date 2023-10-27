@@ -66,7 +66,7 @@ public class TestCaseService : ITestCaseService
                     Name = item.Fields.Summary,
                     Description = item.Fields.Description,
                     Steps = steps,
-                    Attributes = GetAttributes(testCase),
+                    Attributes = ConvertAttributes(testCase),
                     PreconditionSteps = ConvertPreconditionSteps(testCase.Preconditions),
                     PostconditionSteps = new List<Step>(),
                     Attachments = attachments,
@@ -134,7 +134,7 @@ public class TestCaseService : ITestCaseService
         };
     }
 
-    private List<CaseAttribute> GetAttributes(XRayTestFull test)
+    private List<CaseAttribute> ConvertAttributes(XRayTestFull test)
     {
         var attributes = new List<CaseAttribute>();
 
@@ -257,7 +257,7 @@ public class TestCaseService : ITestCaseService
         foreach (var attachment in attachments)
         {
             var attachmentName =
-                await _attachmentService.DownloadAttachment(testCaseId, attachment.Content, attachment.Filename);
+                await _attachmentService.DownloadAttachment(testCaseId, attachment.Content, attachment.FileName);
             attachmentNames.Add(attachmentName);
         }
 
@@ -306,7 +306,7 @@ public class TestCaseService : ITestCaseService
             Name = item.Fields.Summary,
             Description = item.Fields.Description,
             Steps = steps,
-            Attributes = GetAttributes(testCase),
+            Attributes = ConvertAttributes(testCase),
             Attachments = attachments,
             State = StateType.NotReady,
             Priority = PriorityType.Medium,

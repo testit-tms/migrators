@@ -70,27 +70,18 @@ public class Steps
 
 public class Step
 {
-    [JsonPropertyName("raw")]
-    public string Raw { get; set; }
-
     [JsonPropertyName("rendered")]
     public string Rendered { get; set; }
 }
 
 public class Data
 {
-    [JsonPropertyName("raw")]
-    public string Raw { get; set; }
-
     [JsonPropertyName("rendered")]
     public string Rendered { get; set; }
 }
 
 public class Result
 {
-    [JsonPropertyName("raw")]
-    public string Raw { get; set; }
-
     [JsonPropertyName("rendered")]
     public string Rendered { get; set; }
 }

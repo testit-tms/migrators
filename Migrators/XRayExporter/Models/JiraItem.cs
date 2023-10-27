@@ -29,7 +29,7 @@ public class Fields
 public class Attachment
 {
     [JsonPropertyName("filename")]
-    public string Filename { get; set; }
+    public string FileName { get; set; }
 
     [JsonPropertyName("content")]
     public string Content { get; set; }
