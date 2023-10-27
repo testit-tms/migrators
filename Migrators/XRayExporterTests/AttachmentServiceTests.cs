@@ -3,6 +3,7 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NUnit.Framework;
 using XRayExporter.Client;
 using XRayExporter.Services;
 
