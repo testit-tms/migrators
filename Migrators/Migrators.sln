@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporter", "XRayExporte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporterTests", "XRayExporterTests\XRayExporterTests.csproj", "{563D5041-6E07-4D52-BBB9-C87245604E6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCollabExporter", "TestCollabExporter\TestCollabExporter.csproj", "{713AF0B4-B036-4879-B3C6-16071D0864B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
