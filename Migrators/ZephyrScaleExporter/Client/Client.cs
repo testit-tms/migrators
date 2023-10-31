@@ -43,7 +43,7 @@ public class Client : IClient
 
     public async Task<ZephyrProject> GetProject()
     {
-        _logger.LogInformation("Getting project {projectName}", _projectName);
+        _logger.LogInformation("Getting project {ProjectName}", _projectName);
 
         var response = await _httpClient.GetAsync("projects");
         if (!response.IsSuccessStatusCode)
