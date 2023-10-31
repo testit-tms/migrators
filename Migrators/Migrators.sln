@@ -47,6 +47,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLinkExporterTests", "Te
 		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1} = {EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporter", "XRayExporter\XRayExporter.csproj", "{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporterTests", "XRayExporterTests\XRayExporterTests.csproj", "{563D5041-6E07-4D52-BBB9-C87245604E6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +113,14 @@ Global
 		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
