@@ -13,7 +13,7 @@ You can download the latest version of the TestLinkExporter from the [releases](
 ```json
 {
   "resultPath": "/Users/user01/Documents/importer",
-  "testlink": {
+  "testLink": {
     "url": "http://testlink/lib/api/xmlrpc/v1/xmlrpc.php",
     "token": "15fb632cdd8b606561a8b60d69a7149e",
     "projectName": "ProjectName"

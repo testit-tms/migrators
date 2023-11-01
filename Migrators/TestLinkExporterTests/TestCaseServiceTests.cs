@@ -75,7 +75,7 @@ public class TestCaseServiceTests
         var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
         // Act
-        Assert.Throws<Exception>(() => service.ConvertTestCases(_sectionMap));
+        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(_sectionMap));
 
         // Assert
         _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
@@ -96,7 +96,7 @@ public class TestCaseServiceTests
         var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
         // Act
-        Assert.Throws<Exception>(() => service.ConvertTestCases(_sectionMap));
+        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(_sectionMap));
 
         // Assert
         _client.DidNotReceive().GetAttachmentsByTestCaseId(Arg.Any<int>());
@@ -121,7 +121,7 @@ public class TestCaseServiceTests
         var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
         // Act
-        Assert.Throws<Exception>(() => service.ConvertTestCases(new Dictionary<int, Guid>
+        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(new Dictionary<int, Guid>
             {
                 { 1, _sectionMap[1] }
             }
@@ -153,7 +153,7 @@ public class TestCaseServiceTests
         var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
         // Act
-        var testcases = service.ConvertTestCases(new Dictionary<int, Guid>
+        var testcases = await service.ConvertTestCases(new Dictionary<int, Guid>
             {
                 { 1, _sectionMap[1] }
             });

@@ -15,7 +15,7 @@ public class Client : IClient
     {
         _logger = logger;
 
-        var section = configuration.GetSection("testlink");
+        var section = configuration.GetSection("testLink");
         var url = section["url"];
 
         if (string.IsNullOrEmpty(url))
@@ -48,7 +48,7 @@ public class Client : IClient
 
         if (project == null)
         {
-            _logger.LogError($"Project {_projectName} is not found");
+            _logger.LogError("Project {ProjectName} is not found", _projectName);
 
             throw new Exception($"Project {_projectName} is not found");
         }
@@ -68,7 +68,7 @@ public class Client : IClient
 
         if (!testSuites.Any())
         {
-            _logger.LogError($"Test suites from {_projectName} is not found");
+            _logger.LogError("Test suites from {ProjectName} is not found", _projectName);
 
             throw new Exception($"Test suites from {_projectName} is not found");
         }
@@ -117,7 +117,7 @@ public class Client : IClient
 
         if (testCase == null)
         {
-            _logger.LogError($"Test case with id {id} is not found");
+            _logger.LogError("Test case with id {Id} is not found", id);
 
             throw new Exception($"Test case with id {id} is not found");
         }

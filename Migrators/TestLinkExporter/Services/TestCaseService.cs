@@ -23,7 +23,7 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public List<TestCase> ConvertTestCases(Dictionary<int, Guid> sectionMap)
+    public async Task<List<TestCase>> ConvertTestCases(Dictionary<int, Guid> sectionMap)
     {
         _logger.LogInformation("Converting test cases");
 
@@ -33,13 +33,16 @@ public class TestCaseService : ITestCaseService
         {
             var testCaseIds = _client.GetTestCaseIdsBySuiteId(section.Key);
 
-            _logger.LogDebug("Found {@TestCaseIds} test cases", testCaseIds.Count);
+            _logger.LogDebug("Found {Count} test cases", testCaseIds.Count);
 
             foreach (var testCaseId in testCaseIds)
             {
-                testCases.Add(ConvertTestCases(
-                    _client.GetTestCaseById(testCaseId),
-                    section.Value));
+                testCases.Add(
+                    await ConvertTestCases(
+                        _client.GetTestCaseById(testCaseId),
+                        section.Value
+                    )
+                );
             }
         }
 
@@ -48,7 +51,7 @@ public class TestCaseService : ITestCaseService
         return testCases;
     }
 
-    private TestCase ConvertTestCases(TestLinkTestCase testCase, Guid sectionId)
+    private async Task<TestCase> ConvertTestCases(TestLinkTestCase testCase, Guid sectionId)
     {
         var testCaseId = Guid.NewGuid();
 
@@ -64,7 +67,7 @@ public class TestCaseService : ITestCaseService
             Duration = 10,
             Attributes = new List<CaseAttribute>(),
             Tags = new List<string>(),
-            Attachments = _attachmentService.DownloadAttachments(testCase.Id, testCaseId),
+            Attachments = await _attachmentService.DownloadAttachments(testCase.Id, testCaseId),
             Iterations = new List<Iteration>(),
             Links = new List<Link>(),
             Name = testCase.Name,

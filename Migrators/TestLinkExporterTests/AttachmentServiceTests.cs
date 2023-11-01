@@ -48,8 +48,8 @@ public class AttachmentServiceTests
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
-        Assert.Throws<Exception>(() =>
-            service.DownloadAttachments(1, Guid.NewGuid()));
+        Assert.ThrowsAsync<Exception>(async () =>
+            await service.DownloadAttachments(1, Guid.NewGuid()));
 
         // Assert
         _ = _writeService.DidNotReceive()
@@ -64,13 +64,13 @@ public class AttachmentServiceTests
         _client.GetAttachmentsByTestCaseId(1)
             .Returns(_attachments);
         _writeService.WriteAttachment(guid, _attachments[0].Content, _attachments[0].Name)
-            .Throws(new Exception("Failed to write attachment"));
+            .ThrowsAsync(new Exception("Failed to write attachment"));
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
-        Assert.Throws<Exception>(() =>
-            service.DownloadAttachments(1, guid));
+        Assert.ThrowsAsync<Exception>(async () =>
+            await service.DownloadAttachments(1, guid));
     }
 
     [Test]
@@ -86,7 +86,7 @@ public class AttachmentServiceTests
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
-        var result = service.DownloadAttachments(1, guid);
+        var result = await service.DownloadAttachments(1, guid);
 
         // Assert
         await _writeService.Received(1).WriteAttachment(guid, _attachments[0].Content, _attachments[0].Name);

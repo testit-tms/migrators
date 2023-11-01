@@ -24,7 +24,7 @@ public class SectionService : ISectionService
 
         var mainSuites = _client.GetSuitesByProjectId(projectId);
 
-        _logger.LogDebug("Found {@TestSuites} test suites", mainSuites.Count);
+        _logger.LogDebug("Found {Count} test suites", mainSuites.Count);
 
         var sections = ConvertSuitesToSections(mainSuites);
 
@@ -45,7 +45,7 @@ public class SectionService : ISectionService
 
         var sharedSuites = _client.GetSharedSuitesBySuiteId(mainSuiteId);
 
-        _logger.LogDebug("Found {@TestSuites} test suites", sharedSuites.Count);
+        _logger.LogDebug("Found {Count} test suites", sharedSuites.Count);
 
         var sections = ConvertSuitesToSections(sharedSuites);
 

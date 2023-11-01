@@ -4,5 +4,5 @@ namespace TestLinkExporter.Services;
 
 public interface IAttachmentService
 {
-    List<string> DownloadAttachments(int Id, Guid workItemId);
+    Task<List<string>> DownloadAttachments(int Id, Guid workItemId);
 }

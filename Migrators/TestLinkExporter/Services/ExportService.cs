@@ -32,7 +32,7 @@ public class ExportService : IExportService
 
         var sectionData = _sectionService.ConvertSections(project.Id);
 
-        var testCases = _testCaseService.ConvertTestCases(sectionData.SectionMap);
+        var testCases = await _testCaseService.ConvertTestCases(sectionData.SectionMap);
 
         foreach (var testCase in testCases)
         {

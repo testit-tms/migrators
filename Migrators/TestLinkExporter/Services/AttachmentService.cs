@@ -18,9 +18,9 @@ public class AttachmentService : IAttachmentService
         _writeService = writeService;
     }
 
-    public List<string> DownloadAttachments(int id, Guid workItemId)
+    public async Task<List<string>> DownloadAttachments(int id, Guid workItemId)
     {
-        _logger.LogInformation("Downloading attachments");
+        _logger.LogInformation("Downloading attachment: {Id}", id);
 
         var attachments = _client.GetAttachmentsByTestCaseId(id);
 
@@ -30,7 +30,7 @@ public class AttachmentService : IAttachmentService
         {
             _logger.LogDebug("Downloading attachment: {Name}", attachment.Name);
 
-            var name = _writeService.WriteAttachment(workItemId, attachment.Content, attachment.Name).Result;
+            var name = await _writeService.WriteAttachment(workItemId, attachment.Content, attachment.Name);
 
             names.Add(name);
         }
