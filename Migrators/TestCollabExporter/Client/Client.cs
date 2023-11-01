@@ -186,4 +186,13 @@ public class Client : IClient
 
         return customFields;
     }
+
+    public async Task<byte[]> DownloadAttachment(string link)
+    {
+        _logger.LogInformation("Downloading attachment {Link}", link);
+
+        var httpClient = new HttpClient();
+        return
+            await httpClient.GetByteArrayAsync(link);
+    }
 }

@@ -10,4 +10,5 @@ public interface IClient
     Task<List<TestCollabTestCase>> GetTestCases(int projectId, int suiteId);
     Task<List<TestCollabSharedStep>> GetSharedSteps(int projectId);
     Task<List<TestCollabCustomField>> GetCustomFields(int companyId);
+    Task<byte[]> DownloadAttachment(string link);
 }
