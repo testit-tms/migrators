@@ -1,0 +1,8 @@
+{
+  "resultPath": "/Users/user01/Documents/importer",
+  "testLink": {
+    "url": "http://testlink/lib/api/xmlrpc/v1/xmlrpc.php",
+    "token": "15fb632cdd8b606561a8b60d69a7149e",
+    "projectName": "ProjectName"
+  }
+}
