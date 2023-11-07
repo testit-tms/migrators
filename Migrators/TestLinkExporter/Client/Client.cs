@@ -53,6 +53,8 @@ public class Client : IClient
             throw new Exception($"Project {_projectName} is not found");
         }
 
+        _logger.LogDebug("Received project by name {ProjectName}: {@Project}", _projectName, project);
+
         return new TestLinkProject
         {
             Id = project.id,
@@ -73,6 +75,8 @@ public class Client : IClient
             throw new Exception($"Test suites from {_projectName} is not found");
         }
 
+        _logger.LogDebug("Received test suites by id {Id}: {@TestSuites}", id, testSuites);
+
         foreach ( var suite in testSuites) {
             suites.Add(new TestLinkSuite
             {
@@ -91,6 +95,8 @@ public class Client : IClient
 
         var testSuites = _client.GetTestSuitesForTestSuite(id);
 
+        _logger.LogDebug("Received shared test suites by test suite id {Id}: {@TestSuites}", id, testSuites);
+
         foreach (var suite in testSuites)
         {
             suites.Add(new TestLinkSuite
@@ -106,9 +112,11 @@ public class Client : IClient
 
     public List<int> GetTestCaseIdsBySuiteId(int id)
     {
-        var testCaseIds = new List<TestLinkTestCase>();
+        var testCaseIds = _client.GetTestCaseIdsForTestSuite(id, false);
 
-        return _client.GetTestCaseIdsForTestSuite(2, true);
+        _logger.LogDebug("Received test case ids by test suite id {Id}: {@TestCaseIds}", id, testCaseIds);
+
+        return testCaseIds;
     }
 
     public TestLinkTestCase GetTestCaseById(int id)
@@ -121,6 +129,8 @@ public class Client : IClient
 
             throw new Exception($"Test case with id {id} is not found");
         }
+
+        _logger.LogDebug("Received test case by id {Id}: {@TestCase}", id, testCase);
 
         return new TestLinkTestCase
         {
@@ -150,6 +160,8 @@ public class Client : IClient
     public List<TestLinkAttachment> GetAttachmentsByTestCaseId(int id)
     {
         var attachments = _client.GetTestCaseAttachments(id);
+
+        _logger.LogDebug("Received attachments by test case id {Id}: {@Attachments}", id, attachments);
 
         return attachments.Select(attachment =>
             new TestLinkAttachment
