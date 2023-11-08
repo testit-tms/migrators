@@ -16,7 +16,7 @@ public class SharedStepService : ISharedStepService
         _client = client;
     }
 
-    public async Task<SharedStepData> GetSharedSteps(int projectId, Guid sectionId)
+    public async Task<SharedStepData> ConvertSharedSteps(int projectId, Guid sectionId, List<Guid> attributes)
     {
         _logger.LogInformation("Getting shared steps");
 
@@ -33,7 +33,13 @@ public class SharedStepService : ISharedStepService
                 Name = testCollabSharedStep.Name,
                 State = StateType.NeedsWork,
                 Priority = PriorityType.Medium,
-                Attributes = new List<CaseAttribute>(),
+                Attributes = attributes.Select(a =>
+                        new CaseAttribute
+                        {
+                            Id = a,
+                            Value = string.Empty
+                        })
+                    .ToList(),
                 Attachments = new List<string>(),
                 Links = new List<Link>(),
                 SectionId = sectionId,
@@ -56,7 +62,7 @@ public class SharedStepService : ISharedStepService
 
         return new SharedStepData
         {
-            SharedStepMap = sharedStepMap,
+            SharedStepsMap = sharedStepMap,
             SharedSteps = sharedSteps
         };
     }

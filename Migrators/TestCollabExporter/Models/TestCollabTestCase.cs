@@ -17,7 +17,7 @@ public class TestCollabTestCase
     public string Priority { get; set; }
 
     [JsonPropertyName("custom_fields")]
-    public object[] CustomFields { get; set; }
+    public List<CustomField>? CustomFields { get; set; }
 
     [JsonPropertyName("avg_execution_time")]
     public int ExecutionTime { get; set; }
@@ -54,4 +54,13 @@ public class Tags
 {
     [JsonPropertyName("name")]
     public string Name { get; set; }
+}
+
+public class CustomField
+{
+    [JsonPropertyName("label")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("value")]
+    public object Value { get; set; }
 }

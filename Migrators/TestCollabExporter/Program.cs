@@ -54,8 +54,10 @@ namespace TestCollabExporter
                     services.AddSingleton(SetupConfiguration());
                     services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IExportService, ExportService>();
-                    // services.AddSingleton<ISectionService, SectionService>();
-                    // services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<ISharedStepService, SharedStepService>();
+                    services.AddSingleton<ISectionService, SectionService>();
+                    services.AddSingleton<IAttributeService, AttributeService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<ISharedStepService, SharedStepService>();
                     services.AddSingleton<IWriteService, WriteService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();

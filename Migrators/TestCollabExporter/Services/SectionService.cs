@@ -18,7 +18,7 @@ public class SectionService : ISectionService
         _sectionMap = new Dictionary<int, Guid>();
     }
 
-    public async Task<SectionData> ConvertSection(int projectId)
+    public async Task<SectionData> ConvertSections(int projectId)
     {
         _logger.LogInformation("Getting sections");
 

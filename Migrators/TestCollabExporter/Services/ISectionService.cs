@@ -4,5 +4,5 @@ namespace TestCollabExporter.Services;
 
 public interface ISectionService
 {
-    Task<SectionData> ConvertSection(int projectId);
+    Task<SectionData> ConvertSections(int projectId);
 }

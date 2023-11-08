@@ -4,5 +4,5 @@ namespace TestCollabExporter.Services;
 
 public interface ISharedStepService
 {
-    Task<SharedStepData> GetSharedSteps(int projectId, Guid sectionId);
+    Task<SharedStepData> ConvertSharedSteps(int projectId, Guid sectionId, List<Guid> attributes);
 }
