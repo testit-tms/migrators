@@ -12,29 +12,40 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Importer", "Importer\Import
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImporterTests", "ImporterTests\ImporterTests.csproj", "{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureExporter", "AzureExporter\AzureExporter.csproj", "{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureExporter", "AzureExporter\AzureExporter.csproj", "{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllureExporter", "AllureExporter\AllureExporter.csproj", "{BD50456A-86C5-463D-9621-5151C68C3A22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllureExporter", "AllureExporter\AllureExporter.csproj", "{BD50456A-86C5-463D-9621-5151C68C3A22}"
 	ProjectSection(ProjectDependencies) = postProject
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonWriter", "JsonWriter\JsonWriter.csproj", "{C03F7958-C302-4F57-B158-E1F0E8A1A302}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonWriter", "JsonWriter\JsonWriter.csproj", "{C03F7958-C302-4F57-B158-E1F0E8A1A302}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllureExporterTests", "AllureExporterTests\AllureExporterTests.csproj", "{71D9999F-06FA-49B2-91C0-3CE322C9F33B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllureExporterTests", "AllureExporterTests\AllureExporterTests.csproj", "{71D9999F-06FA-49B2-91C0-3CE322C9F33B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureExporterTests", "AzureExporterTests\AzureExporterTests.csproj", "{9EE779EA-9288-47D6-A99A-665AC7B72B47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureExporterTests", "AzureExporterTests\AzureExporterTests.csproj", "{9EE779EA-9288-47D6-A99A-665AC7B72B47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrScaleExporter", "ZephyrScaleExporter\ZephyrScaleExporter.csproj", "{6E815614-B50E-4300-BD3E-CEC43DAA1509}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrScaleExporter", "ZephyrScaleExporter\ZephyrScaleExporter.csproj", "{6E815614-B50E-4300-BD3E-CEC43DAA1509}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrScaleExporterTests", "ZephyrScaleExporterTests\ZephyrScaleExporterTests.csproj", "{78FCEE88-896E-4370-9CC0-8EFEA9CBFCA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrScaleExporterTests", "ZephyrScaleExporterTests\ZephyrScaleExporterTests.csproj", "{78FCEE88-896E-4370-9CC0-8EFEA9CBFCA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrSquadExporter", "ZephyrSquadExporter\ZephyrSquadExporter.csproj", "{FFC6A8BF-B227-4568-8368-569862426E41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrSquadExporter", "ZephyrSquadExporter\ZephyrSquadExporter.csproj", "{FFC6A8BF-B227-4568-8368-569862426E41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZephyrSquadExporterTests", "ZephyrSquadExporterTests\ZephyrSquadExporterTests.csproj", "{C2B65002-89C3-4FD6-A945-87379D552098}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrSquadExporterTests", "ZephyrSquadExporterTests\ZephyrSquadExporterTests.csproj", "{C2B65002-89C3-4FD6-A945-87379D552098}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestLinkExporter", "TestLinkExporter\TestLinkExporter.csproj", "{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
+		{C03F7958-C302-4F57-B158-E1F0E8A1A302} = {C03F7958-C302-4F57-B158-E1F0E8A1A302}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLinkExporterTests", "TestLinkExporterTests\TestLinkExporterTests.csproj", "{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1} = {EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporter", "XRayExporter\XRayExporter.csproj", "{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}"
 EndProject
@@ -62,6 +73,10 @@ Global
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAE915E2-C494-42A9-AAD5-DEEEF1A9E7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BD50456A-86C5-463D-9621-5151C68C3A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BD50456A-86C5-463D-9621-5151C68C3A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD50456A-86C5-463D-9621-5151C68C3A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -74,10 +89,6 @@ Global
 		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F0B8FF2F-2EB3-4A5A-BF3E-55DF351E1118}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9EE779EA-9288-47D6-A99A-665AC7B72B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9EE779EA-9288-47D6-A99A-665AC7B72B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EE779EA-9288-47D6-A99A-665AC7B72B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -98,6 +109,14 @@ Global
 		{C2B65002-89C3-4FD6-A945-87379D552098}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2B65002-89C3-4FD6-A945-87379D552098}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2B65002-89C3-4FD6-A945-87379D552098}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}.Release|Any CPU.ActiveCfg = Release|Any CPU
