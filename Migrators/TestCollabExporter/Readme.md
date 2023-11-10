@@ -16,7 +16,7 @@ You can download the latest version of the TestCollabExporter from the [releases
   "testcollab" : {
     "url" : "https://api.testcollab.io/",
     "token" : "bPM3ji6XEw64fUHq",
-    "projectKey" : "Sample Project"
+    "projectName" : "Sample Project"
   }
 }
 ```
