@@ -28,7 +28,7 @@ Where:
 - testcollab.token - token for access to the TestCollab server
 - testcollab.projectName - name of the project in the TestCollab server
 
-1. Run the exporter with the following command:
+2. Run the exporter with the following command:
 
 ```bash
 .\TestCollabExporter
