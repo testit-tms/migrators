@@ -51,6 +51,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PractiTestExporterTests", "
 		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06} = {B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCollabExporter", "TestCollabExporter\TestCollabExporter.csproj", "{713AF0B4-B036-4879-B3C6-16071D0864B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCollabExporterTests", "TestCollabExporterTests\TestCollabExporterTests.csproj", "{F82361FB-1672-4F60-998C-1702DDEFBAD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +133,14 @@ Global
 		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{713AF0B4-B036-4879-B3C6-16071D0864B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82361FB-1672-4F60-998C-1702DDEFBAD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82361FB-1672-4F60-998C-1702DDEFBAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82361FB-1672-4F60-998C-1702DDEFBAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82361FB-1672-4F60-998C-1702DDEFBAD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,3 @@
-using TestLinkExporter.Models;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using TestLinkExporter.Client;
@@ -20,7 +19,7 @@ public class AttachmentService : IAttachmentService
 
     public async Task<List<string>> DownloadAttachments(int id, Guid workItemId)
     {
-        _logger.LogInformation("Downloading attachment: {Id}", id);
+        _logger.LogInformation("Getting attachments by test case id: {Id}", id);
 
         var attachments = _client.GetAttachmentsByTestCaseId(id);
 

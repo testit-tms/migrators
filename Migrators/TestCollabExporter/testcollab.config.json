@@ -1,0 +1,8 @@
+{
+  "resultPath" : "/Users/user01/Documents/importer",
+  "testcollab" : {
+    "url" : "https://api.testcollab.io",
+    "token" : "bPM3ji6XEw64fUHe",
+    "projectName" : "Sample Project"
+  }
+}

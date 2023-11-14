@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Models;
-using System;
 using System.Text.RegularExpressions;
 using TestLinkExporter.Client;
 using TestLinkExporter.Models;
@@ -82,7 +81,7 @@ public class TestCaseService : ITestCaseService
             3 => PriorityType.High,
             2 => PriorityType.Medium,
             1 => PriorityType.Low,
-            _ => throw new Exception($"Failed to convert priority {priority}")
+            _ => PriorityType.Medium
         };
     }
 
