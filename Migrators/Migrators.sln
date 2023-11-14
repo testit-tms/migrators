@@ -37,19 +37,19 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrSquadExporterTests", "ZephyrSquadExporterTests\ZephyrSquadExporterTests.csproj", "{C2B65002-89C3-4FD6-A945-87379D552098}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestLinkExporter", "TestLinkExporter\TestLinkExporter.csproj", "{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestLinkExporterTests", "TestLinkExporterTests\TestLinkExporterTests.csproj", "{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XRayExporter", "XRayExporter\XRayExporter.csproj", "{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XRayExporterTests", "XRayExporterTests\XRayExporterTests.csproj", "{563D5041-6E07-4D52-BBB9-C87245604E6F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PractiTestExporter", "PractiTestExporter\PractiTestExporter.csproj", "{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PractiTestExporterTests", "PractiTestExporterTests\PractiTestExporterTests.csproj", "{AB081068-0DE0-4408-A858-5109CCF0C3B4}"
 	ProjectSection(ProjectDependencies) = postProject
-		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
-		{C03F7958-C302-4F57-B158-E1F0E8A1A302} = {C03F7958-C302-4F57-B158-E1F0E8A1A302}
+		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06} = {B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLinkExporterTests", "TestLinkExporterTests\TestLinkExporterTests.csproj", "{87D89020-4060-4DA3-BD90-99CA1DBEBD6C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1} = {EDB0D0A9-2B1A-46FB-B0BE-F8166F497BF1}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporter", "XRayExporter\XRayExporter.csproj", "{1E3A8E07-1023-4A40-90DF-1A2CA6BB707C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XRayExporterTests", "XRayExporterTests\XRayExporterTests.csproj", "{563D5041-6E07-4D52-BBB9-C87245604E6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +121,14 @@ Global
 		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{563D5041-6E07-4D52-BBB9-C87245604E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB081068-0DE0-4408-A858-5109CCF0C3B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

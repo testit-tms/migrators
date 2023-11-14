@@ -15,6 +15,7 @@ jobs:
           ./Migrators/ZephyrSquadExporter,
           ./Migrators/XRayExporter,
           ./Migrators/TestLinkExporter,
+          ./Migrators/PractiTestExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -43,6 +44,7 @@ jobs:
           ./Migrators/ZephyrSquadExporterTests,
           ./Migrators/XRayExporterTests,
           ./Migrators/TestLinkExporterTests,
+          ./Migrators/PractiTestExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:
