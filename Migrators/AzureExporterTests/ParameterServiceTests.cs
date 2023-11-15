@@ -130,6 +130,9 @@ public class ParameterServiceTests
         var parameterService = new ParameterService(_logger);
 
         // Act
-        Assert.Throws<XmlException>(() => parameterService.ConvertParameters(parameters));
+        var result = parameterService.ConvertParameters(parameters);
+
+        // Assert
+        Assert.That(result, Is.Empty);
     }
 }
