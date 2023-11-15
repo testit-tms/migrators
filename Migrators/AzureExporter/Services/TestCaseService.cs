@@ -41,6 +41,9 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
             _logger.LogDebug("Converting test case: {Id}", workItemId);
 
             var testCase = await _client.GetWorkItemById(workItemId);
+
+            _logger.LogDebug("Found test case with {Id}: {@TestCase}", testCase.Id, testCase);
+
             var steps = _stepService.ConvertSteps(testCase.Steps, sharedStepMap);
 
             _logger.LogDebug("Found {@Steps} steps", steps.Count);

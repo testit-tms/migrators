@@ -19,7 +19,15 @@ public class App
     {
         _logger.LogInformation("Starting application");
 
-        _service.ExportProject().Wait();
+        try
+        {
+            _service.ExportProject().Wait();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error occurred during export");
+            throw;
+        }
 
         _logger.LogInformation("Ending application");
     }

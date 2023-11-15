@@ -38,22 +38,51 @@ public class LinkService : ILinkService
 
     public List<Link> CovertLinks(IEnumerable<AzureLink> links)
     {
+        _logger.LogInformation("Converting links: {@Links}", links);
+
         var convertedLinks = new List<Link>();
 
         foreach (var link in links)
         {
             var decodedUrl = HttpUtility.UrlDecode(link.Url);
-            var urlParts = decodedUrl.Split('/');
-            var project = urlParts[6];
-            var suffix = link.Title.Equals("Branch")
-                ? $"?version={urlParts[^1]}"
-                : $"/commit/{urlParts[^1]}";
-
-            var convertedLink = new Link
+            while (decodedUrl.Contains('%'))
             {
-                Url = $"{_url}/{_projectName}/_git/{project}{suffix}",
-                Title = link.Title
-            };
+                decodedUrl = HttpUtility.UrlDecode(decodedUrl);
+            }
+
+            var urlParts = decodedUrl.Split('/');
+
+            Link convertedLink;
+            if (link.Url.Contains("VersionControl/Changeset"))
+            {
+                convertedLink = new Link
+                {
+                    Url = $"{_url}/{_projectName}/_versionControl/changeset/{urlParts.Last()}",
+                    Title = link.Title
+                };
+            }
+            else if (link.Url.Contains("VersionControl/VersionedItem"))
+            {
+                convertedLink = new Link
+                {
+                    Url =
+                        $"{_url}/{_projectName}/_versionControl/?path=${decodedUrl.Split("VersionControl/VersionedItem/$").Last().Replace("changesetVersion", "version").Replace("deletionId=0", "_a=contents")}",
+                    Title = link.Title
+                };
+            }
+            else
+            {
+                var project = urlParts[6];
+                var suffix = link.Title.Equals("Branch")
+                    ? $"?version={urlParts[^1]}"
+                    : $"/commit/{urlParts[^1]}";
+
+                convertedLink = new Link
+                {
+                    Url = $"{_url}/{_projectName}/_git/{project}{suffix}",
+                    Title = link.Title
+                };
+            }
 
             _logger.LogDebug("Converted link {@OldLink}: {@Link}", link, convertedLink);
 
