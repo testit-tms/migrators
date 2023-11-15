@@ -32,7 +32,7 @@ public class SharedStepService : WorkItemBaseService, ISharedStepService
 
         var workItemIds = await _client.GetWorkItemIds(Constants.SharedStepType);
 
-        _logger.LogDebug("Found {@WorkItems} shared steps", workItemIds.Count);
+        _logger.LogDebug("Found {Count} shared steps: {@WorkItems}", workItemIds.Count, workItemIds);
 
         var sharedSteps = new Dictionary<int, SharedStep>();
 
@@ -40,7 +40,7 @@ public class SharedStepService : WorkItemBaseService, ISharedStepService
         {
             var sharedStep = await _client.GetWorkItemById(workItemId);
 
-            _logger.LogDebug("Found shared step: {Id}", sharedStep.Id);
+            _logger.LogDebug("Found shared step with {Id}: {@SharedStep}", sharedStep.Id, sharedStep);
 
             var steps = _stepService.ConvertSteps(sharedStep.Steps, new Dictionary<int, Guid>());
 

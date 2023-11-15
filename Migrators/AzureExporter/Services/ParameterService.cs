@@ -19,7 +19,7 @@ public class ParameterService : IParameterService
         _logger.LogInformation("Converting parameters");
         _logger.LogDebug("Parameters: {@Parameters}", parameters);
 
-        if (string.IsNullOrWhiteSpace(parameters.Keys))
+        if (string.IsNullOrWhiteSpace(parameters.Keys) || !parameters.Keys.Contains('<'))
         {
             _logger.LogDebug("No keys found in parameters");
 
@@ -53,14 +53,20 @@ public class ParameterService : IParameterService
 
     private static List<Dictionary<string, string>> ParseParameterValues(string content)
     {
-        var xmlDoc = XDocument.Parse(content);
+        try
+        {
+            var xmlDoc = XDocument.Parse(content);
+            var parameters = xmlDoc.Descendants("Table1")
+                .Select(table1Node => table1Node.Elements()
+                    .ToDictionary(element => element.Name.LocalName,
+                        element => string.IsNullOrWhiteSpace(element.Value) ? "Empty" : element.Value.Trim()))
+                .ToList();
 
-        var parameters = xmlDoc.Descendants("Table1")
-            .Select(table1Node => table1Node.Elements()
-                .ToDictionary(element => element.Name.LocalName,
-                    element => string.IsNullOrWhiteSpace(element.Value) ? "Empty" : element.Value.Trim()))
-            .ToList();
-
-        return parameters;
+            return parameters;
+        }
+        catch (Exception)
+        {
+            return new List<Dictionary<string, string>>();
+        }
     }
 }

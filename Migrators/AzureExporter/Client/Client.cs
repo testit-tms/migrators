@@ -7,7 +7,6 @@ using Microsoft.TeamFoundation.Work.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
 using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
 using Microsoft.VisualStudio.Services.Common;
-using Microsoft.VisualStudio.Services.TestManagement.TestPlanning.WebApi;
 using Microsoft.VisualStudio.Services.WebApi;
 
 namespace AzureExporter.Client;
@@ -17,7 +16,6 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
 
     private readonly ProjectHttpClient _projectClient;
-    private readonly TestPlanHttpClient _testPlanClient;
     private readonly WorkItemTrackingHttpClient _workItemTrackingClient;
     private readonly WorkHttpClient _workHttpClient;
     private readonly string _projectName;
@@ -52,7 +50,6 @@ public class Client : IClient
 
         var connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, token));
         _projectClient = connection.GetClient<ProjectHttpClient>();
-        _testPlanClient = connection.GetClient<TestPlanHttpClient>();
         _workItemTrackingClient = connection.GetClient<WorkItemTrackingHttpClient>();
         _workHttpClient = connection.GetClient<WorkHttpClient>();
     }
@@ -75,29 +72,6 @@ public class Client : IClient
         };
     }
 
-    public async Task<PagedList<TestPlan>> GetTestPlansByProjectId(Guid id)
-    {
-        var testPlans = _testPlanClient.GetTestPlansAsync(project: id).Result;
-
-        return testPlans;
-    }
-
-    public async Task<PagedList<TestSuite>> GetTestSuitesByProjectIdAndTestPlanId(Guid projectId, int planId)
-    {
-        var testSuites = _testPlanClient.GetTestSuitesForPlanAsync(project: projectId, planId: planId).Result;
-
-        return testSuites;
-    }
-
-    public async Task<PagedList<TestCase>> GetTestCaseListByProjectIdAndTestPlanIdAndSuiteId(Guid projectId, int planId,
-        int suiteId)
-    {
-        var testCases = _testPlanClient.GetTestCaseListAsync(project: projectId, planId: planId, suiteId: suiteId)
-            .Result;
-
-        return testCases;
-    }
-
     public async Task<List<int>> GetWorkItemIds(string workItemType)
     {
         var wiql = new Wiql
@@ -115,9 +89,13 @@ public class Client : IClient
 
     public async Task<AzureWorkItem> GetWorkItemById(int id)
     {
+        _logger.LogInformation("Getting work item with ID {Id}", id);
+
         var workItem = _workItemTrackingClient.GetWorkItemAsync(_projectName, id, expand: WorkItemExpand.All).Result;
 
-        var result = new AzureWorkItem()
+        _logger.LogDebug("Work item: {@WorkItem}", workItem);
+
+        var result = new AzureWorkItem
         {
             Id = workItem.Id!.Value,
             Title = GetValueOfField(workItem.Fields, "System.Title"),
@@ -127,22 +105,26 @@ public class Client : IClient
             Steps = GetValueOfField(workItem.Fields, "Microsoft.VSTS.TCM.Steps"),
             IterationPath = GetValueOfField(workItem.Fields, "System.IterationPath"),
             Tags = GetValueOfField(workItem.Fields, "System.Tags"),
-            Links = workItem.Relations
-                .Where(r => r.Rel == "ArtifactLink")
-                .Select(r => new AzureLink
-                {
-                    Title = GetValueOfField(r.Attributes, "name"),
-                    Url = r.Url
-                })
-                .ToList(),
-            Attachments = workItem.Relations
-                .Where(r => r.Rel == "AttachedFile")
-                .Select(r => new AzureAttachment
-                {
-                    Id = new Guid(r.Url[^36..]),
-                    Name = GetValueOfField(r.Attributes, "name"),
-                })
-                .ToList(),
+            Links = workItem.Relations == null
+                ? new List<AzureLink>()
+                : workItem.Relations
+                    .Where(r => r.Rel == "ArtifactLink")
+                    .Select(r => new AzureLink
+                    {
+                        Title = GetValueOfField(r.Attributes, "name"),
+                        Url = r.Url
+                    })
+                    .ToList(),
+            Attachments = workItem.Relations == null
+                ? new List<AzureAttachment>()
+                : workItem.Relations
+                    .Where(r => r.Rel == "AttachedFile")
+                    .Select(r => new AzureAttachment
+                    {
+                        Id = new Guid(r.Url[^36..]),
+                        Name = GetValueOfField(r.Attributes, "name"),
+                    })
+                    .ToList(),
             Parameters = new AzureParameters
             {
                 Keys = GetValueOfField(workItem.Fields, "Microsoft.VSTS.TCM.Parameters"),
@@ -155,11 +137,16 @@ public class Client : IClient
 
     public async Task<List<string>> GetIterations(Guid projectId)
     {
-        var iterations = _workHttpClient.GetTeamIterationsAsync(new TeamContext(projectId)).Result;
+        _logger.LogInformation("Getting iterations");
 
-        return iterations
+        var iterations = _workHttpClient.GetTeamIterationsAsync(new TeamContext(projectId)).Result;
+        var paths = iterations
             .Select(i => i.Path)
             .ToList();
+
+        _logger.LogDebug("Got iterations: {@Iterations}", paths);
+
+        return paths;
     }
 
     public async Task<byte[]> GetAttachmentById(Guid id)
