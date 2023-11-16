@@ -1,22 +1,22 @@
-# TestLink Exporter
+# PractiTest Exporter
 
-You can use this exporter to export your test cases from TestLink.
+You can use this exporter to export your test cases from PractiTest.
 
 ## Download
 
-You can download the latest version of the TestLinkExporter from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
+You can download the latest version of the PractiTestExporter from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
 
 ## How to use
 
-1. Configure connection in the `testlink.config.json` file and save it in the TestLinkExporter location.
+1. Configure connection in the `practitest.config.json` file and save it in the PractiTestExporter location.
 
 ```json
 {
   "resultPath": "/Users/user01/Documents/importer",
-  "testLink": {
-    "url": "http://testlink/lib/api/xmlrpc/v1/xmlrpc.php",
-    "token": "15fb632cdd8b606561a8b60d69a7149e",
-    "projectName": "ProjectName"
+  "practiTest": {
+    "url": "https://prod-api.practitest.app",
+    "token": "a7b9bea53f1e7a6ef7d3052969b55926680bc13b",
+    "projectId": "15467"
   }
 }
 ```
@@ -24,14 +24,14 @@ You can download the latest version of the TestLinkExporter from the [releases](
 Where:
 
 - resultPath - path to the folder where the results will be saved
-- testLink.url - TestLink API url
-- testLink.token - token for access to the TestLink
-- testLink.projectName - name of the project in the TestLink
+- practiTest.url - PractiTest API url
+- practiTest.token - token for access to the PractiTest
+- practiTest.projectName - name of the project in the PractiTest
 
-1. Run the exporter with the following command:
+2. Run the exporter with the following command:
 
 ```bash
-.\TestLinkExporter
+.\PractiTestExporter
 ```
 
 3. Check the results in the folder specified in the `resultPath` parameter.
