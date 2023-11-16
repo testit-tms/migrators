@@ -20,7 +20,6 @@ public class ExportServiceTests
     private ITestCaseService _testCaseService;
     private IWriteService _writeService;
     private IAttributeService _attributeService;
-
     private PractiTestProject _project;
     private AttributeData _attributeData;
     private TestCaseData _testCaseData;
@@ -167,7 +166,7 @@ public class ExportServiceTests
         _attributeService.ConvertCustomAttributes()
             .Returns(_attributeData);
 
-        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), Arg.Any<Dictionary<string, Guid>>())
+        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), _attributeData.AttributeMap)
             .Returns(_testCaseData);
 
         _writeService.WriteSharedStep(_testCaseData.SharedSteps[0])
@@ -197,7 +196,7 @@ public class ExportServiceTests
         _attributeService.ConvertCustomAttributes()
             .Returns(_attributeData);
 
-        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), Arg.Any<Dictionary<string, Guid>>())
+        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), _attributeData.AttributeMap)
             .Returns(_testCaseData);
 
         _writeService.WriteTestCase(_testCaseData.TestCases[0])
@@ -226,7 +225,7 @@ public class ExportServiceTests
         _attributeService.ConvertCustomAttributes()
             .Returns(_attributeData);
 
-        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), Arg.Any<Dictionary<string, Guid>>())
+        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), _attributeData.AttributeMap)
             .Returns(_testCaseData);
 
         _writeService.WriteMainJson(Arg.Any<Root>())
@@ -255,16 +254,13 @@ public class ExportServiceTests
         _attributeService.ConvertCustomAttributes()
             .Returns(_attributeData);
 
-        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), Arg.Any<Dictionary<string, Guid>>())
+        _testCaseService.ConvertTestCases(Arg.Any<Guid>(), _attributeData.AttributeMap)
             .Returns(_testCaseData);
-
-        _writeService.WriteMainJson(Arg.Any<Root>())
-            .Throws(new Exception("Failed to write test case"));
 
         var exportService = new ExportService(_logger, _client, _writeService, _testCaseService, _attributeService);
 
         // Act
-        Assert.ThrowsAsync<Exception>(async () => await exportService.ExportProject());
+        await exportService.ExportProject();
 
         // Assert
         await _writeService.Received()

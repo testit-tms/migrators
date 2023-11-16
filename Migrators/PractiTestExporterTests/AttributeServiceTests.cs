@@ -99,7 +99,7 @@ public class AttributeServiceTests
         _client.GetCustomFields()
             .Returns(_customFields);
 
-        _client.GetListCustomFieldById(Arg.Any<string>())
+        _client.GetListCustomFieldById(_customFields[0].Id)
             .ThrowsAsync(new Exception("Failed to get custom field values"));
 
         var service = new AttributeService(_logger, _client);
@@ -116,7 +116,7 @@ public class AttributeServiceTests
         _client.GetCustomFields()
             .Returns(_customFields);
 
-        _client.GetListCustomFieldById(Arg.Any<string>())
+        _client.GetListCustomFieldById(_customFields[0].Id)
             .Returns(_listCustomField);
 
         var service = new AttributeService(_logger, _client);

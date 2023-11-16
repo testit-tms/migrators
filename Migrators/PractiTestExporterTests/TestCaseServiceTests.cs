@@ -4,6 +4,7 @@ using NSubstitute.ExceptionExtensions;
 using PractiTestExporter.Client;
 using PractiTestExporter.Models;
 using PractiTestExporter.Services;
+using Constants = PractiTestExporter.Models.Constants;
 
 namespace PractiTestExporterTests;
 
@@ -189,10 +190,10 @@ public class TestCaseServiceTests
         _client.GetTestCases()
             .Returns(_tests);
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.TestCaseEntityType, _tests[0].Id, Arg.Any<Guid>())
             .Returns(_attachments);
 
-        _client.GetStepsByTestCaseId(Arg.Any<string>())
+        _client.GetStepsByTestCaseId(_tests[0].Id)
             .Throws(new Exception("Failed to get steps"));
 
         var testCaseService = new TestCaseService(_logger, _client, _attachmentService);
@@ -213,10 +214,10 @@ public class TestCaseServiceTests
         _client.GetStepsByTestCaseId(_tests[0].Id)
             .Returns(_steps);
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.StepEntityType, _steps[0].Id, Arg.Any<Guid>())
             .Returns(_attachments);
 
-        _client.GetTestCaseById(Arg.Any<string>())
+        _client.GetTestCaseById(_sharedSteps[0].Id)
             .Throws(new Exception("Failed to get test case"));
 
         var testCaseService = new TestCaseService(_logger, _client, _attachmentService);
@@ -237,13 +238,13 @@ public class TestCaseServiceTests
         _client.GetStepsByTestCaseId(_tests[0].Id)
             .Returns(_steps);
 
-        _client.GetTestCaseById(Arg.Any<string>())
+        _client.GetTestCaseById(_sharedSteps[0].Id)
             .Returns(_sharedSteps[0]);
 
         _client.GetStepsByTestCaseId(_sharedSteps[0].Id)
             .Returns(_sharedStepSteps);
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.TestCaseEntityType, _sharedSteps[0].Id, Arg.Any<Guid>())
             .Throws(new Exception("Failed to download attachment"));
 
         var testCaseService = new TestCaseService(_logger, _client, _attachmentService);
@@ -276,19 +277,19 @@ public class TestCaseServiceTests
         _client.GetStepsByTestCaseId(_sharedSteps[1].Id)
             .Returns(_sharedStepSteps);
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), _tests[1].Id, Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.TestCaseEntityType, _tests[1].Id, Arg.Any<Guid>())
             .Returns(_attachments);
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), _steps[0].Id, Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.StepEntityType, _steps[0].Id, Arg.Any<Guid>())
             .Returns(new List<string>());
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), _sharedSteps[0].Id, Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.TestCaseEntityType, _sharedSteps[0].Id, Arg.Any<Guid>())
             .Returns(new List<string>());
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), _sharedSteps[1].Id, Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.TestCaseEntityType, _sharedSteps[1].Id, Arg.Any<Guid>())
     .Returns(new List<string>());
 
-        _attachmentService.DownloadAttachments(Arg.Any<string>(), _sharedStepSteps[0].Id, Arg.Any<Guid>())
+        _attachmentService.DownloadAttachments(Constants.StepEntityType, _sharedStepSteps[0].Id, Arg.Any<Guid>())
             .Returns(_attachments);
 
         var testCaseService = new TestCaseService(_logger, _client, _attachmentService);

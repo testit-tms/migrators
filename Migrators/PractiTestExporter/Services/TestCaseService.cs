@@ -13,6 +13,7 @@ public class TestCaseService : ITestCaseService
     private readonly IAttachmentService _attachmentService;
     private readonly Dictionary<string, SharedStep> _sharedSteps;
     private readonly Dictionary<string, TestCase> _testCases;
+    public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IAttachmentService attachmentService)
     {
@@ -85,7 +86,7 @@ public class TestCaseService : ITestCaseService
             Steps = steps,
             PreconditionSteps = ConvertPreconditionSteps(practiTestTestCase.Attributes.Preconditions),
             PostconditionSteps = new List<Step>(),
-            Duration = Constants.Duration,
+            Duration = _duration,
             Attributes = attributes,
             Tags = practiTestTestCase.Attributes.Tags,
             Attachments = attachments,

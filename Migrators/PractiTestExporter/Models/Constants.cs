@@ -7,5 +7,4 @@ public class Constants
     public const string DateCustomFieldType = "date";
     public const string TestCaseEntityType = "test";
     public const string StepEntityType = "step";
-    public const int Duration = 10000;
 }
