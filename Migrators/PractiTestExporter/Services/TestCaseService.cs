@@ -85,7 +85,7 @@ public class TestCaseService : ITestCaseService
             Steps = steps,
             PreconditionSteps = ConvertPreconditionSteps(practiTestTestCase.Attributes.Preconditions),
             PostconditionSteps = new List<Step>(),
-            Duration = 10,
+            Duration = Constants.Duration,
             Attributes = attributes,
             Tags = practiTestTestCase.Attributes.Tags,
             Attachments = attachments,

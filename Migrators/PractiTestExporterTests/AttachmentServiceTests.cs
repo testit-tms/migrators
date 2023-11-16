@@ -16,6 +16,7 @@ public class AttachmentServiceTests
     private IClient _client;
     private IWriteService _writeService;
     private List<PractiTestAttachment> _attachments;
+    private const string _entityId = "111";
 
     [SetUp]
     public void Setup()
@@ -41,20 +42,19 @@ public class AttachmentServiceTests
         var bytes = Encoding.UTF8.GetBytes("Test");
         var guid = Guid.NewGuid();
         var entityType = Constants.TestCaseEntityType;
-        var entityId = "123";
 
-        _client.GetAttachmentsByEntityId(entityType, entityId)
+        _client.GetAttachmentsByEntityId(entityType, _entityId)
             .Returns(_attachments);
-        _client.DownloadAttachmentById(Arg.Any<string>())
+        _client.DownloadAttachmentById(_attachments[0].Id)
             .Returns(bytes);
 
-        _writeService.WriteAttachment(guid, bytes, Arg.Any<string>())
+        _writeService.WriteAttachment(guid, bytes, _attachments[0].Attributes.Name)
             .Returns("Test.txt");
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
-        var result = await service.DownloadAttachments(entityType, entityId, guid);
+        var result = await service.DownloadAttachments(entityType, _entityId, guid);
 
         // Assert
         Assert.That(result, Is.EqualTo(new List<string> { "Test.txt" }));
@@ -66,16 +66,15 @@ public class AttachmentServiceTests
         // Arrange
         var guid = Guid.NewGuid();
         var entityType = Constants.TestCaseEntityType;
-        var entityId = "123";
 
-        _client.GetAttachmentsByEntityId(entityType, entityId)
+        _client.GetAttachmentsByEntityId(entityType, _entityId)
             .Throws(new Exception("Failed to get attachment"));
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(entityType, entityId, guid));
+            await service.DownloadAttachments(entityType, _entityId, guid));
 
         // Assert
         await _client.DidNotReceive()
@@ -90,18 +89,17 @@ public class AttachmentServiceTests
         // Arrange
         var guid = Guid.NewGuid();
         var entityType = Constants.TestCaseEntityType;
-        var entityId = "123";
 
-        _client.GetAttachmentsByEntityId(entityType, entityId)
+        _client.GetAttachmentsByEntityId(entityType, _entityId)
             .Returns(_attachments);
-        _client.DownloadAttachmentById(Arg.Any<string>())
+        _client.DownloadAttachmentById(_attachments[0].Id)
             .Throws(new Exception("Failed to download attachment"));
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(entityType, entityId, guid));
+            await service.DownloadAttachments(entityType, _entityId, guid));
 
         // Assert
         await _writeService.DidNotReceive()
@@ -115,20 +113,19 @@ public class AttachmentServiceTests
         var bytes = Encoding.UTF8.GetBytes("Test");
         var guid = Guid.NewGuid();
         var entityType = Constants.TestCaseEntityType;
-        var entityId = "123";
 
-        _client.GetAttachmentsByEntityId(entityType, entityId)
+        _client.GetAttachmentsByEntityId(entityType, _entityId)
             .Returns(_attachments);
-        _client.DownloadAttachmentById(Arg.Any<string>())
+        _client.DownloadAttachmentById(_attachments[0].Id)
             .Returns(bytes);
 
-        _writeService.WriteAttachment(guid, bytes, Arg.Any<string>())
+        _writeService.WriteAttachment(guid, bytes, _attachments[0].Attributes.Name)
             .Throws(new Exception("Failed to write attachment"));
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(entityType, entityId, guid));
+            await service.DownloadAttachments(entityType, _entityId, guid));
     }
 }

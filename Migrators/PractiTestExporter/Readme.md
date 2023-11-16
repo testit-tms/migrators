@@ -28,7 +28,7 @@ Where:
 - practiTest.token - token for access to the PractiTest
 - practiTest.projectName - name of the project in the PractiTest
 
-1. Run the exporter with the following command:
+2. Run the exporter with the following command:
 
 ```bash
 .\PractiTestExporter
