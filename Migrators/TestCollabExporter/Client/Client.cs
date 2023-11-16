@@ -15,7 +15,6 @@ public class Client : IClient
     public Client(ILogger<Client> logger, IConfiguration configuration)
     {
         _logger = logger;
-        _logger = logger;
 
         var section = configuration.GetSection("testCollab");
         var url = section["url"];
