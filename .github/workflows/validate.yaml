@@ -16,6 +16,7 @@ jobs:
           ./Migrators/XRayExporter,
           ./Migrators/TestCollabExporter,
           ./Migrators/TestLinkExporter,
+          ./Migrators/PractiTestExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -45,6 +46,7 @@ jobs:
           ./Migrators/XRayExporterTests,
           ./Migrators/TestCollabExporterTests,
           ./Migrators/TestLinkExporterTests,
+          ./Migrators/PractiTestExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:
