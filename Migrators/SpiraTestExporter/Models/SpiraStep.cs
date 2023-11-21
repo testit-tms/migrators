@@ -14,5 +14,8 @@ public class SpiraStep
     public string Description { get; set; }
 
     [JsonPropertyName("ExpectedResult")]
-    public object ExpectedResult { get; set; }
+    public string ExpectedResult { get; set; }
+
+    [JsonPropertyName("LinkedTestCaseId")]
+    public int? LinkedId { get; set; }
 }

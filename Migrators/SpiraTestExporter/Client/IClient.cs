@@ -7,6 +7,7 @@ public interface IClient
     Task<SpiraProject> GetProject();
     Task<List<SpiraFolder>> GetFolders(int projectId);
     Task<List<SpiraTest>> GetTestFromFolder(int projectId, int folderId);
+    Task<SpiraTest> GetTestById(int projectId, int id);
     Task<List<SpiraPriority>> GetPriorities(int projectTemplateId);
     Task<List<SpiraStatus>> GetStatuses(int projectTemplateId);
     Task<List<SpiraStep>> GetTestSteps(int projectId, int testCaseId);

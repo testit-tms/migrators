@@ -21,6 +21,9 @@ public class SpiraTest
 
     [JsonPropertyName("AuthorName")]
     public string AuthorName { get; set; }
+
+    [JsonPropertyName("TestCaseFolderId")]
+    public int? FolderId { get; set; }
 }
 
 

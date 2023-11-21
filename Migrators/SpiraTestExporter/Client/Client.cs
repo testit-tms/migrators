@@ -119,6 +119,25 @@ public class Client : IClient
         return tests!;
     }
 
+    public async Task<SpiraTest> GetTestById(int projectId, int id)
+    {
+        _logger.LogInformation("Getting tests {Id} for project {ProjectId}", id, projectId);
+
+        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get test. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var test = JsonSerializer.Deserialize<SpiraTest>(content);
+
+        return test!;
+    }
+
     public async Task<List<SpiraPriority>> GetPriorities(int projectTemplateId)
     {
         _logger.LogInformation("Getting priorities for project {ProjectId}", projectTemplateId);
