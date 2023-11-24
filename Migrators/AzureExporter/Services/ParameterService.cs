@@ -19,7 +19,7 @@ public class ParameterService : IParameterService
         _logger.LogInformation("Converting parameters");
         _logger.LogDebug("Parameters: {@Parameters}", parameters);
 
-        if (string.IsNullOrWhiteSpace(parameters.Keys) || !parameters.Keys.Contains('<'))
+        if (string.IsNullOrWhiteSpace(parameters.Keys) || !parameters.Keys.Contains("<parameters>"))
         {
             _logger.LogDebug("No keys found in parameters");
 
