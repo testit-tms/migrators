@@ -44,7 +44,7 @@ public class StepService : IStepService
             }
             else
             {
-                throw new ApplicationException("Shared step not found in map");
+                _logger.LogDebug("No shared step {Id} found in sharedStepMap: {@SharedStepMap}", sharedStep.Id, sharedStepMap);
             }
 
             steps.AddRange(sharedStep.Steps.Select(ConvertStep).ToList());
