@@ -45,8 +45,6 @@ public class StepService : IStepService
             else
             {
                 _logger.LogDebug("No shared step {Id} found in sharedStepMap: {@SharedStepMap}", sharedStep.Id, sharedStepMap);
-
-                continue;
             }
 
             steps.AddRange(sharedStep.Steps.Select(ConvertStep).ToList());

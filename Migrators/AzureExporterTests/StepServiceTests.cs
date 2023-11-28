@@ -255,7 +255,7 @@ public class StepServiceTests
     }
 
     [Test]
-    public void ConvertSteps_ShouldReturnException_WhenStepsContentHasStepsAndSharedStepsWithOutSharedMap()
+    public void ConvertSteps_ShouldReturnSteps_WhenStepsContentHasStepsAndSharedStepsWithOutSharedMap()
     {
         // Arrange
         var stepService = new StepService(_logger);
@@ -280,8 +280,46 @@ public class StepServiceTests
     </compref>
 </steps>
 ";
+        var expectedSteps = new List<Step>
+        {
+            new()
+            {
+                Action = "<DIV><P>Step01</P></DIV>",
+                Expected = "<DIV><P>ExpectedResult01</P></DIV>",
+                ActionAttachments = new List<string>(),
+                SharedStepId = null
+            },
+            new()
+            {
+                Action = "<DIV><P>Step03</P></DIV>",
+                Expected = "<DIV><P>ExpectedResult03</P></DIV>",
+                ActionAttachments = new List<string>(),
+                SharedStepId = null
+            },
+            new()
+            {
+                Action = "<P>Step04</P>",
+                Expected = "<DIV><P><BR/></P></DIV>",
+                ActionAttachments = new List<string>(),
+                SharedStepId = null
+            }
+        };
 
         // Act
-        Assert.Throws<ApplicationException>(() => stepService.ConvertSteps(context, new Dictionary<int, Guid>()));
+        var result = stepService.ConvertSteps(context, new Dictionary<int, Guid>());
+
+        // Assert
+        Assert.That(result[0].Action, Is.EqualTo(expectedSteps[0].Action));
+        Assert.That(result[0].Expected, Is.EqualTo(expectedSteps[0].Expected));
+        Assert.That(result[0].ActionAttachments, Is.EqualTo(expectedSteps[0].ActionAttachments));
+        Assert.That(result[0].SharedStepId, Is.EqualTo(expectedSteps[0].SharedStepId));
+        Assert.That(result[1].Action, Is.EqualTo(expectedSteps[1].Action));
+        Assert.That(result[1].Expected, Is.EqualTo(expectedSteps[1].Expected));
+        Assert.That(result[1].ActionAttachments, Is.EqualTo(expectedSteps[1].ActionAttachments));
+        Assert.That(result[1].SharedStepId, Is.EqualTo(expectedSteps[1].SharedStepId));
+        Assert.That(result[2].Action, Is.EqualTo(expectedSteps[2].Action));
+        Assert.That(result[2].Expected, Is.EqualTo(expectedSteps[2].Expected));
+        Assert.That(result[2].ActionAttachments, Is.EqualTo(expectedSteps[2].ActionAttachments));
+        Assert.That(result[2].SharedStepId, Is.EqualTo(expectedSteps[2].SharedStepId));
     }
 }
