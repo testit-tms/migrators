@@ -70,6 +70,10 @@ public class LinkService : ILinkService
                     Title = link.Title
                 };
             }
+            else if (link.Url.Contains("VersionControl/LatestItemVersion"))
+            {
+                continue;
+            }
             else
             {
                 var project = urlParts[6];
