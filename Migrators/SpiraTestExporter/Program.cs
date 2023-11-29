@@ -6,6 +6,8 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
+using SpiraTestExporter.Client;
+using SpiraTestExporter.Services;
 
 namespace SpiraTestExporter
 {
@@ -50,12 +52,13 @@ namespace SpiraTestExporter
                 {
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    // services.AddSingleton<IClient, Client.Client>();
-                    // services.AddSingleton<IExportService, ExportService>();
-                    // services.AddSingleton<ISectionService, SectionService>();
-                    // services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<IExportService, ExportService>();
+                    services.AddSingleton<ISectionService, SectionService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IWriteService, WriteService>();
-                    // services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<IAttributeService, AttributeService>();
                 });
         }
 

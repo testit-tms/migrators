@@ -1,4 +1,4 @@
-using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -45,17 +45,18 @@ public class Client : IClient
 
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(url);
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
         _httpClient.DefaultRequestHeaders.Add("username", username);
         _httpClient.DefaultRequestHeaders.Add("api-key", token);
-
     }
 
     public async Task<SpiraProject> GetProject()
     {
         _logger.LogInformation("Getting project {ProjectName}", _projectName);
 
-        var response = await _httpClient.GetAsync("Services/v7_0/RestService.svc/projects");
+        var request = new HttpRequestMessage(HttpMethod.Get, "Services/v7_0/RestService.svc/projects");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get project. Status code: {StatusCode}. Response: {Response}",
@@ -81,7 +82,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting folders for project {ProjectId}", projectId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-folders");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/test-folders");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get folders. Status code: {StatusCode}. Response: {Response}",
@@ -102,7 +105,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting tests from folder {FolderId} for project {ProjectId}", folderId, projectId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-folders/{folderId}/test-cases?starting_row=1&number_of_rows=2000");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/test-folders/{folderId}/test-cases?starting_row=1&number_of_rows=2000");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get tests. Status code: {StatusCode}. Response: {Response}",
@@ -123,7 +128,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting tests {Id} for project {ProjectId}", id, projectId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{id}");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{id}");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get test. Status code: {StatusCode}. Response: {Response}",
@@ -142,7 +149,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting priorities for project {ProjectId}", projectTemplateId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/project-templates/{projectTemplateId}/test-cases/priorities");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/project-templates/{projectTemplateId}/test-cases/priorities");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get priorities. Status code: {StatusCode}. Response: {Response}",
@@ -163,7 +172,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting statuses for project {ProjectId}", projectTemplateId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/project-templates/{projectTemplateId}/test-cases/statuses");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/project-templates/{projectTemplateId}/test-cases/statuses");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get statuses. Status code: {StatusCode}. Response: {Response}",
@@ -184,7 +195,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test steps for project {ProjectId} and test case {TestCaseId}", projectId, testCaseId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{testCaseId}/test-steps");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{testCaseId}/test-steps");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get test steps. Status code: {StatusCode}. Response: {Response}",
@@ -205,7 +218,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting parameters for project {ProjectId} and test case {TestCaseId}", projectId, testCaseId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{testCaseId}/parameters");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{testCaseId}/parameters");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get parameters. Status code: {StatusCode}. Response: {Response}",
@@ -226,7 +241,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting parameters for project {ProjectId} and test case {TestCaseId} and step {StepId}", projectId, testCaseId, stepId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{testCaseId}/test-steps/{stepId}/parameters");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/test-cases/{testCaseId}/test-steps/{stepId}/parameters");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get parameters. Status code: {StatusCode}. Response: {Response}",
@@ -247,7 +264,9 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting attachments for project {ProjectId} and item {ArtifactId}", projectId, artifactId);
 
-        var response = await _httpClient.GetAsync($"Services/v7_0/RestService.svc/projects/{projectId}/artifact-types/{artifactTypeId}/artifacts/{artifactId}/documents");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/artifact-types/{artifactTypeId}/artifacts/{artifactId}/documents");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get attachments. Status code: {StatusCode}. Response: {Response}",
@@ -268,6 +287,10 @@ public class Client : IClient
     {
         _logger.LogInformation("Downloading attachment {AttachmentId} for project {ProjectId}", attachmentId, projectId);
 
-        return await _httpClient.GetByteArrayAsync($"Services/v7_0/RestService.svc/projects/{projectId}/documents/{attachmentId}/open");
+        var request = new HttpRequestMessage(HttpMethod.Get, $"Services/v7_0/RestService.svc/projects/{projectId}/documents/{attachmentId}/open");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        var response = await _httpClient.SendAsync(request);
+
+        return await response.Content.ReadAsByteArrayAsync();
     }
 }

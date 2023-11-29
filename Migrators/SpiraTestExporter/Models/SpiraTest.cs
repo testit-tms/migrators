@@ -7,7 +7,7 @@ public class SpiraTest
     [JsonPropertyName("TestCaseId")]
     public int TestCaseId { get; set; }
 
-    [JsonPropertyName("TestCaseFolderId")]
+    [JsonPropertyName("TestCasePriorityId")]
     public int? PriorityId { get; set; }
 
     [JsonPropertyName("TestCaseStatusId")]

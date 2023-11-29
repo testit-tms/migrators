@@ -6,7 +6,7 @@ using Constants = SpiraTestExporter.Models.Constants;
 
 namespace SpiraTestExporter.Services;
 
-public class TestCaseService
+public class TestCaseService : ITestCaseService
 {
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
@@ -19,6 +19,8 @@ public class TestCaseService
         _logger = logger;
         _client = client;
         _attachmentService = attachmentService;
+        _sharedSteps = new Dictionary<int, SharedStep>();
+        _testCases = new Dictionary<int, TestCase>();
     }
 
     public async Task<TestCaseData> ConvertTestCases(int projectId, Dictionary<int, Guid> sectionMap,
@@ -45,6 +47,20 @@ public class TestCaseService
 
                 var parameters = await _client.GetSpiraParameters(projectId, testCase.TestCaseId);
 
+                var iterationParameters = parameters.Count != 0
+                    ? new List<Iteration>
+                    {
+                        new()
+                        {
+                            Parameters = parameters.Select(p => new Parameter
+                            {
+                                Name = p.Name,
+                                Value = string.IsNullOrEmpty(p.Value) ? string.Empty : p.Value
+                            }).ToList()
+                        }
+                    }
+                    : new List<Iteration>();
+
                 var testCaseModel = new TestCase
                 {
                     Id = testCaseId,
@@ -62,7 +78,9 @@ public class TestCaseService
                         new()
                         {
                             Id = attributesMap[Constants.Priority],
-                            Value = priorities[testCase.PriorityId!.Value],
+                            Value = testCase.PriorityId.HasValue
+                                ? priorities[testCase.PriorityId.Value]
+                                : priorities[1]
                         },
                         new()
                         {
@@ -72,17 +90,7 @@ public class TestCaseService
                     },
                     Tags = new List<string>(),
                     Attachments = attachments,
-                    Iterations = new List<Iteration>
-                    {
-                        new()
-                        {
-                            Parameters = parameters.Select(p => new Parameter
-                            {
-                                Name = p.Name,
-                                Value = p.Value
-                            }).ToList()
-                        }
-                    },
+                    Iterations = iterationParameters,
                     Links = new List<Link>()
                 };
 
@@ -135,7 +143,9 @@ public class TestCaseService
                 {
                     Action = spiraStep.Description,
                     Expected = spiraStep.ExpectedResult,
-                    TestData = stepParameters.Select(p => $"{p.Name}: {p.Value}").Aggregate((a, b) => $"{a}\n{b}"),
+                    TestData = stepParameters.Count != 0
+                        ? stepParameters.Select(p => $"{p.Name}: {p.Value}").Aggregate((a, b) => $"{a}\n{b}")
+                        : string.Empty,
                     ActionAttachments = new List<string>(),
                     ExpectedAttachments = new List<string>(),
                     TestDataAttachments = stepAttachments

@@ -9,6 +9,9 @@ public class SpiraAttachment
 
     [JsonPropertyName("FilenameOrUrl")]
     public string Name { get; set; }
+
+    [JsonPropertyName("AttachmentTypeName")]
+    public string Type { get; set; }
 }
 
 

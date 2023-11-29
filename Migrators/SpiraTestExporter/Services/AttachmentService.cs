@@ -25,7 +25,7 @@ public class AttachmentService : IAttachmentService
         var attachments = await _client.GetAttachments(projectId, GetArtifactTypeId(artifactType), artifactId);
         var attachmentNames = new List<string>();
 
-        foreach (var attachment in attachments)
+        foreach (var attachment in attachments.Where(attachment => attachment.Type.Equals("File")))
         {
             var content = await _client.DownloadAttachment(projectId, attachment.Id);
             var attachmentName = await _writeService.WriteAttachment(testCaseId, content, attachment.Name);
