@@ -12,5 +12,6 @@ We support the following systems:
 - [TestCollab](https://github.com/testit-tms/migrators/tree/main/Migrators/TestCollabExporter/Readme.md)
 - [TestLink](https://github.com/testit-tms/migrators/tree/main/Migrators/TestLinkExporter/Readme.md)
 - [PractiTest](https://github.com/testit-tms/migrators/tree/main/Migrators/PractiTestExporter/Readme.md)
+- [SpiraTest](https://github.com/testit-tms/migrators/tree/main/Migrators/SpiraTestExporter/Readme.md)
 
 We are constantly working on new migrators. If you need a migrator for a system that is not listed here, please contact us at [support@yoonion.ru](mailto:support@yoonion.ru).

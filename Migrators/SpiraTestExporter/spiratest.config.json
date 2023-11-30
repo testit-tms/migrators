@@ -1,0 +1,9 @@
+{
+  "resultPath" : "/Users/user01/Documents/importer/spiratest",
+  "spiraTest" : {
+    "url" : "https://api.inflectra.com/Spira/",
+    "username": "user01",
+    "token" : "MTg1Mzk4NDQxMTE3Ojy/3+hs+mkQ8cqhpKh0bMUPwU3e",
+    "projectName" : "Simple project"
+  }
+}
