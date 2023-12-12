@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraTestExporter", "SpiraT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraTestExporterTests", "SpiraTestExporterTests\SpiraTestExporterTests.csproj", "{49DB8D22-0553-4B2B-99A4-7B1FDEABD72C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPALMExporter", "HPALMExporter\HPALMExporter.csproj", "{F257663B-0160-4843-9384-583187D2E2EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,10 @@ Global
 		{49DB8D22-0553-4B2B-99A4-7B1FDEABD72C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49DB8D22-0553-4B2B-99A4-7B1FDEABD72C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49DB8D22-0553-4B2B-99A4-7B1FDEABD72C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F257663B-0160-4843-9384-583187D2E2EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F257663B-0160-4843-9384-583187D2E2EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F257663B-0160-4843-9384-583187D2E2EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F257663B-0160-4843-9384-583187D2E2EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
