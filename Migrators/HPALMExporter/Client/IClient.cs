@@ -5,17 +5,16 @@ namespace HPALMExporter.Client;
 
 public interface IClient
 {
+    string GetProjectName();
     Task Auth();
-    Task<IEnumerable<HPALMFolder>> GetTestFolders(uint id);
-    Task<IEnumerable<HPALMTest>> GetTests(int folderId, IEnumerable<string> attributes);
-    Task<HPALMTest> GetTest(uint testId, IEnumerable<string> attributes);
-    Task<IEnumerable<HPALMStep>> GetSteps(uint testId);
-    Task<IEnumerable<HPALMAttachment>> GetAttachmentsFromTest(uint testId);
-    Task<IEnumerable<HPALMAttachment>> GetAttachmentsFromStep(uint stepId);
-    Task DownloadAttachment(uint id, string path);
-    Task DownloadAttachment2(uint id, string path);
-    Task DownloadAttachment3(uint id, string path, string testId, string attachName);
-    Task<IEnumerable<HPALMParameter>> GetParameters(uint testId);
+    Task<List<HPALMFolder>> GetTestFolders(uint id);
+    Task<List<HPALMTest>> GetTests(int folderId, IEnumerable<string> attributes);
+    Task<HPALMTest> GetTest(int testId, IEnumerable<string> attributes);
+    Task<List<HPALMStep>> GetSteps(int testId);
+    Task<List<HPALMAttachment>> GetAttachmentsFromTest(int testId);
+    Task<List<HPALMAttachment>> GetAttachmentsFromStep(int stepId);
+    Task<byte[]> DownloadAttachment(int testId, string attachName);
+    Task<List<HPALMParameter>> GetParameters(int testId);
     Task<HPALMAttributes> GetTestAttributes();
     Task<HPALMLists> GetLists();
 }

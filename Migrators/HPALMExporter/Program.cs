@@ -1,4 +1,6 @@
-﻿using JsonWriter;
+﻿using HPALMExporter.Client;
+using HPALMExporter.Services;
+using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -50,12 +52,13 @@ namespace HPALMExporter
                 {
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    // services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<IClient, Client.Client>();
+                    services.AddSingleton<ISectionService, SectionService>();
                     services.AddSingleton<IWriteService, WriteService>();
-                    // services.AddSingleton<IExportService, ExportService>();
-                    // services.AddSingleton<ITestCaseService, TestCaseService>();
-                    // services.AddSingleton<IAttachmentService, AttachmentService>();
-                    // services.AddSingleton<IAttributeService, AttributeService>();
+                    services.AddSingleton<IExportService, ExportService>();
+                    services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<IAttributeService, AttributeService>();
                 });
         }
 

@@ -67,6 +67,11 @@ public class Client : IClient
         _httpClient.BaseAddress = new Uri(url);
     }
 
+    public string GetProjectName()
+    {
+        return _projectName;
+    }
+
     public async Task Auth()
     {
         _logger.Information("Authorizing in HP ALM");
@@ -94,7 +99,7 @@ public class Client : IClient
     }
 
 
-    public async Task<IEnumerable<HPALMFolder>> GetTestFolders(uint id)
+    public async Task<List<HPALMFolder>> GetTestFolders(uint id)
     {
         _logger.Information("Get test folders from HP ALM with parent id {id}", id);
         _logger.Debug(
@@ -143,7 +148,7 @@ public class Client : IClient
         return folders;
     }
 
-    public async Task<IEnumerable<HPALMTest>> GetTests(int folderId, IEnumerable<string> attributes)
+    public async Task<List<HPALMTest>> GetTests(int folderId, IEnumerable<string> attributes)
     {
         _logger.Information("Get tests from HP ALM from folder {id}", folderId);
         _logger.Debug(
@@ -193,7 +198,7 @@ public class Client : IClient
         return tests;
     }
 
-    public async Task<HPALMTest> GetTest(uint testId, IEnumerable<string> attributes)
+    public async Task<HPALMTest> GetTest(int testId, IEnumerable<string> attributes)
     {
         _logger.Information("Get test {Id} from HP ALM", testId);
         _logger.Debug(
@@ -231,7 +236,7 @@ public class Client : IClient
         }
     }
 
-    public async Task<IEnumerable<HPALMStep>> GetSteps(uint testId)
+    public async Task<List<HPALMStep>> GetSteps(int testId)
     {
         _logger.Information("Get steps from HP ALM from test {id}", testId);
         _logger.Debug(
@@ -262,7 +267,7 @@ public class Client : IClient
         return steps;
     }
 
-    public async Task<IEnumerable<HPALMAttachment>> GetAttachmentsFromTest(uint testId)
+    public async Task<List<HPALMAttachment>> GetAttachmentsFromTest(int testId)
     {
         _logger.Information("Get test attachments from HP ALM from test {id}", testId);
         _logger.Debug(
@@ -293,7 +298,7 @@ public class Client : IClient
         return attachments;
     }
 
-    public async Task<IEnumerable<HPALMAttachment>> GetAttachmentsFromStep(uint stepId)
+    public async Task<List<HPALMAttachment>> GetAttachmentsFromStep(int stepId)
     {
         _logger.Information("Get step attachments from HP ALM from step {id}", stepId);
         _logger.Debug(
@@ -324,50 +329,10 @@ public class Client : IClient
         return attachments;
     }
 
-    public async Task DownloadAttachment(uint id, string path)
+    public async Task<byte[]> DownloadAttachment(int testId, string attachName)
     {
-        _logger.Information("Get step attachments from HP ALM with id {id}", id);
-        _logger.Debug(
-            "Connect to {Url}qcbin/rest/domains/{domain}/projects/{project}/attachments/{id}",
-            _httpClient.BaseAddress.AbsoluteUri,
-            _domain,
-            _projectName,
-            id);
-
-        var response = await _httpClient.GetByteArrayAsync(
-            $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/attachments/{id}");
-
-        using var writer = new BinaryWriter(File.OpenWrite(path));
-        writer.Write(response);
-    }
-
-    public async Task DownloadAttachment2(uint id, string path)
-    {
-        _logger.Information("Get step attachments from HP ALM with id {id}", id);
-        _logger.Debug(
-            "Connect to {Url}qcbin/rest/domains/{domain}/projects/{project}/attachments/{id}",
-            _httpClient.BaseAddress.AbsoluteUri,
-            _domain,
-            _projectName,
-            id);
-
-        using var requestMessage =
-            new HttpRequestMessage(HttpMethod.Get,
-                $"{_httpClient.BaseAddress.AbsoluteUri}qcbin/rest/domains/{_domain}/projects/{_projectName}/attachments/{id}");
-        requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
-
-        _logger.Debug("Request: {@Request}", requestMessage);
-
-        var httpResult =
-            await _httpClient.SendAsync(requestMessage);
-        await using var resultStream = await httpResult.Content.ReadAsStreamAsync();
-        await using var fileStream = File.Create(path);
-        await resultStream.CopyToAsync(fileStream);
-    }
-
-    public async Task DownloadAttachment3(uint id, string path, string testId, string attachName)
-    {
-        _logger.Information("Get step attachments from HP ALM with id {id}", id);
+        _logger.Information("Download attachment from HP ALM with test id {testId} and name {attachName}", testId,
+            attachName);
         _logger.Debug(
             "Connect to {Url}qcbin/rest/domains/{domain}/projects/{project}/tests/{testId}/attachments/{attachName}",
             _httpClient.BaseAddress.AbsoluteUri,
@@ -385,12 +350,12 @@ public class Client : IClient
 
         var httpResult =
             await _httpClient.SendAsync(requestMessage);
-        await using var resultStream = await httpResult.Content.ReadAsStreamAsync();
-        await using var fileStream = File.Create(path);
-        await resultStream.CopyToAsync(fileStream);
+       var content = await httpResult.Content.ReadAsByteArrayAsync();
+
+       return content;
     }
 
-    public async Task<IEnumerable<HPALMParameter>> GetParameters(uint testId)
+    public async Task<List<HPALMParameter>> GetParameters(int testId)
     {
         _logger.Information("Get parameters from HP ALM from test {id}", testId);
         _logger.Debug(

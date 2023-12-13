@@ -16,8 +16,8 @@ public static class Converter
         return new HPALMFolder
         {
             Name = name,
-            Id = uint.Parse(id),
-            ParentId = uint.Parse(parentId)
+            Id = int.Parse(id),
+            ParentId = int.Parse(parentId)
         };
     }
 
@@ -44,7 +44,7 @@ public static class Converter
         return new HPALMTest
         {
             Name = name,
-            Id = uint.Parse(id),
+            Id = int.Parse(id),
             ParentId = int.Parse(parentId),
             Description = formatDescription(description),
             Type = type,
@@ -71,13 +71,13 @@ public static class Converter
         return new HPALMStep
         {
             Name = name,
-            Id = uint.Parse(id),
-            ParentId = uint.Parse(parentId),
+            Id = int.Parse(id),
+            ParentId = int.Parse(parentId),
             Description = removeHtmlTags(description),
             HasAttachments = hasAttachments,
             Expected = removeHtmlTags(expected),
-            Order = uint.Parse(order),
-            LinkId = string.IsNullOrEmpty(linkId) ? null : uint.Parse(linkId)
+            Order = int.Parse(order),
+            LinkId = string.IsNullOrEmpty(linkId) ? null : int.Parse(linkId)
         };
     }
 
