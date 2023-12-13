@@ -61,6 +61,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraTestExporterTests", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPALMExporter", "HPALMExporter\HPALMExporter.csproj", "{F257663B-0160-4843-9384-583187D2E2EB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPALMExporterTests", "HPALMExporterTests\HPALMExporterTests.csproj", "{960B55F6-7F29-4051-9BD2-04ACEF8423D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -159,6 +161,10 @@ Global
 		{F257663B-0160-4843-9384-583187D2E2EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F257663B-0160-4843-9384-583187D2E2EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F257663B-0160-4843-9384-583187D2E2EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
