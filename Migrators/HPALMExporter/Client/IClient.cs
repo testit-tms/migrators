@@ -7,7 +7,7 @@ public interface IClient
 {
     string GetProjectName();
     Task Auth();
-    Task<List<HPALMFolder>> GetTestFolders(uint id);
+    Task<List<HPALMFolder>> GetTestFolders(int id);
     Task<List<HPALMTest>> GetTests(int folderId, IEnumerable<string> attributes);
     Task<HPALMTest> GetTest(int testId, IEnumerable<string> attributes);
     Task<List<HPALMStep>> GetSteps(int testId);

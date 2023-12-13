@@ -4,5 +4,5 @@ namespace HPALMExporter.Services;
 
 public interface ISectionService
 {
-    Task<SectionData> GetSections();
+    Task<SectionData> ConvertSections();
 }

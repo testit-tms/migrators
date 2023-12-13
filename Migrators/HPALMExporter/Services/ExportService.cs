@@ -32,7 +32,7 @@ public class ExportService : IExportService
         await _client.Auth();
 
         var attributes = await _attributeService.ConvertAttributes();
-        var section = await _sectionService.GetSections();
+        var section = await _sectionService.ConvertSections();
         var testCases =
             await _testCaseService.ConvertTestCases(section.SectionMap,
                 attributes.ToDictionary(a => a.Name, a => a.Id));

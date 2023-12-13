@@ -99,7 +99,7 @@ public class Client : IClient
     }
 
 
-    public async Task<List<HPALMFolder>> GetTestFolders(uint id)
+    public async Task<List<HPALMFolder>> GetTestFolders(int id)
     {
         _logger.Information("Get test folders from HP ALM with parent id {id}", id);
         _logger.Debug(

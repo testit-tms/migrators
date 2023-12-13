@@ -21,7 +21,7 @@ public class SectionService : ISectionService
         _sectionMap = new Dictionary<int, Guid>();
     }
 
-    public async Task<SectionData> GetSections()
+    public async Task<SectionData> ConvertSections()
     {
         _logger.LogInformation("Get sections from HP ALM");
 
@@ -55,7 +55,7 @@ public class SectionService : ISectionService
     {
         _logger.LogDebug("Convert subsections from HP ALM {ParentId}", parentId);
 
-        var folders = await _client.GetTestFolders(RootFolderId);
+        var folders = await _client.GetTestFolders(parentId);
         var sections = new List<Section>(folders.Count);
 
         foreach (var folder in folders)
