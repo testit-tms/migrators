@@ -25,4 +25,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\HPALMExporter\HPALMExporter.csproj" />
+    </ItemGroup>
+
 </Project>
