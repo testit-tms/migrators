@@ -18,6 +18,7 @@ jobs:
           ./Migrators/TestLinkExporter,
           ./Migrators/PractiTestExporter,
           ./Migrators/SpiraTestExporter,
+          ./Migrators/HPALMExporter,
           ./Migrators/Importer
         ]
     steps:
@@ -49,6 +50,7 @@ jobs:
           ./Migrators/TestLinkExporterTests,
           ./Migrators/PractiTestExporterTests,
           ./Migrators/SpiraTestExporterTests,
+          ./Migrators/HPALMExporterTests,
           ./Migrators/ImporterTests
         ]
     steps:
