@@ -46,6 +46,8 @@ public class TestCaseService : ITestCaseService
                 var attachmentData = await _attachmentService.ConvertAttachmentsFromTest(testCaseId, test.Id);
                 var steps = await ConvertStep(test.Id, testCaseId, attributeMap, sectionMap);
 
+                steps.ForEach(s => attachmentData.Attachments.AddRange(s.TestDataAttachments));
+
                 var testCase = new TestCase
                 {
                     Id = testCaseId,
@@ -153,7 +155,7 @@ public class TestCaseService : ITestCaseService
                     convertedStep.TestDataAttachments = attachmentData.Attachments;
 
                     attachmentData.Links.ForEach(l =>
-                        convertedStep.TestData += $"<a href=\"{l.Description}\">{l.Title}</a>\n");
+                        convertedStep.TestData += $"<a href=\"{l.Url}\">{l.Title}</a>\n");
                 }
 
                 convertedSteps.Add(convertedStep);
