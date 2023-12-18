@@ -26,7 +26,7 @@ You can download the latest version of the HPALMExporter from the [releases](htt
 Where:
 
 - resultPath - path to the folder where the results will be saved
-- hpalm.url - url to the SpiraTest server with organization name
+- hpalm.url - url to the HP ALM server with organization name
 - hpalm.clientId - clientId for access to the HP ALM server
 - hpalm.secret - secret for access to the HP ALM server
 - hpalm.domainName - name of the domain in the HP ALM server
