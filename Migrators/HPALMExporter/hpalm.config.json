@@ -1,0 +1,10 @@
+{
+  "resultPath": "/Users/user01/Documents/importer/hpalm",
+  "hpalm": {
+    "url": "http://alm.server.ru:8080",
+    "clientId": "apikey-egaoktntfhidsjoddmcp",
+    "secret": "dpojbgifjifbjplf",
+    "domainName": "DEFAULT",
+    "projectName": "Migration"
+  }
+}
