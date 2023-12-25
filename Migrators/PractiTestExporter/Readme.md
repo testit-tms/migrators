@@ -26,7 +26,7 @@ Where:
 - resultPath - path to the folder where the results will be saved
 - practiTest.url - PractiTest API url
 - practiTest.token - token for access to the PractiTest
-- practiTest.projectName - name of the project in the PractiTest
+- practiTest.projectId - id of the project in the PractiTest
 
 2. Run the exporter with the following command:
 
