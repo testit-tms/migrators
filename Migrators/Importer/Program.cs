@@ -1,4 +1,4 @@
-﻿using Importer.Client;
+using Importer.Client;
 using Importer.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,9 +10,9 @@ using Serilog.Settings.Configuration;
 
 namespace Importer
 {
-    internal class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             using var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
