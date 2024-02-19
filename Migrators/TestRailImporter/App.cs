@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
 using Newtonsoft.Json;
-using System.Data;
 using System.Text;
 using TestRailImporter.Models;
 using TestRailImporter.Services;
@@ -14,12 +13,15 @@ public class App
     private readonly IConfiguration _configuration;
     private readonly ILogger<App> _logger;
     private readonly TestRailReader _testRailReader;
+    private readonly TestRailBinder _testRailBinder;
 
-    public App(IConfiguration configuration, ILogger<App> logger, TestRailReader testRailReader)
+    public App(IConfiguration configuration, ILogger<App> logger, TestRailReader testRailReader,
+        TestRailBinder testRailBinder)
     {
         _configuration = configuration;
         _logger = logger;
         _testRailReader = testRailReader;
+        _testRailBinder = testRailBinder;
     }
 
     public async Task RunAsync(string[] args)
@@ -33,7 +35,8 @@ public class App
             try
             {
                 (var testRailsXmlSuite, var customAttributes) = await ReadXmlAsync(filePath).ConfigureAwait(false);
-                await WriteMainJsonAsync(resultPath, testRailsXmlSuite).ConfigureAwait(false);
+                var root = _testRailBinder.ConvertTestRailXmlSuite(testRailsXmlSuite, customAttributes);
+                await WriteMainJsonAsync(resultPath, root).ConfigureAwait(false);
                 Importer.Program.Main(args);
 
                 _logger.LogInformation("Xml file '{filePath}' import success", filePath);
@@ -63,11 +66,11 @@ public class App
         return (testRailsXmlSuite, customAttributes);
     }
 
-    private static async Task WriteMainJsonAsync(string? resultPath, TestRailsXmlSuite testRailsXmlSuite)
+    private static async Task WriteMainJsonAsync(string? resultPath, Root root)
     {
         Directory.CreateDirectory(resultPath!);
         var mainJsonPath = Path.Combine(Path.GetFullPath(resultPath!), Constants.MainJson);
-        var mainJsonText = JsonConvert.SerializeObject(testRailsXmlSuite, Formatting.Indented);
+        var mainJsonText = JsonConvert.SerializeObject(root, Formatting.Indented);
 
         await File.WriteAllTextAsync(mainJsonPath, mainJsonText, Encoding.UTF8).ConfigureAwait(false);
     }

@@ -56,6 +56,7 @@ internal class Program
                 services.AddSingleton(SetupConfiguration());
                 services.AddScoped(provider => new XmlSerializer(typeof(TestRailsXmlSuite)));
                 services.AddScoped<TestRailReader>();
+                services.AddScoped<TestRailBinder>();
             });
     }
 
