@@ -13,6 +13,7 @@
     <ItemGroup>
         <ProjectReference Include="..\Importer\Importer.csproj" />
         <ProjectReference Include="..\Models\Models.csproj" />
+        <ProjectReference Include="..\JsonWriter\JsonWriter.csproj" />
     </ItemGroup>
    
 </Project>

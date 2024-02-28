@@ -4,15 +4,19 @@ using System.Xml.Serialization;
 namespace TestRailImporter.Models;
 
 [XmlRoot(ElementName = "custom")]
-public record TestRailsXmlCaseData
+public record struct TestRailsXmlCaseData
 {
+    public TestRailsXmlCaseData()
+    {
+    }
+
     [XmlElement(ElementName = "comment")]
     public string? Comments { get; set; }
 
     [XmlElement(ElementName = "preconds")]
     public string? Preconditions { get; set; }
 
-    public List<TestRailsXmlStep> Steps => StepsSeparated.Concat(StepsCases).ToList();
+    public readonly List<TestRailsXmlStep> Steps => StepsSeparated.Concat(StepsCases).ToList();
 
     [XmlArray(ElementName = "steps_separated")]
     [XmlArrayItem(ElementName = "step")]

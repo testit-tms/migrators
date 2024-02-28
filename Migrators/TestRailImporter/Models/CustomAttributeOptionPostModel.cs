@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TestRailImporter.Models;
 
-public record CustomAttributeOptionPostModel
+public abstract record class CustomAttributeOptionPostModel
 {
     /// <summary>
     /// Value of the attribute option

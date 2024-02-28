@@ -5,21 +5,32 @@ using TestRailImporter.Models;
 
 namespace TestRailImporter.Services;
 
-public class TestRailReader
+public class TestRailImportService
 {
     private readonly XmlSerializer _xmlSerializer;
 
-    public TestRailReader(XmlSerializer xmlSerializer)
+    public TestRailImportService(XmlSerializer xmlSerializer)
     {
         _xmlSerializer = xmlSerializer;
     }
 
-    public TestRailsXmlSuite Read(Stream fileStream)
+    public async Task<(TestRailsXmlSuite testRailsXmlSuite, List<CustomAttributeModel> customAttributes)> ImportXmlAsync(
+        string filePath)
     {
-        return (TestRailsXmlSuite)_xmlSerializer.Deserialize(fileStream)!;
+        await using var fileStream = File.OpenRead(filePath);
+        await using var memoryStream = new MemoryStream();
+        await fileStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        var testRailsXmlSuite = (TestRailsXmlSuite)_xmlSerializer.Deserialize(memoryStream)!;
+
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        var customAttributes = await GetCustomAttributesAsync(memoryStream).ConfigureAwait(false);
+
+        return (testRailsXmlSuite, customAttributes);
     }
 
-    public static async Task<List<CustomAttributeModel>> GetCustomAttributesAsync(Stream fileStream)
+    private static async Task<List<CustomAttributeModel>> GetCustomAttributesAsync(Stream fileStream)
     {
         var knownAttribute = new[]
         {

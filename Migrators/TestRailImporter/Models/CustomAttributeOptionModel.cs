@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 namespace TestRailImporter.Models;
 
 [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-public record CustomAttributeOptionModel : CustomAttributeOptionPostModel
+public record class CustomAttributeOptionModel : CustomAttributeOptionPostModel
 {
     /// <summary>
     /// Unique ID of the attribute option

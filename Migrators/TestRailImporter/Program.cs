@@ -8,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
+using JsonWriter;
 
 namespace TestRailImporter;
 
@@ -15,12 +16,6 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
-        // For local debug only
-        args = new string[]
-        {
-            "C:\\Users\\petr.komissarov\\example.xml"
-        };
-
         using var host = CreateHostBuilder().Build();
         await using var scope = host.Services.CreateAsyncScope();
 
@@ -55,8 +50,9 @@ internal class Program
                 services.AddScoped<App>();
                 services.AddSingleton(SetupConfiguration());
                 services.AddScoped(provider => new XmlSerializer(typeof(TestRailsXmlSuite)));
-                services.AddScoped<TestRailReader>();
-                services.AddScoped<TestRailBinder>();
+                services.AddScoped<IWriteService, WriteService>();
+                services.AddScoped<TestRailImportService>();
+                services.AddScoped<TestRailExportService>();
             });
     }
 

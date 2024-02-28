@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 namespace TestRailImporter.Models;
 
 [XmlRoot(ElementName = "section")]
-public record TestRailsXmlSection
+public record struct TestRailsXmlSection
 {
     [XmlElement(ElementName = "name")]
     public string? Name { get; set; }
