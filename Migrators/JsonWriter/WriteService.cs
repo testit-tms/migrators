@@ -20,7 +20,7 @@ public class WriteService : IWriteService
             throw new ArgumentException("Result path is not specified");
         }
 
-        _path = path;
+        _path = Path.GetFullPath(path);
     }
 
     public async Task<string> WriteAttachment(Guid id, byte[] content, string fileName)

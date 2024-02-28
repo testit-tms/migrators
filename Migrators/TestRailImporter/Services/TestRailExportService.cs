@@ -124,9 +124,16 @@ namespace TestRailImporter.Services
                     {
                         Id = Guid.TryParse(testRailCase.Id, out var guid) ? guid : Guid.NewGuid(),
                         State = Enum.TryParse(testRailCase.State, out StateType type) ? type : StateType.Ready,
-                        Priority = Enum.TryParse(testRailCase.Priority, out PriorityType priority) ? priority : PriorityType.Medium,
-                        Steps = testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Steps.Select(ConvertStep).ToList(),
-                        PreconditionSteps = new List<Step>() { ConvertStep(testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Preconditions) },
+                        Priority = Enum.TryParse(testRailCase.Priority, out PriorityType priority)
+                            ? priority
+                            : PriorityType.Medium,
+                        Steps = new List<Step>(
+                            testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Steps.Select(ConvertStep)
+                        ),
+                        PreconditionSteps = new List<Step>()
+                        {
+                            ConvertStep(testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Preconditions)
+                        },
                         PostconditionSteps = new List<Step>(),
                         Duration = int.TryParse(testRailCase.Estimate, out var duration) ? duration : 0,
                         Attributes = new List<CaseAttribute>(),
