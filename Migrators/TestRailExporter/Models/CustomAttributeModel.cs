@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
-using TestRailImporter.Enums;
+using TestRailExporter.Enums;
 
-namespace TestRailImporter.Models;
+namespace TestRailExporter.Models;
 
 [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public record class CustomAttributeModel : CustomAttributeBaseModel

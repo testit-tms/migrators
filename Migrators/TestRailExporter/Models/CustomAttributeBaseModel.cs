@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TestRailImporter.Models;
+namespace TestRailExporter.Models;
 
 public abstract record class CustomAttributeBaseModel
 {

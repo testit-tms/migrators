@@ -1,23 +1,20 @@
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using TestRailImporter.Enums;
-using TestRailImporter.Models;
+using TestRailExporter.Enums;
+using TestRailExporter.Models;
 
-namespace TestRailImporter.Services;
+namespace TestRailExporter.Services;
 
-public class TestRailImportService
+public class ImportService
 {
     private readonly XmlSerializer _xmlSerializer;
 
-    public TestRailImportService(XmlSerializer xmlSerializer)
-    {
-        _xmlSerializer = xmlSerializer;
-    }
+    public ImportService(XmlSerializer xmlSerializer) => _xmlSerializer = xmlSerializer;
 
     public async Task<(TestRailsXmlSuite testRailsXmlSuite, List<CustomAttributeModel> customAttributes)> ImportXmlAsync(
-        string filePath)
+        string? filePath)
     {
-        await using var fileStream = File.OpenRead(filePath);
+        await using var fileStream = File.OpenRead(filePath!);
         await using var memoryStream = new MemoryStream();
         await fileStream.CopyToAsync(memoryStream).ConfigureAwait(false);
 
@@ -46,7 +43,7 @@ public class TestRailImportService
 
         var attributesScheme = new List<CustomAttributeModel>();
 
-        var xml = await XDocument.LoadAsync(fileStream, LoadOptions.None, default).ConfigureAwait(false);
+        var xml = await XDocument.LoadAsync(fileStream, LoadOptions.PreserveWhitespace, default).ConfigureAwait(false);
 
         var customAttributesOfTestCases = xml.Descendants("custom")
             .SelectMany(xElement => xElement.Elements())
@@ -64,7 +61,6 @@ public class TestRailImportService
                 Name = attributeGroup.Key,
                 IsRequired = false,
                 Type = attributeType,
-                Options = new List<CustomAttributeOptionModel>()
             };
 
             switch (attributeType)
@@ -75,13 +71,16 @@ public class TestRailImportService
 
                         var values = attributeGroup
                             .SelectMany(xElement => xElement.Elements("item"))
-                            .OrderBy(xElement => long.Parse(xElement.Element("id")?.Value ?? string.Empty))
-                            .Select(xElement => xElement.Element("value")?.Value ?? string.Empty)
+                            .OrderBy(xElement => long.TryParse(xElement.Element("id")?.Value, out var value) ? value : 0L)
+                            .Select(xElement => xElement.Element("value")?.Value)
                             .Distinct()
                             .ToList();
 
-                        attributeModel.Options.AddRange(values.Select(value => new CustomAttributeOptionModel
-                            { Value = value }));
+                        attributeModel.Options = new List<CustomAttributeOptionModel>(values.Select(value =>
+                            new CustomAttributeOptionModel
+                            {
+                                Value = value
+                            }));
 
                         break;
                     }
@@ -89,13 +88,16 @@ public class TestRailImportService
                 case CustomAttributeTypesEnum.Options:
                     {
                         var values = attributeGroup
-                            .OrderBy(xElement => long.Parse(xElement.Element("id")?.Value ?? string.Empty))
-                            .Select(xElement => xElement.Element("value")?.Value ?? string.Empty)
+                            .OrderBy(xElement => long.TryParse(xElement.Element("id")?.Value, out var value) ? value : 0L)
+                            .Select(xElement => xElement.Element("value")?.Value)
                             .Distinct()
                             .ToList();
 
-                        attributeModel.Options.AddRange(values.Select(value => new CustomAttributeOptionModel
-                            { Value = value }));
+                        attributeModel.Options = new List<CustomAttributeOptionModel>(values.Select(value =>
+                            new CustomAttributeOptionModel
+                            {
+                                Value = value
+                            }));
 
                         break;
                     }
@@ -117,9 +119,23 @@ public class TestRailImportService
             {
                 IsEnabled = true,
                 Name = nameof(TestRailsXmlCase.References),
-                Options = new List<CustomAttributeOptionModel>(),
                 IsRequired = false,
                 Type = CustomAttributeTypesEnum.String
+            });
+
+        var typeElements = xml.Descendants(nameof(TestRailsXmlCase.Type).ToLower());
+
+        if (typeElements.Any())
+            attributesScheme.Add(new CustomAttributeModel
+            {
+                IsEnabled = true,
+                Name = nameof(TestRailsXmlCase.Type),
+                IsRequired = false,
+                Type = CustomAttributeTypesEnum.Options,
+                Options = typeElements.Select(xElement => new CustomAttributeOptionModel
+                {
+                    Value = xElement.Value
+                }).DistinctBy(x => x.Value).ToList()
             });
 
         return attributesScheme;

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace TestRailImporter.Models;
+namespace TestRailExporter.Models;
 
 [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public record class CustomAttributeOptionModel : CustomAttributeOptionPostModel

@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace TestRailImporter.Models;
+namespace TestRailExporter.Models;
 
 [XmlRoot(ElementName = "step")]
 public record struct TestRailsXmlStep
