@@ -2,26 +2,27 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Xml.Serialization;
-using TestRailImporter.Models;
-using TestRailImporter.Services;
 using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
 using JsonWriter;
+using TestRailExporter;
+using TestRailExporter.Models;
+using TestRailExporter.Services;
 
 namespace TestRailImporter;
 
 internal class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         using var host = CreateHostBuilder().Build();
         await using var scope = host.Services.CreateAsyncScope();
 
         try
         {
-            await scope.ServiceProvider.GetRequiredService<App>().RunAsync(args).ConfigureAwait(false);
+            await scope.ServiceProvider.GetRequiredService<App>().RunAsync().ConfigureAwait(false);
         }
         catch (Exception exception)
         {
@@ -58,13 +59,9 @@ internal class Program
 
     private static IConfiguration SetupConfiguration()
     {
-        var jsonConfig = Directory
-            .GetFiles(AppContext.BaseDirectory, "tms.config.json", SearchOption.AllDirectories)
-            .Single();
-
         return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(jsonConfig)
+            .AddJsonFile("testrail.config.json")
             .AddEnvironmentVariables()
             .Build();
     }

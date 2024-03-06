@@ -1,16 +1,22 @@
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
-using Newtonsoft.Json;
-using TestRailImporter.Models;
+using System.Text;
+using System.Xml.Linq;
+using TestRailExporter.Models;
 using Attribute = Models.Attribute;
 using Section = Models.Section;
 
-namespace TestRailImporter.Services
+namespace TestRailExporter.Services
 {
     public class TestRailExportService
     {
-        private static readonly List<Guid> _sharedStepsIds = new();
+        private const int DEFAULT_DURATION_IN_SEC = 60 * 5;
+        private const int MAX_TAG_NAME_LENGTH = 30;
+
+        private readonly List<Section> _sectionsData = new();
+        private readonly List<TestCase> _testCasesData = new();
+        private readonly List<Guid> _sharedStepsIds = new();
         private readonly ILogger<TestRailExportService> _logger;
         private readonly IWriteService _writeService;
 
@@ -20,18 +26,17 @@ namespace TestRailImporter.Services
             _writeService = writeService;
         }
 
-        public async Task ExportProjectAsync(TestRailsXmlSuite testRailsXmlSuite, List<CustomAttributeModel> customAttributes)
+        public async Task ExportProjectAsync(TestRailsXmlSuite testRailsXmlSuite,
+            List<CustomAttributeModel> customAttributes)
         {
             _logger.LogInformation("Exporting project");
 
-            var sectionData = ConvertSections(testRailsXmlSuite.Sections);
-            var attributeData = ConvertAttributes(customAttributes);
-            var testCaseData = ConvertTestCases(testRailsXmlSuite.Sections, sectionData);
-
+            var attributeData = ConvertAttributes(customAttributes).Distinct().ToList();
+            ConvertSectionsWithTestCases(testRailsXmlSuite.Sections, attributeData, testRailsXmlSuite.Name);
 
             foreach (var sharedStepId in _sharedStepsIds)
             {
-                var testCase = testCaseData.FirstOrDefault(testCase => _sharedStepsIds.Contains(testCase.Id));
+                var testCase = _testCasesData.FirstOrDefault(testCase => _sharedStepsIds.Contains(testCase.Id));
                 var sharedStep = ConvertTestCaseToSharedStep(testCase);
 
                 if (sharedStep == null) continue;
@@ -39,7 +44,7 @@ namespace TestRailImporter.Services
                 await _writeService.WriteSharedStep(sharedStep).ConfigureAwait(false);
             }
 
-            foreach (var testCase in testCaseData)
+            foreach (var testCase in _testCasesData)
             {
                 await _writeService.WriteTestCase(testCase).ConfigureAwait(false);
             }
@@ -47,10 +52,10 @@ namespace TestRailImporter.Services
             var root = new Root
             {
                 ProjectName = testRailsXmlSuite.Name ?? string.Empty,
-                Attributes = attributeData,
-                Sections = sectionData,
+                Attributes = attributeData.OrderBy(attribute => attribute.Name).ToList(),
+                Sections = _sectionsData,
                 SharedSteps = _sharedStepsIds,
-                TestCases = testCaseData.Select(testCase => testCase.Id).ToList()
+                TestCases = _testCasesData.Select(testCase => testCase.Id).ToList()
             };
 
             await _writeService.WriteMainJson(root).ConfigureAwait(false);
@@ -69,8 +74,8 @@ namespace TestRailImporter.Services
                     Type = (AttributeType)customAttribute.Type,
                     IsRequired = customAttribute.IsRequired,
                     IsActive = !customAttribute.IsDeleted,
-                    Options = customAttribute.Options?.Select(option
-                        => JsonConvert.SerializeObject(option)).ToList() ?? new List<string>()
+                    Options = customAttribute.Options?.Select(option => option.Value ?? string.Empty).ToList()
+                        ?? new List<string>()
                 };
 
                 return attribute;
@@ -80,122 +85,177 @@ namespace TestRailImporter.Services
             return attributes.ToList();
         }
 
-        private static List<Section> ConvertSections(IEnumerable<TestRailsXmlSection>? testRailSections)
+        private List<Section> ConvertSectionsWithTestCases(IEnumerable<TestRailsXmlSection>? testRailSections,
+            List<Attribute> customAttributes, string? xmlSuiteName, bool hasRootSection = false)
         {
-            var sections = testRailSections?.Select(testrailSection =>
+            var sections = new List<Section>();
+
+            if (testRailSections == null || !testRailSections.Any())
+                return sections;
+
+            foreach (var testRailSection in testRailSections)
             {
-                var section = new Section
+                Section section = new()
                 {
                     Id = Guid.NewGuid(),
-                    Name = testrailSection.Name ?? string.Empty,
-                    Sections = ConvertSections(testrailSection.Sections),
+                    Name = testRailSection.Name ?? string.Empty,
+                    Sections = ConvertSectionsWithTestCases(testRailSection.Sections, customAttributes, xmlSuiteName, true),
                     PreconditionSteps = new List<Step>(),
                     PostconditionSteps = new List<Step>()
                 };
 
-                return section;
-            }).ToList();
+                if (hasRootSection)
+                {
+                    sections.Add(section);
+                }
+                else
+                {
+                    _sectionsData.Add(section);
+                }          
 
-
-            return sections ?? new List<Section>();
-        }
-
-        private static IEnumerable<TestCase> ConvertTestCases(TestRailsXmlSection[]? testRailSections, List<Section> sectionData)
-        {
-            
-            var testCases = new List<TestCase>();
-
-            if (testRailSections == null || testRailSections.Length == 0)
-            {
-                return testCases;
-            }
-
-            foreach (var section in testRailSections)
-            {
-                
-                if (section.Cases == null || section.Cases.Length == 0)
+                if (testRailSection.Cases == null || testRailSection.Cases.Length == 0)
                 {
                     continue;
                 }
 
-                foreach (var testRailCase in section.Cases)
+                foreach (var testRailCase in testRailSection.Cases)
                 {
+                    var test = testRailCase.Custom?.CustomAttributes?.SingleOrDefault(attribute => attribute.Name == "comment");
                     var testCase = new TestCase
                     {
                         Id = Guid.TryParse(testRailCase.Id, out var guid) ? guid : Guid.NewGuid(),
-                        State = Enum.TryParse(testRailCase.State, out StateType type) ? type : StateType.Ready,
-                        Priority = Enum.TryParse(testRailCase.Priority, out PriorityType priority)
-                            ? priority
+                        Description = ExtractDescription(testRailCase),
+                        State = Enum.TryParse(testRailCase.State, out StateType type) ? type : StateType.NeedsWork,
+                        Priority = Enum.TryParse(testRailCase.Priority, out PriorityType priority) ? priority
                             : PriorityType.Medium,
-                        Steps = new List<Step>(
-                            testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Steps.Select(ConvertStep)
-                        ),
-                        PreconditionSteps = new List<Step>()
-                        {
-                            ConvertStep(testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Preconditions)
-                        },
+                        Steps = ConvertSteps(testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData())),
+                        PreconditionSteps = ExtractPreconditions(testRailCase),
                         PostconditionSteps = new List<Step>(),
-                        Duration = int.TryParse(testRailCase.Estimate, out var duration) ? duration : 0,
-                        Attributes = new List<CaseAttribute>(),
-                        Tags = new List<string>(),
+                        Duration = (int.TryParse(testRailCase.Estimate, out var duration) ? duration
+                            : DEFAULT_DURATION_IN_SEC) * 1000,
+                        Attributes = GetTestCaseAttributes(testRailCase, customAttributes),
+                        Tags = new List<string>() { new((xmlSuiteName ?? string.Empty).Take(MAX_TAG_NAME_LENGTH).ToArray()) },
                         Attachments = new List<string>(),
                         Iterations = new List<Iteration>(),
                         Links = new List<Link>(),
                         Name = testRailCase.Title ?? string.Empty,
-                        SectionId = sectionData.FirstOrDefault(data => data.Name == section.Name)?.Id ?? Guid.NewGuid(),
+                        SectionId = section.Id,
                     };
 
-                    testCases.Add(testCase);
+                    _testCasesData.Add(testCase);
                 }
             }
 
-            return testCases;
+            return sections;
         }
 
-        private static Step ConvertStep(TestRailsXmlStep testRailStep)
+        private List<Step> ConvertSteps(TestRailsXmlCaseData xmlCaseData)
         {
-            var step = new Step
-            {
-                Action = testRailStep.Action ?? string.Empty,
-                Expected = testRailStep.Expected ?? string.Empty,
-                TestData = testRailStep.TestData ?? string.Empty,
-                SharedStepId = Guid.TryParse(testRailStep.SharedStepId, out var guid) ? guid : null
-            };
+            var steps = new List<Step>();
 
-            if (step.SharedStepId != null)
+            foreach (var xmlStep in xmlCaseData.Steps)
             {
-                _sharedStepsIds.Add(step.SharedStepId.Value);
+                var step = new Step
+                {
+                    Action = FormatStepText(xmlStep.Action),
+                    Expected = FormatStepText(xmlStep.Expected),
+                    TestData = FormatStepText(xmlStep.TestData),
+                    SharedStepId = Guid.TryParse(xmlStep.SharedStepId, out var guid) ? guid : null
+                };
+
+                if (step.SharedStepId != null)
+                {
+                    _sharedStepsIds.Add(step.SharedStepId.Value);
+                }
+
+                steps.Add(step);
             }
 
-            return step;
-        }
-
-        private static Step ConvertTestCaseToSharedStep(TestRailsXmlStep testRailStep)
-        {
-            var step = new Step
+            if (!string.IsNullOrWhiteSpace(xmlCaseData.Step) || !string.IsNullOrWhiteSpace(xmlCaseData.Expected))
             {
-                Action = testRailStep.Action ?? string.Empty,
-                Expected = testRailStep.Expected ?? string.Empty,
-                TestData = testRailStep.TestData ?? string.Empty,
-                SharedStepId = Guid.TryParse(testRailStep.SharedStepId, out var guid) ? guid : null
-            };
+                steps.Insert(0, new Step()
+                {
 
-            if (step.SharedStepId != null)
-            {
-                _sharedStepsIds.Add(step.SharedStepId.Value);
+                    Action = FormatStepText(xmlCaseData.Step),
+                    Expected = FormatStepText(xmlCaseData.Expected),
+                });
             }
 
-            return step;
+            return steps;
         }
 
-        private static Step ConvertStep(string? conditionStep)
+        private static string ExtractDescription(TestRailsXmlCase testRailCase)
         {
-            var step = new Step
+            var stringBuilder = new StringBuilder();
+
+            if (!string.IsNullOrWhiteSpace(testRailCase.Custom?.Comments))
+                stringBuilder.AppendLine(testRailCase.Custom?.Comments).AppendLine();
+
+
+            stringBuilder.Append($"Imported from {testRailCase.Id}");
+
+            return stringBuilder.ToString();
+        }
+
+        private static List<Step> ExtractPreconditions(TestRailsXmlCase testRailCase)
+        {
+            var action = FormatStepText(testRailCase.Custom.GetValueOrDefault(new TestRailsXmlCaseData()).Preconditions);
+
+            if (string.IsNullOrWhiteSpace(action))
             {
-                Action = conditionStep ?? string.Empty,
+                return new List<Step>();
+            }
+            else
+            {
+                var step = new Step
+                {
+                    Action = action,
+                };
+
+                return new List<Step>() { step };
+            }
+        }
+
+        private static List<CaseAttribute> GetTestCaseAttributes(TestRailsXmlCase testRailCase,
+            List<Attribute> customAttributes)
+        {
+            var testCaseAttributes = testRailCase.Custom?.CustomAttributes?.Select(attribute =>
+            {
+                return new CaseAttribute()
+                {
+                    Id = customAttributes.FirstOrDefault(customAttribute =>
+                        customAttribute.Name == attribute.Name)?.Id ?? Guid.NewGuid(),
+                    Value = XElement.Parse(attribute?.OuterXml ?? string.Empty)?.Element("value")?.Value ?? string.Empty
+                };
+            }).ToList() ?? new List<CaseAttribute>();
+
+            var attributesNames = new string[]
+            {
+                nameof(TestRailsXmlCase.References),
+                nameof(TestRailsXmlCase.Type)
             };
 
-            return step;
+            foreach (var attributeName in attributesNames)
+            {
+                var attribute = customAttributes.SingleOrDefault(attribute =>
+                    attribute?.Name == attributeName, null);
+
+                if (attribute == null)
+                    continue;
+
+                testCaseAttributes.Add(new CaseAttribute()
+                {
+                    Id = attribute.Id,
+                    Value = testRailCase.GetType().GetProperty(attributeName)?.GetValue(testRailCase, null) as string
+                        ?? string.Empty
+                });
+            }
+
+            testCaseAttributes.Sort((first, second) => string.Compare(
+                customAttributes.SingleOrDefault(attribute => attribute?.Id == first.Id, null)?.Name,
+                customAttributes.SingleOrDefault(attribute => attribute?.Id == second.Id, null)?.Name));
+
+            return testCaseAttributes;
         }
 
         private static SharedStep? ConvertTestCaseToSharedStep(TestCase? testCase)
@@ -221,6 +281,14 @@ namespace TestRailImporter.Services
             };
 
             return sharedStep;
+        }
+
+        private static string FormatStepText(string? input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            return input.Replace("\n", "\n<br>\n");
         }
     }
 }

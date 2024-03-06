@@ -15,5 +15,11 @@
         <ProjectReference Include="..\Models\Models.csproj" />
         <ProjectReference Include="..\JsonWriter\JsonWriter.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="testrail.config.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
    
 </Project>

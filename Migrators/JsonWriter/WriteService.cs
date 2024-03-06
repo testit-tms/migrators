@@ -1,4 +1,6 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Unicode;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
@@ -7,6 +9,11 @@ namespace JsonWriter;
 
 public class WriteService : IWriteService
 {
+    private readonly JsonSerializerOptions _options = new()
+    {
+        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+        WriteIndented = true
+    };
     private readonly ILogger<WriteService> _logger;
     private readonly string _path;
 
@@ -85,7 +92,7 @@ public class WriteService : IWriteService
         _logger.LogInformation("Writing test case {Id}: {Path}", testCase.Id, filePath);
 
         await using var createStream = File.Create(filePath);
-        await JsonSerializer.SerializeAsync(createStream, testCase);
+        await JsonSerializer.SerializeAsync(createStream, testCase, _options);
     }
 
     public async Task WriteSharedStep(SharedStep sharedStep)
@@ -101,7 +108,7 @@ public class WriteService : IWriteService
         _logger.LogInformation("Writing shared step {Id}: {Path}", sharedStep.Id, filePath);
 
         await using var createStream = File.Create(filePath);
-        await JsonSerializer.SerializeAsync(createStream, sharedStep);
+        await JsonSerializer.SerializeAsync(createStream, sharedStep, _options);
     }
 
     public async Task WriteMainJson(Root mainJson)
@@ -111,6 +118,6 @@ public class WriteService : IWriteService
         _logger.LogInformation("Writing main.json: {Path}", filePath);
 
         await using var createStream = File.Create(filePath);
-        await JsonSerializer.SerializeAsync(createStream, mainJson);
+        await JsonSerializer.SerializeAsync(createStream, mainJson, _options);
     }
 }

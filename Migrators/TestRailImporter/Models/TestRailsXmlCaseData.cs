@@ -1,7 +1,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace TestRailImporter.Models;
+namespace TestRailExporter.Models;
 
 [XmlRoot(ElementName = "custom")]
 public record struct TestRailsXmlCaseData

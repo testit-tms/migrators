@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace TestRailImporter.Enums;
+namespace TestRailExporter.Enums;
 
 public enum CustomAttributeTypesEnum
 {
