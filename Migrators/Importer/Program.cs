@@ -10,9 +10,9 @@ using Serilog.Settings.Configuration;
 
 namespace Importer
 {
-    public class Program
+    internal class Program
     {
-        public static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             using var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
