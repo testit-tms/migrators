@@ -47,7 +47,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
             catch (Exception e)
             {
                 _logger.LogError("Could not import test case {Name} with error {Message}", tc.Name, e.Message);
-    }
+            }
         }
     }
 

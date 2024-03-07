@@ -9,12 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Data\Output\ExportJson_Positive%28CustomAttributes { Attributes = System.Collections.Generic.List`1[TestRailExporter.Models.CustomAttributeModel] },TestRailsXmlSuite { Name = Master, Sections = TestRailExporter.Models.TestRailsXmlSection[] }%29\**" />
-    <EmbeddedResource Remove="Data\Output\ExportJson_Positive%28CustomAttributes { Attributes = System.Collections.Generic.List`1[TestRailExporter.Models.CustomAttributeModel] },TestRailsXmlSuite { Name = Master, Sections = TestRailExporter.Models.TestRailsXmlSection[] }%29\**" />
-    <None Remove="Data\Output\ExportJson_Positive%28CustomAttributes { Attributes = System.Collections.Generic.List`1[TestRailExporter.Models.CustomAttributeModel] },TestRailsXmlSuite { Name = Master, Sections = TestRailExporter.Models.TestRailsXmlSection[] }%29\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="NUnit" Version="4.1.0" />
