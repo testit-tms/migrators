@@ -14,9 +14,10 @@ namespace TestRailExporter.Services
         private const int DEFAULT_DURATION_IN_SEC = 60 * 5;
         private const int MAX_TAG_NAME_LENGTH = 30;
 
-        private readonly List<Section> _sectionsData = new();
-        private readonly List<TestCase> _testCasesData = new();
-        private readonly List<Guid> _sharedStepsIds = new();
+        private readonly List<Section> _sectionsData;
+        private readonly List<Guid> _sharedStepsIds;
+        private readonly List<TestCase> _testCasesData;
+
         private readonly ILogger<ExportService> _logger;
         private readonly IWriteService _writeService;
 
@@ -24,6 +25,10 @@ namespace TestRailExporter.Services
         {
             _logger = logger;
             _writeService = writeService;
+
+            _sectionsData = new();
+            _sharedStepsIds = new();
+            _testCasesData = new();
         }
 
         public async Task ExportProjectAsync(TestRailsXmlSuite testRailsXmlSuite, List<CustomAttributeModel> customAttributes)

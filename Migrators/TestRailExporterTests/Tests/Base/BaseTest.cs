@@ -28,22 +28,22 @@ public abstract class BaseTest
 
         if (File.Exists(outputJson))
         {
-            var expectedModel = DeserializeFile<T>(outputJson);
-            actualModel.Should().BeEquivalentTo(expectedModel, options => options.Excluding(x => x.Path.EndsWith("Id")
-                || (x.Type == typeof(List<Guid>) && x.Path.EndsWith("TestCases"))));
+            var expectedModel = await DeserializeFileAsync<T>(outputJson).ConfigureAwait(false);
+
+            actualModel.Should().BeEquivalentTo(expectedModel, options => options.Excluding(memberInfo =>
+                memberInfo.Path.EndsWith("Id") || memberInfo.Path.EndsWith("TestCases"))
+            );
         }
         else
         {
-            await File.WriteAllTextAsync(
-                outputJson,
-                JsonConvert.SerializeObject(actualModel, Formatting.Indented),
-                Encoding.UTF8).ConfigureAwait(false);
+            var actualText = JsonConvert.SerializeObject(actualModel, Formatting.Indented);
+            await File.WriteAllTextAsync(outputJson, actualText, Encoding.UTF8).ConfigureAwait(false);
         }
     }
 
-    private protected static T DeserializeFile<T>(string file) where T : notnull
+    private protected static async Task<T> DeserializeFileAsync<T>(string file) where T : notnull
     {
-        var text = File.ReadAllText(file, Encoding.UTF8);
+        var text = await File.ReadAllTextAsync(file, Encoding.UTF8).ConfigureAwait(false);
         var model = JsonConvert.DeserializeObject<T>(text)!;
 
         return model;

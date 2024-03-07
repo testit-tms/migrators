@@ -25,8 +25,10 @@ public class ExportServiceTests : BaseTest
     }
 
     [SetUp]
-    public void Setup() => _exportService = new ExportService(_factory.CreateLogger<ExportService>(),
-        new WriteService(_factory.CreateLogger<WriteService>(), _configuration));
+    public void Setup() => _exportService = new ExportService(
+        _factory.CreateLogger<ExportService>(),
+        new WriteService(_factory.CreateLogger<WriteService>(), _configuration)
+    );
 
     [TearDown]
     public void TearDown()
@@ -64,18 +66,23 @@ public class ExportServiceTests : BaseTest
 
         var directory = Path.Combine(_inputFolder, directoryName);
         var customAttributesJson = Path.Combine(directory, $"{nameof(CustomAttributes)}.json");
-        var customAttributesModel = DeserializeFile<CustomAttributes>(customAttributesJson);
+        var customAttributesModel = await DeserializeFileAsync<CustomAttributes>(customAttributesJson).ConfigureAwait(false);
 
         var testRailsXmlSuiteJson = Path.Combine(directory, $"{nameof(TestRailsXmlSuite)}.json");
-        var testRailsXmlSuiteModel = DeserializeFile<TestRailsXmlSuite>(testRailsXmlSuiteJson);
+        var testRailsXmlSuiteModel = await DeserializeFileAsync<TestRailsXmlSuite>(testRailsXmlSuiteJson).ConfigureAwait(false);
            
         // Act
         await _exportService.ExportProjectAsync(testRailsXmlSuiteModel, customAttributesModel.Attributes).ConfigureAwait(false);
-        var actualRoot = DeserializeFile<Root>(mainJson);
-        actualTestCases.Cases.AddRange(from resultDir in Directory.GetDirectories(_configuration["resultPath"]!)
-                                       from file in Directory.GetFiles(resultDir, "*.json", SearchOption.AllDirectories)
-                                       let testCase = DeserializeFile<TestCase>(file)
-                                       select testCase);
+        var actualRoot = await DeserializeFileAsync<Root>(mainJson).ConfigureAwait(false);
+
+        foreach (var testCaseDirectory in Directory.GetDirectories(_configuration["resultPath"]!))
+        {
+            foreach (var testCaseJson in Directory.GetFiles(testCaseDirectory, "*.json", SearchOption.AllDirectories))
+            {
+                var testCase = await DeserializeFileAsync<TestCase>(testCaseJson).ConfigureAwait(false);
+                actualTestCases.Cases.Add(testCase);
+            }
+        }
 
         // Assert
         await Assert.MultipleAsync(async () =>
