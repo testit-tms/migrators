@@ -32,7 +32,7 @@ Where:
 
 2. Run the exporter with the following command:
 
-```bash
+```console
 sudo chmod +x .\AllureExporter
 .\AllureExporter
 ```
