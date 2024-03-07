@@ -12,7 +12,7 @@ namespace Importer
 {
     internal class Program
     {
-        internal static void Main(string[] args)
+        static void Main(string[] args)
         {
             using var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
