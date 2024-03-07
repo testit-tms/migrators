@@ -33,11 +33,11 @@ public class ImportServiceTests
         (var actualSuite, var actualAttributes) = await _importService.ImportXmlAsync(inputXml).ConfigureAwait(false);
 
         // Assert
-        Assert.Multiple(async () =>
+        await Assert.MultipleAsync(async () =>
         {
             await AssertOrUpdateExpectedJson(actualSuite).ConfigureAwait(false);
             await AssertOrUpdateExpectedJson(new CustomAttributes(actualAttributes)).ConfigureAwait(false);
-        });
+        }).ConfigureAwait(false);
     }
 
     [Test]
