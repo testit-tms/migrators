@@ -11,11 +11,7 @@ namespace TestRailExporterTests.Tests;
 
 public class ImportServiceTests : BaseTest
 {
-    private static string _inputFolder;
     private ImportService _importService;
-
-    [OneTimeSetUp]
-    public void OneTimeSetUp() => _inputFolder = Path.Combine(projectRootPath, "Data", "Input");
 
     [SetUp]
     public void Setup() => _importService = new ImportService(new XmlSerializer(typeof(TestRailsXmlSuite)));
@@ -26,7 +22,7 @@ public class ImportServiceTests : BaseTest
     public async Task ImportXml_Positive(string inputXmlName)
     {
         // Arrange
-        var inputXml = Path.Combine(_inputFolder, inputXmlName);
+        var inputXml = Path.Combine(inputDirectory, inputXmlName);
 
         // Act
         (var actualSuite, var actualAttributes) = await _importService.ImportXmlAsync(inputXml).ConfigureAwait(false);

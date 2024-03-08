@@ -7,22 +7,25 @@ using TestRailExporter.Services;
 using TestRailExporterTests.Models;
 using TestRailExporterTests.Tests.Base;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 
 namespace TestRailExporterTests.Tests;
 
 public class ExportServiceTests : BaseTest
 {
-    private static readonly string _inputFolder = Path.Combine(projectRootPath, "Data", "Output");
-    private static TestConfiguration _configuration;
+    private static IConfiguration _configuration;
     private static ILoggerFactory _factory;
-    private ExportService _exportService;
+    private static string _resultPath;
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
     {
         _configuration = new TestConfiguration();
         _factory = LoggerFactory.Create(builder => builder.AddConsole());
+        _resultPath = _configuration["resultPath"]!;
     }
+
+    private ExportService _exportService;
 
     [SetUp]
     public void Setup() => _exportService = new ExportService(
@@ -33,8 +36,8 @@ public class ExportServiceTests : BaseTest
     [TearDown]
     public void TearDown()
     {
-        if (Directory.Exists(_configuration["resultPath"]!))
-            Directory.Delete(_configuration["resultPath"]!, true);
+        if (Directory.Exists(_resultPath))
+            Directory.Delete(_resultPath, true);
     }
 
     [OneTimeTearDown]
@@ -42,9 +45,9 @@ public class ExportServiceTests : BaseTest
 
     private static IEnumerable<TestCaseData> PositiveInputData()
     {
-        foreach (var directory in Directory.GetDirectories(_inputFolder, "ImportXml*"))
+        foreach (var testDirectory in Directory.GetDirectories(outputDirectory, "ImportXml*"))
         {
-            yield return new TestCaseData(Path.GetRelativePath(_inputFolder, directory));
+            yield return new TestCaseData(Path.GetRelativePath(outputDirectory, testDirectory));
         }
     }
 
@@ -62,20 +65,20 @@ public class ExportServiceTests : BaseTest
     {
         // Arrange
         var actualTestCases = new TestCases(new List<TestCase>());
-        var mainJson = Path.Combine(_configuration["resultPath"]!, Constants.MainJson);
+        var mainJson = Path.Combine(_resultPath, Constants.MainJson);
 
-        var directory = Path.Combine(_inputFolder, directoryName);
-        var customAttributesJson = Path.Combine(directory, $"{nameof(CustomAttributes)}.json");
+        var testDirectory = Path.Combine(outputDirectory, directoryName);
+        var customAttributesJson = Path.Combine(testDirectory, $"{nameof(CustomAttributes)}.json");
         var customAttributesModel = await DeserializeFileAsync<CustomAttributes>(customAttributesJson).ConfigureAwait(false);
 
-        var testRailsXmlSuiteJson = Path.Combine(directory, $"{nameof(TestRailsXmlSuite)}.json");
+        var testRailsXmlSuiteJson = Path.Combine(testDirectory, $"{nameof(TestRailsXmlSuite)}.json");
         var testRailsXmlSuiteModel = await DeserializeFileAsync<TestRailsXmlSuite>(testRailsXmlSuiteJson).ConfigureAwait(false);
            
         // Act
         await _exportService.ExportProjectAsync(testRailsXmlSuiteModel, customAttributesModel.Attributes).ConfigureAwait(false);
         var actualRoot = await DeserializeFileAsync<Root>(mainJson).ConfigureAwait(false);
 
-        foreach (var testCaseDirectory in Directory.GetDirectories(_configuration["resultPath"]!))
+        foreach (var testCaseDirectory in Directory.GetDirectories(_resultPath))
         {
             foreach (var testCaseJson in Directory.GetFiles(testCaseDirectory, "*.json", SearchOption.AllDirectories))
             {
