@@ -1,17 +1,16 @@
+using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Xml.Serialization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
-using JsonWriter;
-using TestRailExporter;
+using System.Xml.Serialization;
 using TestRailExporter.Models;
 using TestRailExporter.Services;
 
-namespace TestRailImporter;
+namespace TestRailExporter;
 
 internal class Program
 {

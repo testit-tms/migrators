@@ -2,11 +2,14 @@ namespace TestRailExporterTests.Extensions
 {
     public static class StringExtensions
     {
-        public static string ToValidPathName(this string input) => new(
-            input.Where(symbol =>
+        public static string ToValidPathName(this string input)
+        {
+            var filteredInput = input.Where(symbol =>
                 !Path.GetInvalidPathChars().Contains(symbol) &&
                 !Path.GetInvalidFileNameChars().Contains(symbol)
-            ).ToArray()
-        );
+            );
+
+            return new(filteredInput.ToArray());
+        }
     }
 }

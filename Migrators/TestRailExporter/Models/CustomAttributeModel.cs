@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using TestRailExporter.Enums;
 
 namespace TestRailExporter.Models;

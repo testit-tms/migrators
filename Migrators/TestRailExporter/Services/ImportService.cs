@@ -9,7 +9,10 @@ public class ImportService
 {
     private readonly XmlSerializer _xmlSerializer;
 
-    public ImportService(XmlSerializer xmlSerializer) => _xmlSerializer = xmlSerializer;
+    public ImportService(XmlSerializer xmlSerializer)
+    {
+        _xmlSerializer = xmlSerializer;
+    }
 
     public async Task<(TestRailsXmlSuite testRailsXmlSuite, List<CustomAttributeModel> customAttributes)> ImportXmlAsync(
         string? filePath)
@@ -115,6 +118,7 @@ public class ImportService
         var existReferences = xml.Descendants(nameof(TestRailsXmlCase.References).ToLower()).Any();
 
         if (existReferences)
+        {
             attributesScheme.Add(new CustomAttributeModel
             {
                 IsEnabled = true,
@@ -122,10 +126,12 @@ public class ImportService
                 IsRequired = false,
                 Type = CustomAttributeTypesEnum.String
             });
+        }
 
         var typeElements = xml.Descendants(nameof(TestRailsXmlCase.Type).ToLower());
 
         if (typeElements.Any())
+        {
             attributesScheme.Add(new CustomAttributeModel
             {
                 IsEnabled = true,
@@ -137,6 +143,7 @@ public class ImportService
                     Value = xElement.Value
                 }).DistinctBy(x => x.Value).ToList()
             });
+        }
 
         return attributesScheme;
     }

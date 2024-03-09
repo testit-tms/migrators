@@ -9,19 +9,17 @@ namespace TestRailExporterTests.Tests.Base;
 [TestFixture]
 public abstract class BaseTest
 {
-    private static readonly string _dataDirectory;
     private protected static readonly string inputDirectory;
     private protected static readonly string outputDirectory;
 
     static BaseTest()
     {
-        _dataDirectory = Path.Combine(
+        var dataDirectory = Path.Combine(
             Directory.GetParent(Environment.CurrentDirectory)?.Parent?.Parent?.FullName!,
             "Data"
         );
-
-        inputDirectory = Path.Combine(_dataDirectory, "Input");
-        outputDirectory = Path.Combine(_dataDirectory, "Output");
+        inputDirectory = Path.Combine(dataDirectory, "Input");
+        outputDirectory = Path.Combine(dataDirectory, "Output");
     }
 
     private protected static async Task AssertOrUpdateExpectedJsonAsync<T>(T actualModel) where T : notnull
@@ -34,8 +32,12 @@ public abstract class BaseTest
         {
             var expectedModel = await DeserializeFileAsync<T>(expectedJson).ConfigureAwait(false);
 
-            actualModel.Should().BeEquivalentTo(expectedModel, options => options.Excluding(memberInfo =>
-                memberInfo.Path.EndsWith("Id") || memberInfo.Path.EndsWith("TestCases"))
+            actualModel.Should().BeEquivalentTo(
+                expectedModel,
+                options => options.Excluding(memberInfo =>
+                    memberInfo.Path.EndsWith("Id") ||
+                    memberInfo.Path.EndsWith("TestCases")
+                )
             );
         }
         else

@@ -43,7 +43,10 @@ namespace TestRailExporter.Services
                 var testCase = _testCasesData.FirstOrDefault(testCase => _sharedStepsIds.Contains(testCase.Id));
                 var sharedStep = ConvertTestCaseToSharedStep(testCase);
 
-                if (sharedStep == null) continue;
+                if (sharedStep == null)
+                {
+                    continue;
+                }
 
                 await _writeService.WriteSharedStep(sharedStep).ConfigureAwait(false);
             }
@@ -95,7 +98,9 @@ namespace TestRailExporter.Services
             var sections = new List<Section>();
 
             if (testRailSections == null || !testRailSections.Any())
+            {
                 return sections;
+            }
 
             foreach (var testRailSection in testRailSections)
             {
@@ -115,7 +120,7 @@ namespace TestRailExporter.Services
                 else
                 {
                     _sectionsData.Add(section);
-                }          
+                }
 
                 if (testRailSection.Cases == null || testRailSection.Cases.Length == 0)
                 {
@@ -193,8 +198,9 @@ namespace TestRailExporter.Services
             var stringBuilder = new StringBuilder();
 
             if (!string.IsNullOrWhiteSpace(testRailCase.Custom?.Comments))
+            {
                 stringBuilder.AppendLine(testRailCase.Custom?.Comments).AppendLine();
-
+            }
 
             stringBuilder.Append($"Imported from {testRailCase.Id}");
 
@@ -245,7 +251,9 @@ namespace TestRailExporter.Services
                     attribute?.Name == attributeName, null);
 
                 if (attribute == null)
+                {
                     continue;
+                }
 
                 testCaseAttributes.Add(new CaseAttribute()
                 {
@@ -289,10 +297,7 @@ namespace TestRailExporter.Services
 
         private static string FormatStepText(string? input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-                return string.Empty;
-
-            return input.Replace("\n", "\n<br>\n");
+            return string.IsNullOrWhiteSpace(input) ? string.Empty : input.Replace("\n", "\n<br>\n");
         }
     }
 }
