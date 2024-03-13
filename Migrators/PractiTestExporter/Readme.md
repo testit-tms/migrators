@@ -31,6 +31,7 @@ Where:
 2. Run the exporter with the following command:
 
 ```bash
+sudo chmod +x .\PractiTestExporter
 .\PractiTestExporter
 ```
 

@@ -46,22 +46,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XRayExporterTests", "XRayEx
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PractiTestExporter", "PractiTestExporter\PractiTestExporter.csproj", "{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PractiTestExporterTests", "PractiTestExporterTests\PractiTestExporterTests.csproj", "{AB081068-0DE0-4408-A858-5109CCF0C3B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PractiTestExporterTests", "PractiTestExporterTests\PractiTestExporterTests.csproj", "{AB081068-0DE0-4408-A858-5109CCF0C3B4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06} = {B90D8A9F-CFCB-4F02-8B76-4C082FFA3D06}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCollabExporter", "TestCollabExporter\TestCollabExporter.csproj", "{713AF0B4-B036-4879-B3C6-16071D0864B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCollabExporter", "TestCollabExporter\TestCollabExporter.csproj", "{713AF0B4-B036-4879-B3C6-16071D0864B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCollabExporterTests", "TestCollabExporterTests\TestCollabExporterTests.csproj", "{F82361FB-1672-4F60-998C-1702DDEFBAD3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCollabExporterTests", "TestCollabExporterTests\TestCollabExporterTests.csproj", "{F82361FB-1672-4F60-998C-1702DDEFBAD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraTestExporter", "SpiraTestExporter\SpiraTestExporter.csproj", "{0A0E69C6-B882-4B8B-AD47-932C626B29E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiraTestExporter", "SpiraTestExporter\SpiraTestExporter.csproj", "{0A0E69C6-B882-4B8B-AD47-932C626B29E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiraTestExporterTests", "SpiraTestExporterTests\SpiraTestExporterTests.csproj", "{49DB8D22-0553-4B2B-99A4-7B1FDEABD72C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiraTestExporterTests", "SpiraTestExporterTests\SpiraTestExporterTests.csproj", "{49DB8D22-0553-4B2B-99A4-7B1FDEABD72C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPALMExporter", "HPALMExporter\HPALMExporter.csproj", "{F257663B-0160-4843-9384-583187D2E2EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPALMExporter", "HPALMExporter\HPALMExporter.csproj", "{F257663B-0160-4843-9384-583187D2E2EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HPALMExporterTests", "HPALMExporterTests\HPALMExporterTests.csproj", "{960B55F6-7F29-4051-9BD2-04ACEF8423D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPALMExporterTests", "HPALMExporterTests\HPALMExporterTests.csproj", "{960B55F6-7F29-4051-9BD2-04ACEF8423D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRailExporterTests", "TestRailExporterTests\TestRailExporterTests.csproj", "{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailExporter", "TestRailExporter\TestRailExporter.csproj", "{1FD6902A-9ADC-4FAE-B528-39012EE755AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -165,6 +169,14 @@ Global
 		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{960B55F6-7F29-4051-9BD2-04ACEF8423D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FD6902A-9ADC-4FAE-B528-39012EE755AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FD6902A-9ADC-4FAE-B528-39012EE755AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FD6902A-9ADC-4FAE-B528-39012EE755AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FD6902A-9ADC-4FAE-B528-39012EE755AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

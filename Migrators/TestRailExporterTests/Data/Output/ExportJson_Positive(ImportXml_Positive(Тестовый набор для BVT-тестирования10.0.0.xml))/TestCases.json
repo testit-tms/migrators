@@ -1,0 +1,5516 @@
+﻿{
+  "Cases": [
+    {
+      "Id": "007e8105-04e5-404d-9de9-bd161de5b597",
+      "Description": "Imported from C399083",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отображение расписания",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "00cf8993-8bdf-46d3-a2fd-8ed2050f8072",
+      "Description": "Imported from C328376",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка ЛИ",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "035af1be-faf5-4833-b6e8-fe80abf569d1",
+      "Description": "Imported from C277244",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации Карты вызова",
+      "SectionId": "5fb82ae1-f716-42aa-96be-04f997277c45"
+    },
+    {
+      "Id": "04ebfb4b-59ab-4e7e-a093-b07f725c6c2a",
+      "Description": "Imported from C277271",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации по назначению на ИД",
+      "SectionId": "25c78c0c-776b-4028-9d55-db265f07dcee"
+    },
+    {
+      "Id": "069d9126-f638-4edd-b87d-40582cbb932c",
+      "Description": "Imported from C277306",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Закрыть иЭМК",
+      "SectionId": "e3dc1060-4072-4a68-996a-e7b54003a8ca"
+    },
+    {
+      "Id": "077f9429-b4d9-4250-9b57-71e1aac88770",
+      "Description": "Imported from C277301",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Подписание документов КС",
+      "SectionId": "db5486cb-50d6-4e3c-acab-432079774502"
+    },
+    {
+      "Id": "086f0469-1cf4-47ac-9451-a56fff7f3f74",
+      "Description": "ЧЗП максимально заполенен\r\n\r\nImported from C326049",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "(!)Проверка совместимости ЧЗП созданных в предыдущих версиях",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "0a0488e4-90dd-4100-a34f-3e17d0fda24c",
+      "Description": "Imported from C277251",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание направления на консультацию",
+      "SectionId": "35747e7e-1d09-43cc-824c-397e3ec10617"
+    },
+    {
+      "Id": "0a98d8cb-2ef1-4cd7-97bf-15bc54806fa4",
+      "Description": "Imported from C277263",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование Назначения на ИД",
+      "SectionId": "3069abbc-1cf3-4082-bf48-ad26069da9f1"
+    },
+    {
+      "Id": "0be630be-b331-43ce-97d7-69fb3ce7f94c",
+      "Description": "Imported from C431264",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка процедур",
+      "SectionId": "31782e3f-a7bc-4d0a-bfb8-568eb96f929d"
+    },
+    {
+      "Id": "0f5bb08c-3ba0-4d2f-a45a-a059a408f14e",
+      "Description": "Imported from C399077",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выдача нового заключения на БП",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "1093381c-3fdb-4988-bfc9-9b1589ac0198",
+      "Description": "Imported from C400631",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Диагностические задачи",
+      "SectionId": "1e37038d-d4af-4b3b-b972-61de58accb17"
+    },
+    {
+      "Id": "137f368e-c995-46f9-90ad-5536fc30a777",
+      "Description": "Imported from C330916",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Завершить приём",
+      "SectionId": "939ac8f3-fed8-46bd-b6ae-75c8d1ec9f3c"
+    },
+    {
+      "Id": "141fb49f-6949-4dc2-b720-0b499788a9ea",
+      "Description": "Imported from C277256",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание направления на консультацию",
+      "SectionId": "36b23706-e6ee-4e5c-b90f-143400e9c00b"
+    },
+    {
+      "Id": "166429ff-2bb9-4860-87f8-bd4c1f7da5b8",
+      "Description": "Imported from C277255",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка Консультаций",
+      "SectionId": "36b23706-e6ee-4e5c-b90f-143400e9c00b"
+    },
+    {
+      "Id": "19004a6d-8556-4bc1-9d76-ba12adf9834d",
+      "Description": "Imported from C281986",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [
+        {
+          "SharedStepId": null,
+          "Action": "\n<br>\n                                                    В футере есть свернутая иЭМК другого пациента.\n<br>\n                                                    Начать прием нового пациента\n<br>\n                                                    Отложить прием пациента путем клика в футере на карту другого пациента\n<br>\n                                                ",
+          "Expected": null,
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": null
+        }
+      ],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отложить прием через футер",
+      "SectionId": "c43d6336-7ef6-4dbf-b8a3-f77d5d8a0fd3"
+    },
+    {
+      "Id": "1c618595-e86a-4c7a-b745-b150156c8870",
+      "Description": "Imported from C400634",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Область \"Лист назначений\"",
+      "SectionId": "1e37038d-d4af-4b3b-b972-61de58accb17"
+    },
+    {
+      "Id": "1f51fded-620c-4939-8434-3dcd922d7800",
+      "Description": "Imported from C431263",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации назначения",
+      "SectionId": "da803520-419e-47b2-96cf-62be8b5853d3"
+    },
+    {
+      "Id": "1fc9cc29-03ff-4924-a3bb-4c08e5814007",
+      "Description": "Imported from C277289",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание рецепта",
+      "SectionId": "eeebe15a-72af-4f48-9c28-f10ec6e0be11"
+    },
+    {
+      "Id": "209e606a-1599-42ea-a389-59602fbc6e1c",
+      "Description": "Imported from C400635",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание Контрольной явки",
+      "SectionId": "1e37038d-d4af-4b3b-b972-61de58accb17"
+    },
+    {
+      "Id": "22d80651-4860-4dc7-b2aa-611d8ac99dc8",
+      "Description": "Imported from C431267",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации назначения",
+      "SectionId": "31782e3f-a7bc-4d0a-bfb8-568eb96f929d"
+    },
+    {
+      "Id": "254c58b5-18d2-44da-a5f8-995fd6ae069b",
+      "Description": "Imported from C400623",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Вкладка \"Актуальное\"",
+      "SectionId": "5fb82ae1-f716-42aa-96be-04f997277c45"
+    },
+    {
+      "Id": "25ae15f9-cd90-4992-a852-b38d3e9e9bd1",
+      "Description": "Imported from C396350",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Инициирование подписания заключения",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "26fb696c-888a-4a1c-a234-49951129cb28",
+      "Description": "Imported from C281987",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Возобновление приема из Плана приема",
+      "SectionId": "7ddd68b1-3598-42a2-a946-4c9560d3ae5e"
+    },
+    {
+      "Id": "2799f2cf-fec9-442e-9307-6df1c1456b12",
+      "Description": "Imported from C277310",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка назначений на ИИ",
+      "SectionId": "06992da1-3ee5-4086-a568-6ce6eb366122"
+    },
+    {
+      "Id": "2cfb97e5-0b4b-4a0f-9549-6fad7b2cf0f7",
+      "Description": "\n                                                            1. В протоколе  при заполнении указывать диагноз\n                                                            2. Заполнять часто используемые поля\n                                                        \r\n\r\nImported from C277245",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "(!)Создание протокола без ЧЗП",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "2d3a50c6-d09f-4347-b6db-3d2dfbddd95b",
+      "Description": "Imported from C277266",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование направления на ИД",
+      "SectionId": "3069abbc-1cf3-4082-bf48-ad26069da9f1"
+    },
+    {
+      "Id": "2e742d38-1b47-49d0-9279-40cad282524e",
+      "Description": "Imported from C399078",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Переход к просмотру деталей ранее выданных Заключений",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "2f57e309-4cdb-427f-81b3-9de781260735",
+      "Description": "Imported from C281989",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание рецепта на МИ",
+      "SectionId": "7272ebb3-ce87-48b5-9ce9-c1626d736589"
+    },
+    {
+      "Id": "32dbc2cf-95b3-46e8-b423-faebcda67aa1",
+      "Description": "Imported from C431262",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование назначения на Процедуру",
+      "SectionId": "da803520-419e-47b2-96cf-62be8b5853d3"
+    },
+    {
+      "Id": "33f55fc6-c58f-44f1-8826-b6545bdda4b8",
+      "Description": "Imported from C277304",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Начать приём",
+      "SectionId": "e3dc1060-4072-4a68-996a-e7b54003a8ca"
+    },
+    {
+      "Id": "345aade8-3c36-490b-9e86-a4851fcf645f",
+      "Description": "Imported from C277327",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Начать работу с картой без пациента из иЭМК",
+      "SectionId": "9df082af-9021-46a0-ac9b-06142221c1e4"
+    },
+    {
+      "Id": "358cc9f5-9dce-4973-b156-30a47d505a40",
+      "Description": "Imported from C399081",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Инициирование печати заключения",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "35de6b2b-3bea-427c-8d95-769cc30a32a1",
+      "Description": "Imported from C277295",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выбор документов КС",
+      "SectionId": "ed0d6c60-f15c-4f94-a2e8-cd31afad8b4d"
+    },
+    {
+      "Id": "35f34093-6055-4672-8049-e26e5dc5e16f",
+      "Description": "Imported from C277223",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [
+        {
+          "SharedStepId": null,
+          "Action": "\n<br>\n                                            Выбрать контекст пользователя, под которым можно работать в Системе:\n<br>\n                                            - Место указания услуг\n<br>\n                                            - Должность\n<br>\n                                            - Основную роль\n<br>\n                                        ",
+          "Expected": "Выбраны параметры доступного контекста.Появился контрол выбора ресурса.",
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": ""
+        },
+        {
+          "SharedStepId": null,
+          "Action": "\n<br>\n                                            Выбрать в поле ресурс связку ДР и КР, под которыми пользователь будет работать в Системе.\n<br>\n                                            Нажать \"Продолжить\"\n<br>\n                                        ",
+          "Expected": "\n<br>\n                                            Сервис маршрутизации возвращает url для входа в КПИ или СУПП.\n<br>\n                                            Система закрывает экран выбора контекста и переводит пользователя в АРМ Врача.\n<br>\n                                        ",
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": ""
+        },
+        {
+          "SharedStepId": null,
+          "Action": "Проверить передаваемые параметры запроса index.api ",
+          "Expected": "\n<br>\n                                            В параметрах передаются id выбранных параметров в Предусловии:\n<br>\n                                            - ДР\n<br>\n                                            - КР\n<br>\n                                            - роли (Врач = 4)\n<br>\n                                            - медучреждения\n<br>\n                                        ",
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": ""
+        },
+        {
+          "SharedStepId": null,
+          "Action": "Проверить параметры, передаваемые при запросе данных медработник (метод getEmployeeInfo)",
+          "Expected": "\n<br>\n                                            В качестве входных параметров передается\n<br>\n                                            EmployeeID UserInfo.employeeId из ранее сформированного экземпляра UserContext\n<br>\n                                            HealthOrgID Workplace.medicalEntityId сформированного экземпляра UserContext\n<br>\n                                            RequesterSystemCode 'kpi'\n<br>\n                                        ",
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": ""
+        }
+      ],
+      "PreconditionSteps": [
+        {
+          "SharedStepId": null,
+          "Action": "Пользователь авторизован. Открыта страница выбора контекста пользователя.",
+          "Expected": null,
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": null
+        }
+      ],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " BVT"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Утверждён"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Контекст пользователя и приема",
+      "SectionId": "65a2825e-5909-4dc9-b37d-0cd240081827"
+    },
+    {
+      "Id": "3897362a-f3e6-4338-a54c-a91ccb700210",
+      "Description": "Imported from C396347",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр выданных ранее заключений на БП",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "38dec099-6fe1-4424-9fd0-60f58bb0be9e",
+      "Description": "Imported from C277322",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отмена работы с картой (КС переведено в статус \"Отменено\")",
+      "SectionId": "b207f68a-88e1-4d1c-b1a2-57a43f16ef3c"
+    },
+    {
+      "Id": "3df7d575-dc13-46ea-81bf-9f4276f7abe3",
+      "Description": "Imported from C328379",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование назначения на ЛИ",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "402df74d-8879-45b1-b689-1b05848692f5",
+      "Description": "Imported from C277319",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отложить работу с картой(КС переведено в статус \"Отложено\")",
+      "SectionId": "0e55da10-0829-4f06-acc0-c6f0789ddf16"
+    },
+    {
+      "Id": "4057bf2c-ed73-4eec-92cd-19ff4e882c73",
+      "Description": "Imported from C400624",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Вкладка \"История\"",
+      "SectionId": "5fb82ae1-f716-42aa-96be-04f997277c45"
+    },
+    {
+      "Id": "4119cee8-b52d-4f72-b2c8-f5fffed7417c",
+      "Description": "Imported from C277224",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [
+        {
+          "SharedStepId": null,
+          "Action": "\n<br>\n                                            Записать врачу в План приема экстренных пациентов.\n<br>\n                                            Пациентов по предварительной записи.\n<br>\n                                        ",
+          "Expected": "",
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": ""
+        },
+        {
+          "SharedStepId": null,
+          "Action": "Записать на прием к врачу пациентов по направлению. (Зайти под другим врачом и создать консультацию к данному врачу)",
+          "Expected": "",
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": ""
+        }
+      ],
+      "PreconditionSteps": [
+        {
+          "SharedStepId": null,
+          "Action": "\n<br>\n                                    Врач:\n<br>\n                                    - у врача есть связка ДР+КР под которыми можно работать в системе\n<br>\n                                    - у врача есть максимально заполненный в предыдущей версии  ЧЗП\n<br>\n                                    Врач имеет права:\n<br>\n                                    - на выписку льготных рецептов\n<br>\n                                    - на работу с Заявками на ЛН\n<br>\n                                    - имеет возможность выписывать БП\n<br>\n\n<br>\n\n<br>\n                                    Пациент:\n<br>\n                                    - с максимально заполненными сведения о себе (Номер страхового полиса, СНИЛС пациента и т.д.);\n<br>\n                                    - пациент имеет право на получение льготного лекарственного обеспечения;\n<br>\n                                    - имеет ранее подписанный ТАП;\n<br>\n                                    - Подписанные протоколы в предыдущих версиях КПИ Врач\n<br>\n                                    - имеет карту вызова с госпитализацией.\n<br>\n                                    - иммет необходимые условия для получения БП\n<br>\n                                ",
+          "Expected": null,
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": null
+        }
+      ],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " BVT"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Подготовка тестовых данных",
+      "SectionId": "6484edac-2b57-4d48-9131-03f727f5baa0"
+    },
+    {
+      "Id": "43d90ba2-4d0c-4c58-ac08-f8670d39f738",
+      "Description": "Imported from C277228",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Получение плана приема",
+      "SectionId": "ab1c84d9-6e47-4033-a3a8-95946c1750b3"
+    },
+    {
+      "Id": "4750906b-828d-4f56-a72f-cd5f0be11a96",
+      "Description": "Imported from C396355",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Аннулирование выписанного заключения на БП",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "4ba24d25-81bf-42f1-a2ac-1c435389a388",
+      "Description": "Imported from C330917",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Поиск пациента",
+      "SectionId": "ab1c84d9-6e47-4033-a3a8-95946c1750b3"
+    },
+    {
+      "Id": "51d577f8-936a-4ec8-a1f1-812143fa2691",
+      "Description": "Imported from C277257",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование Направления",
+      "SectionId": "36b23706-e6ee-4e5c-b90f-143400e9c00b"
+    },
+    {
+      "Id": "54a11191-bc5f-4f62-a02c-6fa863eb5e42",
+      "Description": "Imported from C277240",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Получение списка Карт вызова и Сведений о Госпитализации",
+      "SectionId": "5fb82ae1-f716-42aa-96be-04f997277c45"
+    },
+    {
+      "Id": "5991c86d-2aad-4936-adab-f7479ad4a13c",
+      "Description": "Imported from C396351",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Подтверждение подписания заключения",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "5bdbc4c4-5bee-4ceb-aa8b-c1f7c814f837",
+      "Description": "Imported from C277252",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование Направления",
+      "SectionId": "35747e7e-1d09-43cc-824c-397e3ec10617"
+    },
+    {
+      "Id": "5cc04249-5d71-41c5-b5f4-d2ca64d81086",
+      "Description": "Imported from C396353",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Инициирование просмотра расписания МРП (Иконка \"расписание\")",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "5f0b4d87-f17e-46ac-acbd-fc0b0783a66a",
+      "Description": "Imported from C277270",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка на ИД",
+      "SectionId": "25c78c0c-776b-4028-9d55-db265f07dcee"
+    },
+    {
+      "Id": "5fe373ed-de27-4ce0-b879-0288f9213be8",
+      "Description": "Imported from C277298",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Печать документов КС",
+      "SectionId": "5b94fbec-da14-4c58-aa5e-2b4d0aea98bc"
+    },
+    {
+      "Id": "607fdbbd-51f2-431c-8242-a148796a6680",
+      "Description": "Imported from C277258",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации Направления",
+      "SectionId": "36b23706-e6ee-4e5c-b90f-143400e9c00b"
+    },
+    {
+      "Id": "63baa619-388e-4ec2-80f9-8680fae24b76",
+      "Description": "Imported from C281992",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр печатной формы направления",
+      "SectionId": "35747e7e-1d09-43cc-824c-397e3ec10617"
+    },
+    {
+      "Id": "643218cc-e89a-4b13-bfab-0c2b7ca5c8e4",
+      "Description": "Imported from C277307",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Свернуть иЭМК",
+      "SectionId": "e3dc1060-4072-4a68-996a-e7b54003a8ca"
+    },
+    {
+      "Id": "64c9c6a1-7b7f-4639-a662-fb9dfbab5e25",
+      "Description": "Imported from C277287",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование ТАП",
+      "SectionId": "fff2b577-3317-4b31-9652-fd6f70a7cb99"
+    },
+    {
+      "Id": "65000a44-38cf-4d91-b183-c9aaa9da3a6e",
+      "Description": "Imported from C400629",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Область \"Лист назначений\"",
+      "SectionId": "0dd64b61-1b82-4f16-ab27-015792f66f14"
+    },
+    {
+      "Id": "655dd22d-5ef5-480c-ba7b-a83f7e45881e",
+      "Description": "Imported from C277276",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование направления на ИД",
+      "SectionId": "25c78c0c-776b-4028-9d55-db265f07dcee"
+    },
+    {
+      "Id": "670feda3-3475-43db-9ad0-8e46121ab2f3",
+      "Description": "Imported from C277234",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Получение данных о пациенте",
+      "SectionId": "2fa09f9b-92d5-40d1-9afa-101ab97612be"
+    },
+    {
+      "Id": "6bf1dd9b-e9d3-40ea-80ab-4234930a5382",
+      "Description": "Imported from C431260",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка Процедур",
+      "SectionId": "da803520-419e-47b2-96cf-62be8b5853d3"
+    },
+    {
+      "Id": "71e4f82b-f60d-41a1-9af6-197af2c58219",
+      "Description": "Imported from C277265",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание направления на ИД",
+      "SectionId": "3069abbc-1cf3-4082-bf48-ad26069da9f1"
+    },
+    {
+      "Id": "74d14a6a-932e-4e9c-930e-6987b2a0a8cd",
+      "Description": "Imported from C400627",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выполненные исследования за 30 дней",
+      "SectionId": "0dd64b61-1b82-4f16-ab27-015792f66f14"
+    },
+    {
+      "Id": "788705e2-c808-4db8-940c-b6c658d01876",
+      "Description": "Imported from C277239",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Получение осмотров для Листа осмотров (актуальный осмотр+история)",
+      "SectionId": "5fb82ae1-f716-42aa-96be-04f997277c45"
+    },
+    {
+      "Id": "7d5d9d88-b088-4e0d-a50a-c78dde8d8ebe",
+      "Description": "Imported from C277312",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка рецептов",
+      "SectionId": "06992da1-3ee5-4086-a568-6ce6eb366122"
+    },
+    {
+      "Id": "7e401359-7ac3-435b-850d-5f6683775cb4",
+      "Description": "Imported from C277278",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр перечня рецептов",
+      "SectionId": "7272ebb3-ce87-48b5-9ce9-c1626d736589"
+    },
+    {
+      "Id": "80097cd8-7234-4fa6-9f7e-887d1e0a7c38",
+      "Description": "Imported from C431266",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование назначения на Процедуру",
+      "SectionId": "31782e3f-a7bc-4d0a-bfb8-568eb96f929d"
+    },
+    {
+      "Id": "80543056-1540-4b17-b11f-d392f9e53928",
+      "Description": "Imported from C277296",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Подписание документов КС",
+      "SectionId": "ed0d6c60-f15c-4f94-a2e8-cd31afad8b4d"
+    },
+    {
+      "Id": "8370f4d5-666f-4543-831e-8b22362a8ece",
+      "Description": "Imported from C328378",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание направления на ЛИ(сценарий убран в связи с EMIASIE-22803)",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "84affda2-edb5-468b-bf4f-6e59f6396c68",
+      "Description": "Imported from C328377",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание назначения на ЛИ",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "868286d8-f3c3-471e-95f7-43f8dcd330c7",
+      "Description": "Imported from C277250",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка Консультаций",
+      "SectionId": "35747e7e-1d09-43cc-824c-397e3ec10617"
+    },
+    {
+      "Id": "873520f4-f7ae-4df1-8606-dea30411efde",
+      "Description": "Imported from C400625",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Текущий статус пациента",
+      "SectionId": "06992da1-3ee5-4086-a568-6ce6eb366122"
+    },
+    {
+      "Id": "87e8fb5d-24d7-4fec-ab79-fb7a7a51b5ce",
+      "Description": "Imported from C396348",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выдача нового заключения на БП",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "87ee44d9-72a0-4e4a-9932-1f10c0518c05",
+      "Description": "Imported from C334366",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание листа нетрудоспособности. Продление",
+      "SectionId": "b29e9bfe-9508-4152-b1b5-33bd553657e5"
+    },
+    {
+      "Id": "899a95a4-2b68-4d08-b7f8-fecffaff7b69",
+      "Description": "Imported from C277320",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Возобновление работы с картой (КС переведено в статус \"Выполняется\")",
+      "SectionId": "74866244-c9ae-4152-a6a3-07ea2c6f3d49"
+    },
+    {
+      "Id": "8a692094-1442-4659-8b05-9b5661a7b608",
+      "Description": "Imported from C277326",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [
+        {
+          "SharedStepId": null,
+          "Action": "Начать прием из списка Плана приема (среди плановых)",
+          "Expected": null,
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": null
+        }
+      ],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Начать прием из плана приема",
+      "SectionId": "beb1bbc3-f310-49bf-bd42-c482b0a67daf"
+    },
+    {
+      "Id": "8ef091a7-7638-41e7-b0b1-e6a3a353534d",
+      "Description": "Imported from C399080",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Подтверждение подписания заключения",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "8f6f2cfa-12a5-44fa-b839-7dfff3e730f3",
+      "Description": "Imported from C431259",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка процедур",
+      "SectionId": "06992da1-3ee5-4086-a568-6ce6eb366122"
+    },
+    {
+      "Id": "8f7a0d96-dd14-4bab-85e3-288f22071804",
+      "Description": "Imported from C328385",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание назначения на ЛИ",
+      "SectionId": "d08d2c1f-6f0b-4004-94aa-32fb8378f2a4"
+    },
+    {
+      "Id": "8fe6d464-3939-4dc8-bdd8-d0260656d320",
+      "Description": "Imported from C281990",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание листа нетрудоспособности. Открытие",
+      "SectionId": "b29e9bfe-9508-4152-b1b5-33bd553657e5"
+    },
+    {
+      "Id": "95a76ef3-bcdb-4de4-83b5-2f3dbceaee51",
+      "Description": "Imported from C396349",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Переход к просмотру деталей ранее выданных Заключений",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "96b81877-09f2-4912-a3b4-5880b4141938",
+      "Description": "Imported from C334367",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание листа нетрудоспособности. Продолжение",
+      "SectionId": "b29e9bfe-9508-4152-b1b5-33bd553657e5"
+    },
+    {
+      "Id": "97dd555d-2c47-491a-8430-4fdcc4bf1670",
+      "Description": "Imported from C328381",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации по назначению на ЛИ",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "99e7c0cf-3cc4-4c23-b8b8-56bddb5cc47d",
+      "Description": "Imported from C277286",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Сохранение ТАП",
+      "SectionId": "fff2b577-3317-4b31-9652-fd6f70a7cb99"
+    },
+    {
+      "Id": "9a3f4a10-bb76-4066-831b-ea1a52bf57b6",
+      "Description": "Imported from C277225",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Переход к выбору дополнительного медработника",
+      "SectionId": "d01d6dd8-6e1f-4ff0-a0fb-c149c446f413"
+    },
+    {
+      "Id": "9afb3796-b579-421c-8eba-44e8d16c433f",
+      "Description": "Imported from C281988",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание льготного рецепта",
+      "SectionId": "7272ebb3-ce87-48b5-9ce9-c1626d736589"
+    },
+    {
+      "Id": "9ba75336-cbfa-44b8-8ef7-5a70cfdba285",
+      "Description": "Imported from C277260",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка на ИД",
+      "SectionId": "3069abbc-1cf3-4082-bf48-ad26069da9f1"
+    },
+    {
+      "Id": "a12ec9c6-8d0f-4a58-93d1-3237a443361a",
+      "Description": "Imported from C277311",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка консультаций",
+      "SectionId": "06992da1-3ee5-4086-a568-6ce6eb366122"
+    },
+    {
+      "Id": "a4d878ef-613e-49d6-8a30-70857af02e2f",
+      "Description": "Imported from C330309",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отклик системы при заполнении текстовых полей(особенно Диагноз) в среднезаполненном протоколе",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "a4e7e3c9-1d34-45b1-b3b9-30b6c0ae52c6",
+      "Description": "Imported from C399084",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Аннулирование выписанного заключения на БП",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "a5d28060-c27f-4a26-99ae-19ed61a690e1",
+      "Description": "Imported from C400632",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выполненные исследования за 30 дней",
+      "SectionId": "1e37038d-d4af-4b3b-b972-61de58accb17"
+    },
+    {
+      "Id": "a5e8fbec-6c6a-40db-96c2-1b3c2d6ddb13",
+      "Description": "Imported from C396354",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отображение расписания",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "a89742c9-f056-41d0-9f0f-dc33aadd1451",
+      "Description": "Imported from C277325",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выбор задачи на подписание",
+      "SectionId": "987f1ff2-231f-492d-ae6b-d19c92c6c0bf"
+    },
+    {
+      "Id": "a8d2cfad-b956-4725-9294-61dd9fd37a3c",
+      "Description": "Imported from C400628",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации по выполненному исследованию",
+      "SectionId": "0dd64b61-1b82-4f16-ab27-015792f66f14"
+    },
+    {
+      "Id": "aaabf9bb-0b14-4dfd-9657-096bea139276",
+      "Description": "Imported from C277318",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Начать работу с картой без пациента из иЭМК",
+      "SectionId": "17a64061-3b76-4e76-bf87-0c56142b2b85"
+    },
+    {
+      "Id": "adab4fd0-b7ca-4a18-a229-92d507c83775",
+      "Description": "Imported from C292411",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Сохранение шаблона ЧЗП",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "ae959768-72ed-4437-886d-29acaf0a0bdb",
+      "Description": "Imported from C431261",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание назначения на Процедуру",
+      "SectionId": "da803520-419e-47b2-96cf-62be8b5853d3"
+    },
+    {
+      "Id": "ae9f7c7d-3764-4aea-b732-be3fab701d01",
+      "Description": "Imported from C277253",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации Направления",
+      "SectionId": "35747e7e-1d09-43cc-824c-397e3ec10617"
+    },
+    {
+      "Id": "b0201f52-6a11-4019-9bf9-80cfb6d50d18",
+      "Description": "Imported from C281991",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр печатной формы листа нетрудоспособности",
+      "SectionId": "b29e9bfe-9508-4152-b1b5-33bd553657e5"
+    },
+    {
+      "Id": "b1251574-74f9-4b97-aae3-b0d0cfc7f062",
+      "Description": "Imported from C277313",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Начать прием из иЭМК",
+      "SectionId": "74f00d70-c51c-4a5d-807d-db4268502591"
+    },
+    {
+      "Id": "b4352c19-3b2a-43de-a896-bfefb8be2182",
+      "Description": "Imported from C399082",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Инициирование просмотра расписания МРП (Иконка \"расписание\")",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "b7885ffb-d0bb-47db-86c4-1a25426a69b9",
+      "Description": "Imported from C277302",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выбор документов КС для печати",
+      "SectionId": "640304a6-314f-459e-b841-682a2b8e8797"
+    },
+    {
+      "Id": "ba0b3ab0-16e9-4847-8881-5ea833e9a933",
+      "Description": "Imported from C277261",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации по назначению на ИД",
+      "SectionId": "3069abbc-1cf3-4082-bf48-ad26069da9f1"
+    },
+    {
+      "Id": "ba9bc221-aa23-4faa-abe4-551395ef8b59",
+      "Description": "Imported from C277305",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Работа с картой без пациента",
+      "SectionId": "e3dc1060-4072-4a68-996a-e7b54003a8ca"
+    },
+    {
+      "Id": "bde5018e-3ad1-4443-8eb4-108072e3bf45",
+      "Description": "Imported from C277316",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отмена приема (КС переведено в статус \"Отменено\")",
+      "SectionId": "c5872475-acac-4cd7-9c02-68a0098b8f00"
+    },
+    {
+      "Id": "be0a6eda-1a84-4a23-aacf-9d1a450847b1",
+      "Description": "Imported from C328386",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование назначения на ЛИ",
+      "SectionId": "d08d2c1f-6f0b-4004-94aa-32fb8378f2a4"
+    },
+    {
+      "Id": "c53a3bf9-97b2-48d8-9cd6-82dfc02f1236",
+      "Description": "Imported from C277300",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выбор документов КС",
+      "SectionId": "db5486cb-50d6-4e3c-acab-432079774502"
+    },
+    {
+      "Id": "c6811409-8870-4b36-9359-9d1827a45a18",
+      "Description": "Imported from C277273",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование Назначения на ИД",
+      "SectionId": "25c78c0c-776b-4028-9d55-db265f07dcee"
+    },
+    {
+      "Id": "c784dbb4-b849-4df5-8d9b-59958a0da6e2",
+      "Description": "Imported from C292412",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование протокола осмотра",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "c7f8abd0-bfba-455f-b1b2-98bae5932668",
+      "Description": "Imported from C277315",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Возобновление приема по кнопке из иЭМК (КС переведено в статус \"Выполняется\")",
+      "SectionId": "7ddd68b1-3598-42a2-a946-4c9560d3ae5e"
+    },
+    {
+      "Id": "c809e4e2-1e4c-4be1-a072-c3fb1237066d",
+      "Description": "Imported from C277226",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выбор доп.медработников из ДР",
+      "SectionId": "d01d6dd8-6e1f-4ff0-a0fb-c149c446f413"
+    },
+    {
+      "Id": "c86c3b19-99bc-4c43-af4c-d3d1d1d33c75",
+      "Description": "Imported from C400630",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание Контрольной явки",
+      "SectionId": "0dd64b61-1b82-4f16-ab27-015792f66f14"
+    },
+    {
+      "Id": "caf88232-cb51-4925-9432-9543c2e60740",
+      "Description": "Imported from C277231",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Печать Плана приема",
+      "SectionId": "ab1c84d9-6e47-4033-a3a8-95946c1750b3"
+    },
+    {
+      "Id": "cce9a642-58ac-4489-b7a4-93d8ac00cf67",
+      "Description": "Imported from C292410",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание протокола с применением ЧЗП",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "ce6f3c26-df63-4ab4-8fe4-9c8c9562d049",
+      "Description": "Imported from C400633",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации по выполненному исследованию",
+      "SectionId": "1e37038d-d4af-4b3b-b972-61de58accb17"
+    },
+    {
+      "Id": "d04eedd0-6d15-40ce-b8ad-bf5165af1e04",
+      "Description": "Imported from C400626",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Диагностические задачи",
+      "SectionId": "0dd64b61-1b82-4f16-ab27-015792f66f14"
+    },
+    {
+      "Id": "d1083b03-be96-4ada-84c7-69749f7ff721",
+      "Description": "Imported from C277285",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Заполнение ТАП",
+      "SectionId": "fff2b577-3317-4b31-9652-fd6f70a7cb99"
+    },
+    {
+      "Id": "d3d2bdc4-0766-4b24-888b-907c286ce2a2",
+      "Description": "Imported from C334368",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание листа нетрудоспособности. Закрытие",
+      "SectionId": "b29e9bfe-9508-4152-b1b5-33bd553657e5"
+    },
+    {
+      "Id": "d3f3018e-aeae-480f-b015-f2aa90491ed6",
+      "Description": "Imported from C328384",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка ЛИ",
+      "SectionId": "d08d2c1f-6f0b-4004-94aa-32fb8378f2a4"
+    },
+    {
+      "Id": "d4390ee5-45e9-4a17-b016-2b80a777fa44",
+      "Description": "Imported from C396352",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Инициирование печати заключения",
+      "SectionId": "2f26c4a5-1023-4100-896d-22badd1a9785"
+    },
+    {
+      "Id": "d841bf05-7d8a-46e4-9988-c91776b87a07",
+      "Description": "Imported from C328382",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание записи на ЛИ",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "d8458bc0-d321-45cd-b56a-fba9bbace5a9",
+      "Description": "Imported from C277232",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка задач",
+      "SectionId": "987f1ff2-231f-492d-ae6b-d19c92c6c0bf"
+    },
+    {
+      "Id": "dad6b85a-2582-4a7d-88b3-86a7a6e13e5b",
+      "Description": "Imported from C431265",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание назначения на Процедуру",
+      "SectionId": "31782e3f-a7bc-4d0a-bfb8-568eb96f929d"
+    },
+    {
+      "Id": "dd347103-8875-43b0-b0a8-48e525e68ab6",
+      "Description": "Imported from C277317",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Завершение приёма",
+      "SectionId": "70623033-5315-4eff-a5a8-6db73525c53a"
+    },
+    {
+      "Id": "dd6e81cd-0c2e-48b1-a57e-2dbfbd163092",
+      "Description": "Imported from C277314",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [
+        {
+          "SharedStepId": null,
+          "Action": "Отложить прием пациента по троеточию  \"Отложить\"  в иЭМК пациента(КС переведено в статус \"Отложено\")",
+          "Expected": null,
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": null
+        }
+      ],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отложить прием (КС переведено в статус \"Отложено\")",
+      "SectionId": "c43d6336-7ef6-4dbf-b8a3-f77d5d8a0fd3"
+    },
+    {
+      "Id": "e15b3f5d-a9ee-4dab-b866-8d5d69ab536e",
+      "Description": "Imported from C277303",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Печать документов КС",
+      "SectionId": "640304a6-314f-459e-b841-682a2b8e8797"
+    },
+    {
+      "Id": "e202beee-6cd9-4358-b916-edf0b5d9b14e",
+      "Description": "Imported from C277262",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание назначения на ИД",
+      "SectionId": "3069abbc-1cf3-4082-bf48-ad26069da9f1"
+    },
+    {
+      "Id": "e5a4d379-da41-4cc3-ab9a-62f51abfb00b",
+      "Description": "Imported from C328387",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации по назначению на ЛИ",
+      "SectionId": "d08d2c1f-6f0b-4004-94aa-32fb8378f2a4"
+    },
+    {
+      "Id": "e65efa48-51fb-4f7d-a34e-e3ddf5dffd95",
+      "Description": "Imported from C277297",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Выбор документов КС для печати",
+      "SectionId": "5b94fbec-da14-4c58-aa5e-2b4d0aea98bc"
+    },
+    {
+      "Id": "e85146c2-d6fb-46fb-ade5-36e81e940a8a",
+      "Description": "Imported from C399079",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Инициирование подписания заключения",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "ea0c19fe-13b6-4b36-ac87-ed0fd28723db",
+      "Description": "Imported from C277275",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание направления на ИД",
+      "SectionId": "25c78c0c-776b-4028-9d55-db265f07dcee"
+    },
+    {
+      "Id": "eac73031-da77-4aba-8bdc-693eb43693d5",
+      "Description": "Imported from C277323",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Завершение работы с картой",
+      "SectionId": "8c9c20c8-c3eb-4997-a804-f4c95b830b83"
+    },
+    {
+      "Id": "ead91b65-12a0-43f4-a93f-28af5dd9222f",
+      "Description": "Imported from C328383",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр списка ЛИ",
+      "SectionId": "06992da1-3ee5-4086-a568-6ce6eb366122"
+    },
+    {
+      "Id": "eb41c682-f013-4037-b9c7-5f6ea4646996",
+      "Description": "Imported from C328380",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Редактирование направления на ЛИ(Сценарий убран в связи с EMIASIE-22803)",
+      "SectionId": "8170c4b4-d1e9-4310-8871-1ddb9428758b"
+    },
+    {
+      "Id": "edf2cf1c-8f7a-4878-8015-4ecf9800fdcf",
+      "Description": "Imported from C277236",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр баннера в развернутом виде",
+      "SectionId": "2fa09f9b-92d5-40d1-9afa-101ab97612be"
+    },
+    {
+      "Id": "ef39defa-bf81-45b0-9764-b7bb71a7ed70",
+      "Description": "Imported from C281985",
+      "State": 0,
+      "Priority": 2,
+      "Steps": [],
+      "PreconditionSteps": [
+        {
+          "SharedStepId": null,
+          "Action": "Отложить прием пациента кликом по пункту меню \"План приема\"",
+          "Expected": null,
+          "ActionAttachments": null,
+          "ExpectedAttachments": null,
+          "TestDataAttachments": null,
+          "TestData": null
+        }
+      ],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Отложить прием не через иЭМК",
+      "SectionId": "c43d6336-7ef6-4dbf-b8a3-f77d5d8a0fd3"
+    },
+    {
+      "Id": "efc24451-e9c2-40d9-bbca-f7aeb34ff25b",
+      "Description": "Imported from C277246",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Сохранение протокола осмотра с ЧЗП",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "f69ec74b-b289-4ec7-80b2-62337c64413c",
+      "Description": "Imported from C277279",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание коммерческого рецепта",
+      "SectionId": "7272ebb3-ce87-48b5-9ce9-c1626d736589"
+    },
+    {
+      "Id": "f95fd411-3292-4ee3-b584-89f15b10daaa",
+      "Description": "Imported from C336898",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " BVT"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание протокола с применением ЧЗП, в котором не заполнено поле \"Жалобы\"",
+      "SectionId": "ce2d1ed3-12fe-43c6-8480-e1f9369987b8"
+    },
+    {
+      "Id": "faf35471-15d9-4e2c-9806-47bf07f90b0e",
+      "Description": "Imported from C277272",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Создание назначения на ИД",
+      "SectionId": "25c78c0c-776b-4028-9d55-db265f07dcee"
+    },
+    {
+      "Id": "fc29fa72-730e-453b-82d5-b8c4e424ab66",
+      "Description": "Imported from C277243",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр детальной информации осмотра",
+      "SectionId": "5fb82ae1-f716-42aa-96be-04f997277c45"
+    },
+    {
+      "Id": "fd6984ae-a642-462d-9725-77561db76959",
+      "Description": "Imported from C399076",
+      "State": 0,
+      "Priority": 3,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "9e85f413-57f7-4f46-8ca9-adc68444897c",
+          "Value": " Черновик "
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр выданных ранее заключений на БП",
+      "SectionId": "d67e8940-facc-48c9-81ae-aa58882493a3"
+    },
+    {
+      "Id": "ff822d29-b74d-4b8c-8240-31b43b22f122",
+      "Description": "Imported from C277288",
+      "State": 0,
+      "Priority": 1,
+      "Steps": [],
+      "PreconditionSteps": [],
+      "PostconditionSteps": [],
+      "Duration": 300000,
+      "Attributes": [
+        {
+          "Id": "6a07451b-da0f-45ca-8182-282df01d3992",
+          "Value": " Нет"
+        },
+        {
+          "Id": "b017a5bf-1c80-4f97-8181-61f85bffc2cd",
+          "Value": ""
+        },
+        {
+          "Id": "43961a6c-ee09-44b2-95d1-f81d986f3001",
+          "Value": " Regress"
+        },
+        {
+          "Id": "02f7ac13-86a6-4b38-a6ba-d83b1b92d5f2",
+          "Value": "Functional"
+        }
+      ],
+      "Tags": [
+        "Тестовый набор для BVT-тестиро"
+      ],
+      "Attachments": [],
+      "Iterations": [],
+      "Links": [],
+      "Name": "Просмотр перечня рецептов",
+      "SectionId": "eeebe15a-72af-4f48-9c28-f10ec6e0be11"
+    }
+  ]
+}

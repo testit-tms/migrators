@@ -35,6 +35,7 @@ Where:
 1. Run the exporter with the following command:
 
 ```bash
+sudo chmod +x .\HPALMExporter
 .\HPALMExporter
 ```
 

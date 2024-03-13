@@ -31,6 +31,7 @@ Where:
 2. Run the Importer with the following command:
 
 ```bash
+sudo chmod +x .\Importer
 .\Importer
 ```
 

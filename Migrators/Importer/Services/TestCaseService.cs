@@ -98,7 +98,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         tmsTestCase.Steps.ToList().ForEach(
             s =>
             {
-                s.ActionAttachments.ForEach(a =>
+                s.ActionAttachments?.ForEach(a =>
                 {
                     if (s.Action.Contains($"<<<{a}>>>"))
                     {
@@ -117,7 +117,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
                     }
                 });
 
-                s.ExpectedAttachments.ForEach(a =>
+                s.ExpectedAttachments?.ForEach(a =>
                 {
                     if (s.Expected.Contains($"<<<{a}>>>"))
                     {
@@ -136,7 +136,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
                     }
                 });
 
-                s.TestDataAttachments.ForEach(a =>
+                s.TestDataAttachments?.ForEach(a =>
                 {
                     if (s.TestData.Contains($"<<<{a}>>>"))
                     {
