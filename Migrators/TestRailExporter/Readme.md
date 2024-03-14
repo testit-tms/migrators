@@ -1,4 +1,4 @@
-# TestLink Exporter
+# TestRail Exporter
 
 You can use this exporter to export your test cases from TestRail.
 
