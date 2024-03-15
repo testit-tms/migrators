@@ -11,6 +11,7 @@ We support the following systems:
 - [XRay](https://github.com/testit-tms/migrators/tree/main/Migrators/XRayExporter/Readme.md)
 - [TestCollab](https://github.com/testit-tms/migrators/tree/main/Migrators/TestCollabExporter/Readme.md)
 - [TestLink](https://github.com/testit-tms/migrators/tree/main/Migrators/TestLinkExporter/Readme.md)
+- [TestRail](https://github.com/testit-tms/migrators/tree/main/Migrators/TestRailExporter/Readme.md)
 - [PractiTest](https://github.com/testit-tms/migrators/tree/main/Migrators/PractiTestExporter/Readme.md)
 - [SpiraTest](https://github.com/testit-tms/migrators/tree/main/Migrators/SpiraTestExporter/Readme.md)
 - [HPALM](https://github.com/testit-tms/migrators/tree/main/Migrators/HPALMExporter/Readme.md)
