@@ -11,6 +11,7 @@ public class TestCaseService : ITestCaseService
     private readonly ILogger<TestCaseService> _logger;
     private readonly IClient _client;
     private readonly IAttachmentService _attachmentService;
+    public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IAttachmentService attachmentService)
     {
@@ -61,7 +62,7 @@ public class TestCaseService : ITestCaseService
                     PreconditionSteps = new List<Step>(),
                     PostconditionSteps = new List<Step>(),
                     Steps = ConvertSteps(testCollabTestCase.Steps, sharedStepsMap),
-                    Duration = testCollabTestCase.ExecutionTime == 0 ? 10000 : testCollabTestCase.ExecutionTime,
+                    Duration = testCollabTestCase.ExecutionTime == 0 ? _duration : testCollabTestCase.ExecutionTime,
                     Attributes = ConvertAttributes(testCollabTestCase.CustomFields, attributes),
                     Tags = testCollabTestCase.Tags.Select(t => t.Name).ToList(),
                     Attachments = attachments,

@@ -14,6 +14,7 @@ public class TestCaseService : ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
     private readonly Dictionary<string, Attribute> _attributeMap;
+    public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService)
@@ -109,7 +110,7 @@ public class TestCaseService : ITestCaseService
                             }
                         },
                     PostconditionSteps = new List<Step>(),
-                    Duration = 10,
+                    Duration = _duration,
                     Attributes = new List<CaseAttribute>
                     {
                         new()

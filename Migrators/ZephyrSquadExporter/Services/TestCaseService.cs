@@ -11,6 +11,7 @@ public class TestCaseService : ITestCaseService
     private readonly IClient _client;
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
+    public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService)
@@ -61,7 +62,7 @@ public class TestCaseService : ITestCaseService
                         : execution.IssueLabel.Split(",").Select(t => t.Trim()).ToList(),
                     PreconditionSteps = new List<Step>(),
                     PostconditionSteps = new List<Step>(),
-                    Duration = 10,
+                    Duration = _duration,
                     Attributes = new List<CaseAttribute>(),
                     Attachments = attachments,
                     Iterations = new List<Iteration>(),
