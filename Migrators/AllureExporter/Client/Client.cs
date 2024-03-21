@@ -103,7 +103,7 @@ public class Client : IClient
             page++;
 
             _logger.LogInformation("Got test case ids from main suite from {Page} page out of {TotalPages} pages", page, testCases.TotalPages);
-        } while (totalPages != -1 && page != totalPages) ;
+        } while (page < totalPages);
 
         return allTestCases;
     }
@@ -142,7 +142,7 @@ public class Client : IClient
             page++;
 
             _logger.LogInformation("Got test case ids from suite {SuiteId} from {Page} page out of {TotalPages} pages", suiteId, page, totalPages);
-        } while (totalPages != -1 && page != totalPages);
+        } while (page < totalPages);
 
         return allTestCases;
     }
