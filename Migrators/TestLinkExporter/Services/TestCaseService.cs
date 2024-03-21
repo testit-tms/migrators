@@ -12,6 +12,7 @@ public class TestCaseService : ITestCaseService
     private readonly IClient _client;
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
+    public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService)
@@ -63,7 +64,7 @@ public class TestCaseService : ITestCaseService
             Steps = _stepService.ConvertSteps(testCase.Steps),
             PreconditionSteps = ConvertPreconditionSteps(testCase.Preconditions),
             PostconditionSteps = new List<Step>(),
-            Duration = 10,
+            Duration = _duration,
             Attributes = new List<CaseAttribute>(),
             Tags = new List<string>(),
             Attachments = await _attachmentService.DownloadAttachments(testCase.Id, testCaseId),

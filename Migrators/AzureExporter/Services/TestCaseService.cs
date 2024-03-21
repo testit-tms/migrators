@@ -13,6 +13,7 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
     private readonly IAttachmentService _attachmentService;
     private readonly ILinkService _linkService;
     private readonly IParameterService _parameterService;
+    public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService, ILinkService linkService, IParameterService parameterService)
@@ -80,7 +81,7 @@ public class TestCaseService : WorkItemBaseService, ITestCaseService
                 Steps = steps,
                 PreconditionSteps = new List<Step>(),
                 PostconditionSteps = new List<Step>(),
-                Duration = 10,
+                Duration = _duration,
                 Attributes = new List<CaseAttribute>
                 {
                     new()
