@@ -20,6 +20,7 @@ public class StepService : IStepService
     public async Task<List<Step>> ConvertSteps(int testCaseId)
     {
         var steps = await _client.GetSteps(testCaseId);
+        var commonAttachments = await _client.GetAttachments(testCaseId);
 
         _logger.LogDebug("Found steps: {@Steps}", steps);
 
@@ -30,7 +31,7 @@ public class StepService : IStepService
                 foreach (var allureStepStep in allureStep.Steps.Where(allureStepStep =>
                              allureStepStep.Attachments != null))
                 {
-                    attachments.AddRange(allureStepStep.Attachments!.Select(a => a.Name));
+                    attachments.AddRange(GetAttachments(allureStepStep.Attachments!, commonAttachments));
                 }
 
                 var step = new Step
@@ -74,5 +75,28 @@ public class StepService : IStepService
             });
 
         return builder.ToString();
+    }
+
+    private static List<string> GetAttachments(
+        List<AllureAttachment> stepAttachments,
+        List<AllureAttachment> commonAttachments)
+    {
+        var attachments = new List<string>();
+
+        foreach (var stepAttachment in stepAttachments)
+        {
+            var attachment = commonAttachments.FirstOrDefault(
+                a => a.Id.Equals(stepAttachment.Id)
+            );
+
+            if (attachment == null)
+            {
+                continue;
+            }
+
+            attachments.Add(stepAttachment.Name);
+        }
+
+        return attachments;
     }
 }

@@ -73,54 +73,78 @@ public class Client : IClient
 
     public async Task<List<int>> GetTestCaseIdsFromMainSuite(int projectId)
     {
+        var allTestCases = new List<int>();
+        var page = 0;
+        var totalPages = -1;
+
         _logger.LogInformation("Getting test case ids from main suite");
 
-        var response = await _httpClient.GetAsync($"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2");
-        if (!response.IsSuccessStatusCode)
+        do
         {
-            _logger.LogError(
-                "Failed to get test case ids from main suite. Status code: {StatusCode}. Response: {Response}",
-                response.StatusCode, await response.Content.ReadAsStringAsync());
+            var response = await _httpClient.GetAsync($"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&page={page}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get test case ids from main suite. Status code: {StatusCode}. Response: {Response}",
+                    response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get test case ids from main suite. Status code: {response.StatusCode}");
-        }
+                throw new Exception($"Failed to get test case ids from main suite. Status code: {response.StatusCode}");
+            }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
+            var content = await response.Content.ReadAsStringAsync();
+            var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
+            totalPages = testCases.TotalPages;
 
-        return testCases is { Content.Count: 0 }
-            ? new List<int>()
-            : testCases.Content
-                .Where(t => _migrateAutotests || t.Automated == false)
-                .Select(t => t.Id)
-                .ToList();
+            allTestCases.AddRange(testCases.Content
+                    .Where(t => _migrateAutotests || t.Automated == false)
+                    .Select(t => t.Id)
+                    .ToList());
+
+            page++;
+
+            _logger.LogInformation("Got test case ids from main suite from {Page} page out of {TotalPages} pages", page, testCases.TotalPages);
+        } while (page < totalPages);
+
+        return allTestCases;
     }
 
     public async Task<List<int>> GetTestCaseIdsFromSuite(int projectId, int suiteId)
     {
+        var allTestCases = new List<int>();
+        var page = 0;
+        var totalPages = -1;
+
         _logger.LogInformation("Getting test case ids from suite {SuiteId}", suiteId);
 
-        var response =
-            await _httpClient.GetAsync($"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&path={suiteId}");
-        if (!response.IsSuccessStatusCode)
+        do
         {
-            _logger.LogError(
-                "Failed to get test case ids from suite {SuiteId}. Status code: {StatusCode}. Response: {Response}",
-                suiteId, response.StatusCode, await response.Content.ReadAsStringAsync());
+            var response =
+            await _httpClient.GetAsync($"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&path={suiteId}&page={page}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get test case ids from suite {SuiteId}. Status code: {StatusCode}. Response: {Response}",
+                    suiteId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception(
-                $"Failed to get test case ids from suite {suiteId}. Status code: {response.StatusCode}");
-        }
+                throw new Exception(
+                    $"Failed to get test case ids from suite {suiteId}. Status code: {response.StatusCode}");
+            }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
+            var content = await response.Content.ReadAsStringAsync();
+            var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
+            totalPages = testCases.TotalPages;
 
-        return testCases is { Content.Count: 0 }
-            ? new List<int>()
-            : testCases.Content
-                .Where(t => _migrateAutotests || t.Automated == false)
-                .Select(t => t.Id)
-                .ToList();
+            allTestCases.AddRange(testCases.Content
+                    .Where(t => _migrateAutotests || t.Automated == false)
+                    .Select(t => t.Id)
+                    .ToList());
+
+            page++;
+
+            _logger.LogInformation("Got test case ids from suite {SuiteId} from {Page} page out of {TotalPages} pages", suiteId, page, totalPages);
+        } while (page < totalPages);
+
+        return allTestCases;
     }
 
     public async Task<AllureTestCase> GetTestCaseById(int testCaseId)
