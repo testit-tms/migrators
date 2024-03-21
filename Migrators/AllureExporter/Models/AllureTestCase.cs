@@ -7,6 +7,9 @@ public class AllureTestCases
 {
     [JsonPropertyName("content")]
     public List<AllureTestCaseBase> Content { get; set; }
+
+    [JsonPropertyName("totalPages")]
+    public int TotalPages { get; set; }
 }
 
 public class AllureTestCaseBase
