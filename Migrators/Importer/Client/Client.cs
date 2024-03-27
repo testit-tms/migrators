@@ -2,11 +2,11 @@ using Importer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
-using TestIt.Client.Api;
-using TestIt.Client.Client;
-using TestIt.Client.Model;
+using TestIT.ApiClient.Api;
+using TestIT.ApiClient.Client;
+using TestIT.ApiClient.Model;
 using Attribute = Models.Attribute;
-using LinkType = TestIt.Client.Model.LinkType;
+using LinkType = TestIT.ApiClient.Model.LinkType;
 
 namespace Importer.Client;
 
@@ -15,6 +15,7 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
     private readonly AttachmentsApi _attachments;
     private readonly ProjectsApi _projectsApi;
+    private readonly ProjectSectionsApi _projectSectionsApi;
     private readonly SectionsApi _sectionsApi;
     private readonly CustomAttributesApi _customAttributes;
     private readonly WorkItemsApi _workItemsApi;
@@ -57,6 +58,7 @@ public class Client : IClient
 
         _attachments = new AttachmentsApi(new HttpClient(), cfg, httpClientHandler);
         _projectsApi = new ProjectsApi(new HttpClient(), cfg, httpClientHandler);
+        _projectSectionsApi = new ProjectSectionsApi(new HttpClient(), cfg, httpClientHandler);
         _sectionsApi = new SectionsApi(new HttpClient(), cfg, httpClientHandler);
         _customAttributes = new CustomAttributesApi(new HttpClient(), cfg, httpClientHandler);
         _workItemsApi = new WorkItemsApi(new HttpClient(), cfg, httpClientHandler);
@@ -70,7 +72,7 @@ public class Client : IClient
 
         try
         {
-            var resp = await _projectsApi.CreateProjectAsync(new ProjectPostModel(name: name));
+            var resp = await _projectsApi.CreateProjectAsync(new CreateProjectRequest(name: name));
             _projectId = resp.Id;
 
             _logger.LogDebug("Created project {@Project}", resp);
@@ -89,14 +91,14 @@ public class Client : IClient
 
         try
         {
-            var model = new SectionPostModel(name: section.Name, parentId: parentSectionId, projectId: _projectId)
+            var model = new CreateSectionRequest(name: section.Name, parentId: parentSectionId, projectId: _projectId, attachments: [])
             {
-                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPutModel
+                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
                 {
                     Action = s.Action,
                     Expected = s.Expected
                 }).ToList(),
-                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPutModel
+                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPostModel
                 {
                     Action = s.Action,
                     Expected = s.Expected
@@ -125,7 +127,7 @@ public class Client : IClient
 
         try
         {
-            var model = new GlobalCustomAttributePostModel(name: attribute.Name)
+            var model = new ApiV2CustomAttributesGlobalPostRequest(name: attribute.Name)
             {
                 Type = Enum.Parse<CustomAttributeTypesEnum>(attribute.Type.ToString()),
                 IsRequired = attribute.IsRequired,
@@ -198,13 +200,13 @@ public class Client : IClient
     {
         try
         {
-            var model = new WorkItemPostModel(
-                steps: new List<StepPutModel>(),
-                preconditionSteps: new List<StepPutModel>(),
-                postconditionSteps: new List<StepPutModel>(),
+            var model = new CreateWorkItemRequest(
+                steps: new List<StepPostModel>(),
+                preconditionSteps: new List<StepPostModel>(),
+                postconditionSteps: new List<StepPostModel>(),
                 attributes: new Dictionary<string, object>(),
                 links: new List<LinkPostModel>(),
-                tags: new List<TagShortModel>(),
+                tags: new List<TagPostModel>(),
                 name: sharedStep.Name)
             {
                 EntityTypeName = WorkItemEntityTypes.SharedSteps,
@@ -213,7 +215,7 @@ public class Client : IClient
                 State = Enum.Parse<WorkItemStates>(sharedStep.State.ToString()),
                 Priority = Enum.Parse<WorkItemPriorityModel>(sharedStep.Priority.ToString()),
                 Steps = sharedStep.Steps.Select(s =>
-                    new StepPutModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
@@ -221,7 +223,7 @@ public class Client : IClient
                 Attributes = sharedStep.Attributes
                     .ToDictionary(keySelector: a => a.Id.ToString(),
                         elementSelector: a => (object)a.Value),
-                Tags = sharedStep.Tags.Select(t => new TagShortModel(t)).ToList(),
+                Tags = sharedStep.Tags.Select(t => new TagPostModel(t)).ToList(),
                 Links = sharedStep.Links.Select(l =>
                     new LinkPostModel(url: l.Url)
                     {
@@ -257,13 +259,13 @@ public class Client : IClient
 
         try
         {
-            var model = new WorkItemPostModel(
-                steps: new List<StepPutModel>(),
-                preconditionSteps: new List<StepPutModel>(),
-                postconditionSteps: new List<StepPutModel>(),
+            var model = new CreateWorkItemRequest(
+                steps: new List<StepPostModel>(),
+                preconditionSteps: new List<StepPostModel>(),
+                postconditionSteps: new List<StepPostModel>(),
                 attributes: new Dictionary<string, object>(),
                 links: new List<LinkPostModel>(),
-                tags: new List<TagShortModel>(),
+                tags: new List<TagPostModel>(),
                 name: testCase.Name)
             {
                 EntityTypeName = WorkItemEntityTypes.TestCases,
@@ -271,19 +273,19 @@ public class Client : IClient
                 State = Enum.Parse<WorkItemStates>(testCase.State.ToString()),
                 Priority = Enum.Parse<WorkItemPriorityModel>(testCase.Priority.ToString()),
                 PreconditionSteps = testCase.PreconditionSteps.Select(s =>
-                    new StepPutModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
                     }).ToList(),
                 PostconditionSteps = testCase.PostconditionSteps.Select(s =>
-                    new StepPutModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
                     }).ToList(),
                 Steps = testCase.Steps.Select(s =>
-                    new StepPutModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected,
@@ -293,7 +295,7 @@ public class Client : IClient
                 Attributes = testCase.Attributes
                     .ToDictionary(keySelector: a => a.Id.ToString(),
                         elementSelector: a => (object)a.Value),
-                Tags = testCase.Tags.Select(t => new TagShortModel(t)).ToList(),
+                Tags = testCase.Tags.Select(t => new TagPostModel(t)).ToList(),
                 Links = testCase.Links.Select(l =>
                     new LinkPostModel(url: l.Url)
                     {
@@ -334,7 +336,7 @@ public class Client : IClient
 
         try
         {
-            var section = await _projectsApi.GetSectionsByProjectIdAsync(_projectId.ToString());
+            var section = await _projectSectionsApi.GetSectionsByProjectIdAsync(_projectId.ToString());
 
             _logger.LogDebug("Got root section {@Section}", section.First());
 
@@ -354,7 +356,7 @@ public class Client : IClient
         try
         {
             var attributes = await _customAttributesApi.ApiV2CustomAttributesSearchPostAsync(
-                customAttributeSearchQueryModel: new CustomAttributeSearchQueryModel(isGlobal: true, isDeleted: false));
+                apiV2CustomAttributesSearchPostRequest: new ApiV2CustomAttributesSearchPostRequest(isGlobal: true, isDeleted: false));
 
             _logger.LogDebug("Got project attributes {@Attributes}", attributes);
 
@@ -402,7 +404,7 @@ public class Client : IClient
 
         try
         {
-            var model = new GlobalCustomAttributeUpdateModel(name: attribute.Name)
+            var model = new ApiV2CustomAttributesGlobalIdPutRequest(name: attribute.Name)
             {
                 IsEnabled = attribute.IsEnabled,
                 IsRequired = attribute.IsRequired,
@@ -417,7 +419,7 @@ public class Client : IClient
             _logger.LogDebug("Updating attribute {@Model}", model);
 
             var resp = await _customAttributesApi.ApiV2CustomAttributesGlobalIdPutAsync(id: attribute.Id,
-                globalCustomAttributeUpdateModel: model);
+                apiV2CustomAttributesGlobalIdPutRequest: model);
 
             _logger.LogDebug("Updated attribute {@Response}", resp);
 
@@ -467,7 +469,7 @@ public class Client : IClient
 
         try
         {
-            var model = new ParameterPostModel(name: parameter.Name,
+            var model = new CreateParameterRequest(name: parameter.Name,
                 value: parameter.Value);
 
             _logger.LogDebug("Creating parameter {@Model}", model);
@@ -498,7 +500,7 @@ public class Client : IClient
         try
         {
             var resp = await _parametersApi.ApiV2ParametersSearchPostAsync(
-                parameterFilterModel: new ParameterFilterModel(name: name, isDeleted: false));
+                apiV2ParametersSearchPostRequest: new ApiV2ParametersSearchPostRequest(name: name, isDeleted: false));
 
             _logger.LogDebug("Got parameter {@Response}", resp);
 
