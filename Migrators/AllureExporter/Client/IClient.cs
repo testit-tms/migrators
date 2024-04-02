@@ -9,6 +9,7 @@ public interface IClient
     Task<List<int>> GetTestCaseIdsFromSuite(int projectId, int suiteId);
     Task<AllureTestCase> GetTestCaseById(int testCaseId);
     Task<List<AllureStep>> GetSteps(int testCaseId);
+    Task<AllureStepsInfo> GetStepsInfo(int testCaseId);
     Task<List<AllureAttachment>> GetAttachments(int testCaseId);
     Task<List<AllureLink>> GetLinks(int testCaseId);
     Task<List<BaseEntity>> GetSuites(int projectId);

@@ -66,6 +66,7 @@ public class TestCaseService : ITestCaseService
 
         var testCaseGuid = Guid.NewGuid();
         var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseId, testCaseGuid);
+        var preconditionSteps = testCase.Precondition != null ? [new Step { Action = testCase.Precondition }] : new List<Step>();
         var steps = await _stepService.ConvertSteps(testCaseId);
         var caseAttributes = await ConvertAttributes(testCaseId, testCase, attributes);
 
@@ -76,7 +77,7 @@ public class TestCaseService : ITestCaseService
             Description = testCase.Description,
             State = StateType.NotReady,
             Priority = PriorityType.Medium,
-            PreconditionSteps = new List<Step>(),
+            PreconditionSteps = preconditionSteps,
             PostconditionSteps = new List<Step>(),
             Tags = testCase.Tags.Select(t => t.Name).ToList(),
             Iterations = new List<Iteration>(),

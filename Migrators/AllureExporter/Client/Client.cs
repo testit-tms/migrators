@@ -187,6 +187,27 @@ public class Client : IClient
         return steps.Steps;
     }
 
+    public async Task<AllureStepsInfo> GetStepsInfo(int testCaseId)
+    {
+        _logger.LogInformation("Getting steps info for test case with id {TestCaseId}", testCaseId);
+
+        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/step");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get steps info for test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
+                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get steps info for test case with id {testCaseId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var stepsInfo = JsonSerializer.Deserialize<AllureStepsInfo>(content);
+
+        return stepsInfo;
+    }
+
     public async Task<List<AllureAttachment>> GetAttachments(int testCaseId)
     {
         _logger.LogInformation("Getting attachments for test case with id {TestCaseId}", testCaseId);

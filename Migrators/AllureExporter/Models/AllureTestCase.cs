@@ -37,6 +37,9 @@ public class AllureTestCase : AllureTestCaseBase
 
     [JsonPropertyName("testLayer")]
     public TestLayer? Layer { get; set; }
+
+    [JsonPropertyName("precondition")]
+    public string? Precondition { get; set; }
 }
 
 public class Tags
