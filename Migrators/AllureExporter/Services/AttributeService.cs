@@ -47,7 +47,7 @@ public class AttributeService : IAttributeService
             Id = Guid.NewGuid(),
             Name = Constants.AllureStatus,
             IsActive = true,
-            IsRequired = true,
+            IsRequired = false,
             Type = AttributeType.Options,
             Options = new List<string>
             {
