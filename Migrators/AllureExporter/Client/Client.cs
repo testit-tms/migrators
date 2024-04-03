@@ -38,7 +38,7 @@ public class Client : IClient
         }
 
         var migrateAutotests = section["migrateAutotests"];
-        _migrateAutotests = !string.IsNullOrEmpty(migrateAutotests) && bool.Parse(migrateAutotests);
+        _migrateAutotests = bool.TryParse(migrateAutotests, out var value) ? value : false;
 
         _projectName = projectName;
         _httpClient = new HttpClient();
