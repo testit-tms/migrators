@@ -11,16 +11,18 @@ public class ExportService : IExportService
     private readonly IClient _client;
     private readonly IWriteService _writeService;
     private readonly ISectionService _sectionService;
+    private readonly ISharedStepService _sharedStepService;
     private readonly ITestCaseService _testCaseService;
     private readonly IAttributeService _attributeService;
 
     public ExportService(ILogger<ExportService> logger, IClient client, IWriteService writeService,
-        ISectionService sectionService, ITestCaseService testCaseService, IAttributeService attributeService)
+        ISectionService sectionService, ISharedStepService sharedStepService, ITestCaseService testCaseService, IAttributeService attributeService)
     {
         _logger = logger;
         _client = client;
         _writeService = writeService;
         _sectionService = sectionService;
+        _sharedStepService = sharedStepService;
         _testCaseService = testCaseService;
         _attributeService = attributeService;
     }
@@ -34,8 +36,15 @@ public class ExportService : IExportService
         var attributes = await _attributeService.GetCustomAttributes(project.Id);
 
         var customAttributes = attributes.ToDictionary(k => k.Name, v => v.Id);
+        var sharedSteps = await _sharedStepService.ConvertSharedSteps(project.Id, section.MainSection.Id, attributes);
+        var sharedStepsMap = sharedSteps.ToDictionary(k => k.Key.ToString(), v => v.Value.Id);
         var testCases =
-            await _testCaseService.ConvertTestCases(project.Id, customAttributes, section.SectionDictionary);
+            await _testCaseService.ConvertTestCases(project.Id, sharedStepsMap, customAttributes, section.SectionDictionary);
+
+        foreach (var sharedStep in sharedSteps)
+        {
+            await _writeService.WriteSharedStep(sharedStep.Value);
+        }
 
         foreach (var testCase in testCases)
         {
@@ -47,7 +56,7 @@ public class ExportService : IExportService
             ProjectName = project.Name,
             Sections = new List<Section> { section.MainSection },
             TestCases = testCases.Select(t => t.Id).ToList(),
-            SharedSteps = new List<Guid>(),
+            SharedSteps = sharedSteps.Values.Select(s => s.Id).ToList(),
             Attributes = attributes
         };
 

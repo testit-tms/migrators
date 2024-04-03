@@ -22,7 +22,10 @@ public class TestCaseService : ITestCaseService
         _stepService = stepService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<string, Guid> attributes,
+    public async Task<List<TestCase>> ConvertTestCases(
+        int projectId,
+        Dictionary<string, Guid> sharedStepMap,
+        Dictionary<string, Guid> attributes,
         Dictionary<int, Guid> sectionIdMap)
     {
         _logger.LogInformation("Converting test cases");
@@ -42,7 +45,7 @@ public class TestCaseService : ITestCaseService
 
             foreach (var testCaseId in ids)
             {
-                var testCase = await ConvertTestCase(testCaseId, section.Value, attributes);
+                var testCase = await ConvertTestCase(testCaseId, sharedStepMap, section.Value, attributes);
 
                 testCases.Add(testCase);
             }
@@ -53,7 +56,10 @@ public class TestCaseService : ITestCaseService
         return testCases;
     }
 
-    protected virtual async Task<TestCase> ConvertTestCase(int testCaseId, Guid sectionId,
+    protected virtual async Task<TestCase> ConvertTestCase(
+        int testCaseId,
+        Dictionary<string, Guid> sharedStepMap,
+        Guid sectionId,
         Dictionary<string, Guid> attributes)
     {
         var testCase = await _client.GetTestCaseById(testCaseId);
@@ -65,9 +71,9 @@ public class TestCaseService : ITestCaseService
         _logger.LogDebug("Found links: {@Links}", links);
 
         var testCaseGuid = Guid.NewGuid();
-        var tmsAttachments = await _attachmentService.DownloadAttachments(testCaseId, testCaseGuid);
+        var tmsAttachments = await _attachmentService.DownloadAttachmentsforTestCase(testCaseId, testCaseGuid);
         var preconditionSteps = testCase.Precondition != null ? [new Step { Action = testCase.Precondition }] : new List<Step>();
-        var steps = await _stepService.ConvertSteps(testCaseId);
+        var steps = await _stepService.ConvertStepsForTestCase(testCaseId, sharedStepMap);
         var caseAttributes = await ConvertAttributes(testCaseId, testCase, attributes);
 
         var allureTestCase = new TestCase

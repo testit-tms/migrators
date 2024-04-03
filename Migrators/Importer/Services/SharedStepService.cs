@@ -46,6 +46,7 @@ public class SharedStepService : BaseWorkItemService, ISharedStepService
         step.Attributes = ConvertAttributes(step.Attributes, _attributesMap);
         var attachments = await _attachmentService.GetAttachments(step.Id, step.Attachments);
         step.Attachments = attachments.Select(a => a.Value.ToString()).ToList();
+        step.Steps = AddAttachmentsToSteps(step.Steps, attachments);
 
         var sectionId = _sectionsMap[step.SectionId];
 

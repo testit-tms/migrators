@@ -59,4 +59,3 @@ public class TestLayer
     [JsonPropertyName("name")]
     public string Name { get; set; }
 }
-

@@ -18,4 +18,7 @@ public class AllureAttachmentContent
 {
     [JsonPropertyName("content")]
     public List<AllureAttachment> Content { get; set; }
+
+    [JsonPropertyName("totalPages")]
+    public int TotalPages { get; set; }
 }

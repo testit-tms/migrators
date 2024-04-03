@@ -3,6 +3,7 @@ using System.Text.Json;
 using AllureExporter.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Models;
 
 namespace AllureExporter.Client;
 
@@ -73,7 +74,7 @@ public class Client : IClient
 
     public async Task<List<int>> GetTestCaseIdsFromMainSuite(int projectId)
     {
-        var allTestCases = new List<int>();
+        var testCaseIds = new List<int>();
         var page = 0;
         var totalPages = -1;
 
@@ -95,7 +96,7 @@ public class Client : IClient
             var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
             totalPages = testCases.TotalPages;
 
-            allTestCases.AddRange(testCases.Content
+            testCaseIds.AddRange(testCases.Content
                     .Where(t => _migrateAutotests || t.Automated == false)
                     .Select(t => t.Id)
                     .ToList());
@@ -105,12 +106,12 @@ public class Client : IClient
             _logger.LogInformation("Got test case ids from main suite from {Page} page out of {TotalPages} pages", page, testCases.TotalPages);
         } while (page < totalPages);
 
-        return allTestCases;
+        return testCaseIds;
     }
 
     public async Task<List<int>> GetTestCaseIdsFromSuite(int projectId, int suiteId)
     {
-        var allTestCases = new List<int>();
+        var testCaseIds = new List<int>();
         var page = 0;
         var totalPages = -1;
 
@@ -134,7 +135,7 @@ public class Client : IClient
             var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
             totalPages = testCases.TotalPages;
 
-            allTestCases.AddRange(testCases.Content
+            testCaseIds.AddRange(testCases.Content
                     .Where(t => _migrateAutotests || t.Automated == false)
                     .Select(t => t.Id)
                     .ToList());
@@ -144,8 +145,46 @@ public class Client : IClient
             _logger.LogInformation("Got test case ids from suite {SuiteId} from {Page} page out of {TotalPages} pages", suiteId, page, totalPages);
         } while (page < totalPages);
 
-        return allTestCases;
+        return testCaseIds;
     }
+
+    public async Task<List<AllureSharedStep>> GetSharedStepsByProjectId(int projectId)
+    {
+        var allSharedSteps = new List<AllureSharedStep>();
+        var page = 0;
+        var totalPages = -1;
+
+        _logger.LogInformation("Getting shared step ids by project id {ProjectId}", projectId);
+
+        do
+        {
+            var response =
+            await _httpClient.GetAsync($"api/rs/sharedstep?projectId={projectId}&treeId=2&page={page}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get shared step ids by project id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
+                    projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception(
+                    $"Failed to get shared step ids by project id {projectId}. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var sharedSteps = JsonSerializer.Deserialize<AllureSharedSteps>(content);
+            totalPages = sharedSteps.TotalPages;
+
+            allSharedSteps.AddRange(sharedSteps.Content);
+
+            page++;
+
+            _logger.LogInformation("Got shared step ids by project id {ProjectId} from {Page} page out of {TotalPages} pages", projectId, page, totalPages);
+        } while (page < totalPages);
+
+        return allSharedSteps;
+    }
+
+
 
     public async Task<AllureTestCase> GetTestCaseById(int testCaseId)
     {
@@ -187,19 +226,19 @@ public class Client : IClient
         return steps.Steps;
     }
 
-    public async Task<AllureStepsInfo> GetStepsInfo(int testCaseId)
+    public async Task<AllureStepsInfo> GetStepsInfoByTestCaseId(int testCaseId)
     {
-        _logger.LogInformation("Getting steps info for test case with id {TestCaseId}", testCaseId);
+        _logger.LogInformation("Getting steps info by test case id {TestCaseId}", testCaseId);
 
         var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/step");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
-                "Failed to get steps info for test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
+                "Failed to get steps info by test case id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
                 testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
             throw new Exception(
-                $"Failed to get steps info for test case with id {testCaseId}. Status code: {response.StatusCode}");
+                $"Failed to get steps info by test case id {testCaseId}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -208,25 +247,95 @@ public class Client : IClient
         return stepsInfo;
     }
 
-    public async Task<List<AllureAttachment>> GetAttachments(int testCaseId)
+    public async Task<AllureSharedStepsInfo> GetStepsInfoBySharedStepId(int sharedStepId)
     {
-        _logger.LogInformation("Getting attachments for test case with id {TestCaseId}", testCaseId);
+        _logger.LogInformation("Getting steps info by shared step id {SharedStepId}", sharedStepId);
 
-        var response = await _httpClient.GetAsync($"api/rs/testcase/attachment?testCaseId={testCaseId}");
+        var response = await _httpClient.GetAsync($"api/rs/sharedstep/{sharedStepId}/step");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
-                "Failed to get attachments for test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
-                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
+                "Failed to get steps info by shared step id {SharedStepId}. Status code: {StatusCode}. Response: {Response}",
+                sharedStepId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
             throw new Exception(
-                $"Failed to get attachments for test case with id {testCaseId}. Status code: {response.StatusCode}");
+                $"Failed to get steps info by shared step id {sharedStepId}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content);
+        var sharedStepsInfo = JsonSerializer.Deserialize<AllureSharedStepsInfo>(content);
 
-        return attachments.Content;
+        return sharedStepsInfo;
+    }
+
+    public async Task<List<AllureAttachment>> GetAttachmentsByTestCaseId(int testCaseId)
+    {
+        var allAttachments = new List<AllureAttachment>();
+        var page = 0;
+        var totalPages = -1;
+
+        _logger.LogInformation("Getting attachments by test case id {TestCaseId}", testCaseId);
+
+        do
+        {
+            var response = await _httpClient.GetAsync($"api/rs/testcase/attachment?testCaseId={testCaseId}&page={page}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get attachments by test case id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
+                    testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception(
+                    $"Failed to get attachments by test case id {testCaseId}. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content);
+            totalPages = attachments.TotalPages;
+
+            allAttachments.AddRange(attachments.Content);
+
+            page++;
+
+            _logger.LogInformation("Got attachments by test case id {TestCaseId} from {Page} page out of {TotalPages} pages", testCaseId, page, totalPages);
+        } while (page < totalPages);
+
+        return allAttachments;
+    }
+
+    public async Task<List<AllureAttachment>> GetAttachmentsBySharedStepId(int sharedStepId)
+    {
+        var allAttachments = new List<AllureAttachment>();
+        var page = 0;
+        var totalPages = -1;
+
+        _logger.LogInformation("Getting attachments by shared step id {SharedStepId}", sharedStepId);
+
+        do
+        {
+            var response = await _httpClient.GetAsync($"api/rs/sharedstep/attachment?sharedStepId={sharedStepId}&page={page}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get attachments by shared step id {SharedStepId}. Status code: {StatusCode}. Response: {Response}",
+                    sharedStepId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception(
+                    $"Failed to get attachments by shared step id {sharedStepId}. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content);
+            totalPages = attachments.TotalPages;
+
+            allAttachments.AddRange(attachments.Content);
+
+            page++;
+
+            _logger.LogInformation("Got attachments by shared step id {SharedStepId} from {Page} page out of {TotalPages} pages", sharedStepId, page, totalPages);
+        } while (page < totalPages);
+
+        return allAttachments;
     }
 
     public async Task<List<AllureLink>> GetLinks(int testCaseId)
@@ -269,11 +378,18 @@ public class Client : IClient
         return suites.Content.ToList();
     }
 
-    public async Task<byte[]> DownloadAttachment(int attachmentId)
+    public async Task<byte[]> DownloadAttachmentForTestCase(int attachmentId)
     {
-        _logger.LogInformation("Downloading attachment with id {AttachmentId}", attachmentId);
+        _logger.LogInformation("Downloading attachment for test case with id {AttachmentId}", attachmentId);
 
         return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
+    }
+
+    public async Task<byte[]> DownloadAttachmentForSharedStep(int attachmentId)
+    {
+        _logger.LogInformation("Downloading attachment for shared step with id {AttachmentId}", attachmentId);
+
+        return await _httpClient.GetByteArrayAsync($"api/rs/sharedstep/attachment/{attachmentId}/content?inline=false");
     }
 
     public async Task<List<BaseEntity>> GetTestLayers()

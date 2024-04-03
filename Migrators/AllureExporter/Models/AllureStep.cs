@@ -26,24 +26,6 @@ public class AllureSteps
     public List<AllureStep> Steps { get; set; }
 }
 
-public class AllureScenarioRoot
-{
-    [JsonPropertyName("children")]
-    public List<int> NestedStepIds { get; set; }
-}
-
-public class AllureSharedStep
-{
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
-
-    [JsonPropertyName("body")]
-    public string Name { get; set; }
-
-    [JsonPropertyName("children")]
-    public List<int> NestedStepIds { get; set; }
-}
-
 public class AllureScenarioStep
 {
     [JsonPropertyName("id")]
@@ -65,11 +47,8 @@ public class AllureScenarioStep
     public int? SharedStepId { get; set; }
 }
 
-public class AllureStepsInfo
+public class AllureStepsInfo : AllureSharedStepsInfo
 {
-    [JsonPropertyName("root")]
-    public AllureScenarioRoot Root { get; set; }
-
     [JsonPropertyName("scenarioSteps")]
     public Dictionary<string, AllureScenarioStep> ScenarioStepsDictionary { get; set; }
 
@@ -77,11 +56,5 @@ public class AllureStepsInfo
     public Dictionary<string, AllureAttachment> AttachmentsDictionary { get; set; }
 
     [JsonPropertyName("sharedSteps")]
-    public Dictionary<string, AllureSharedStep> SharedStepsDictionary { get; set; }
-
-    [JsonPropertyName("sharedStepScenarioSteps")]
-    public Dictionary<string, AllureScenarioStep> SharedStepScenarioStepsDictionary { get; set; }
-
-    [JsonPropertyName("sharedStepAttachments")]
-    public Dictionary<string, AllureAttachment> SharedStepAttachmentsDictionary { get; set; }
+    public Dictionary<string, AllureSharedStepInfo> SharedStepsDictionary { get; set; }
 }
