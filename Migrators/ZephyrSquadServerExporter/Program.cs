@@ -56,7 +56,6 @@ namespace ZephyrSquadServerExporter
                     services.AddSingleton<IExportService, ExportService>();
                     services.AddSingleton<IFolderService, FolderService>();
                     services.AddSingleton<IStepService, StepService>();
-                    // services.AddSingleton<IAttributeService, AttributeService>();
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IWriteService, WriteService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();
