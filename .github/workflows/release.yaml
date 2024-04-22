@@ -256,7 +256,7 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true           
 
-zephyr_squad_server_build:
+  zephyr_squad_server_build:
     needs: zephyr_squad_build
     runs-on: ubuntu-latest
     strategy:
