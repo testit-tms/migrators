@@ -15,7 +15,21 @@ You can download the latest version of the AllureExporter from the [releases](ht
     "resultPath": "/Users/user01/Documents/importer",
     "allure": {
         "url": "https://allure.ru/",
-        "token": "49a1238b-b0a6-4ebb-a47c-acb2b7a9c4e9",
+        "apiToken": "49a1238b-b0a6-4ebb-a47c-acb2b7a9c4e9",
+        "projectName": "ProjectName",
+        "migrateAutotests": true
+    }
+}
+```
+
+or
+
+```json
+{
+    "resultPath": "/Users/user01/Documents/importer",
+    "allure": {
+        "url": "https://allure.ru/",
+        "bearerToken": "MmEwMjd4OWYtNGMxMC0zYjhkLWExMmUtNTZjYmY0OTE0MGExIDcxMjAyMCUzQTNjOWYwMzJkLWVlZWEtNGRjMC04NjIyLTliMGY2ODQzZWMzNCBVU0VSX0RFRkFVTFRfTkFNRQ",
         "projectName": "ProjectName",
         "migrateAutotests": true
     }
@@ -26,7 +40,8 @@ Where:
 
 - resultPath - path to the folder where the results will be saved
 - allure.url - url to the Allure server
-- allure.token - token for access to the Allure server
+- allure.apiToken - Api-Token for access to the Allure server
+- allure.bearerToken - Bearer-Token for access to the Allure server
 - allure.projectName - name of the project in the Allure server
 - allure.migrateAutotests - flag for migration of autotests
 

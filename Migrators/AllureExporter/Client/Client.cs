@@ -25,11 +25,8 @@ public class Client : IClient
             throw new ArgumentException("Url is not specified");
         }
 
-        var token = section["token"];
-        if (string.IsNullOrEmpty(token))
-        {
-            throw new ArgumentException("Token is not specified");
-        }
+        var apiToken = section["apiToken"];
+        var bearerToken = section["bearerToken"];
 
         var projectName = section["projectName"];
         if (string.IsNullOrEmpty(projectName))
@@ -43,7 +40,19 @@ public class Client : IClient
         _projectName = projectName;
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(url);
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Token", token);
+
+        if (!string.IsNullOrEmpty(apiToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Token", apiToken);
+        }
+        else if (!string.IsNullOrEmpty(bearerToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+        }
+        else
+        {
+            throw new ArgumentException("Api-Token or Bearer-Token is not specified");
+        }
     }
 
     public async Task<BaseEntity> GetProjectId()
