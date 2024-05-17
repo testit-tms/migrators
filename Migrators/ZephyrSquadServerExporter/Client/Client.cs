@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text;
 using System.Text.Json;
 using ZephyrSquadServerExporter.Models;
 
@@ -10,7 +11,6 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
     private readonly string _baseUrl;
     private readonly string _projectKey;
-    private readonly string _token;
     private readonly HttpClient _client;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
@@ -31,17 +31,28 @@ public class Client : IClient
         }
 
         var token = section["token"];
-        if (string.IsNullOrEmpty(token))
-        {
-            throw new ArgumentException("Token is not specified");
-        }
+        var login = section["login"];
+        var password = section["password"];
+
         _baseUrl = url.Trim('/');
         _projectKey = projectKey;
-        _token = token;
 
         _client = new HttpClient();
         _client.BaseAddress = new Uri(_baseUrl);
-        _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + _token);
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+        }
+        else if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
+        {
+            var basicAuthenticationValue = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{login}:{password}"));
+
+            _client.DefaultRequestHeaders.Add("Authorization", "Basic " + basicAuthenticationValue);
+        }
+        else {
+            throw new ArgumentException("Token or login/password is not specified");
+        }
     }
 
     public async Task<JiraProject> GetProject()
@@ -65,22 +76,22 @@ public class Client : IClient
         return project;
     }
 
-    public async Task<string> GetZephyrIssueTypeIdByProjectId(string projectId)
+    public async Task<string> GetZephyrIssueTypeIdByProjectId()
     {
-        _logger.LogInformation("Getting zephyr issue type id by project id {ProjectId}", projectId);
+        _logger.LogInformation("Getting zephyr issue type");
 
-        var response = await _client.GetAsync($"/rest/api/2/issue/createmeta/{projectId}/issuetypes");
+        var response = await _client.GetAsync($"/rest/api/2/issuetype");
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogError("Failed to get zephyr issue type by project id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
-                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
+            _logger.LogError("Failed to get zephyr issue type. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get zephyr issue type id by project id {projectId}. Status code: {response.StatusCode}");
+            throw new Exception($"Failed to get zephyr issue type. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var issueTypes = JsonSerializer.Deserialize<JiraIssueTypes>(content);
-        var zephyrIssueType = issueTypes.Types.First(i => i.Name.Equals("Test"));
+        var issueTypes = JsonSerializer.Deserialize<List<JiraIssueType>>(content);
+        var zephyrIssueType = issueTypes.First(i => i.Name.Equals("Test"));
 
         if (zephyrIssueType == null)
         {

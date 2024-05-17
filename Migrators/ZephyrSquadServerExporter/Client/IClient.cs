@@ -5,7 +5,7 @@ namespace ZephyrSquadServerExporter.Client;
 public interface IClient
 {
     Task<JiraProject> GetProject();
-    Task<string> GetZephyrIssueTypeIdByProjectId(string projectId);
+    Task<string> GetZephyrIssueTypeIdByProjectId();
     Task<JiraIssueCustomAttributes> GetCustomAttributesByProjectIdAndZephyrIssueTypeId(string projectId, string zephyrIssueTypeId);
     Task<List<ZephyrCycle>> GetCyclesByProjectIdAndVersionId(string projectId, string versionId);
     Task<List<ZephyrFolder>> GetFoldersByProjectIdAndVersionIdAndCycleId(string projectId, string versionId, string cycleId);
