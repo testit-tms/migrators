@@ -21,11 +21,27 @@ You can download the latest version of the ZephyrSquadServerExporter from the [r
 }
 ```
 
+or
+
+```json
+{
+  "resultPath": "/Users/user01/Documents/importer",
+  "zephyr": {
+    "url": "https://jira.instance.ru",
+    "login": "User",
+    "password": "pass",
+    "projectKey": "PK"
+  }
+}
+```
+
 Where:
 
 - resultPath - path to the folder where the results will be saved
-- zephyr.url - url to the Zephyr server with organization name
+- zephyr.url - url to the Jira server with organization name
 - zephyr.token - key for access to the Jira server
+- zephyr.login - login to the Jira server
+- zephyr.password - password to the Jira server
 - zephyr.projectKey - key of the project in the Jira server
 
 1. Run the exporter with the following command:
