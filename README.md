@@ -7,6 +7,7 @@ We support the following systems:
 - [Allure TestOps](https://github.com/testit-tms/migrators/tree/main/Migrators/AllureExporter/Readme.md)
 - [Azure DevOps](https://github.com/testit-tms/migrators/tree/main/Migrators/AzureExporter/Readme.md)
 - [Zephyr Scale](https://github.com/testit-tms/migrators/tree/main/Migrators/ZephyrScaleExporter/Readme.md)
+- [Zephyr Scale Server](https://github.com/testit-tms/migrators/tree/main/Migrators/ZephyrScaleServerExporter/Readme.md)
 - [Zephyr Squad](https://github.com/testit-tms/migrators/tree/main/Migrators/ZephyrSquadExporter/Readme.md)
 - [Zephyr Squad Server](https://github.com/testit-tms/migrators/tree/main/Migrators/ZephyrSquadServerExporter/Readme.md)
 - [XRay](https://github.com/testit-tms/migrators/tree/main/Migrators/XRayExporter/Readme.md)
