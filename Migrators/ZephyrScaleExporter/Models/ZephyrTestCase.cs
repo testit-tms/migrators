@@ -76,6 +76,9 @@ public class WebLinks
 
 public class ZephyrTestCases
 {
+    [JsonPropertyName("isLast")]
+    public bool IsLast { get; set; }
+
     [JsonPropertyName("values")]
     public List<ZephyrTestCase> TestCases { get; set; }
 }
@@ -85,4 +88,3 @@ public class TestScript
     [JsonPropertyName("self")]
     public string Self { get; set; }
 }
-

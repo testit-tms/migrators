@@ -133,22 +133,34 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test cases for folder {FolderId}", folderId);
 
-        var response = await _httpClient.GetAsync($"testcases?projectKey={_projectName}&folderId={folderId}");
-        if (!response.IsSuccessStatusCode)
+        var allTestCases = new List<ZephyrTestCase>();
+        var page = 0;
+        var isLast = false;
+
+        do
         {
-            _logger.LogError(
-                "Failed to get test cases for folder {FolderId}. Status code: {StatusCode}. Response: {Response}",
-                folderId, response.StatusCode, await response.Content.ReadAsStringAsync());
+            var response = await _httpClient.GetAsync($"testcases?maxResults=100&startAt={page}&projectKey={_projectName}&folderId={folderId}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get test cases for folder {FolderId}. Status code: {StatusCode}. Response: {Response}",
+                    folderId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get test cases for folder {folderId}. Status code: {response.StatusCode}");
-        }
+                throw new Exception($"Failed to get test cases for folder {folderId}. Status code: {response.StatusCode}");
+            }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var testCases = JsonSerializer.Deserialize<ZephyrTestCases>(content);
+            var content = await response.Content.ReadAsStringAsync();
+            var testCases = JsonSerializer.Deserialize<ZephyrTestCases>(content);
+            isLast = testCases.IsLast;
 
-        _logger.LogDebug("Got test cases {@TestCases}", testCases);
+            allTestCases.AddRange(testCases.TestCases);
 
-        return testCases.TestCases;
+            page++;
+
+            _logger.LogDebug("Got test cases {@TestCases} from {Page} page", testCases, page);
+        } while (!isLast);
+
+        return allTestCases;
     }
 
     public async Task<List<ZephyrStep>> GetSteps(string testCaseKey)
