@@ -1,4 +1,3 @@
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
@@ -79,23 +78,37 @@ public class Client : IClient
     public async Task<List<ZephyrTestCase>> GetTestCases()
     {
         _logger.LogInformation("Getting test cases by project key {Key}", _projectKey);
+        var allTestCases = new List<ZephyrTestCase>();
+        var page = 0;
 
-        var response = await _httpClient.GetAsync($"/rest/atm/1.0/testcase/search?query=projectKey = \"{_projectKey}\"");
-        if (!response.IsSuccessStatusCode)
+        do
         {
-            _logger.LogError(
-                "Failed to get test cases by project key {Key}. Status code: {StatusCode}. Response: {Response}",
-                _projectKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+            var response = await _httpClient.GetAsync($"/rest/atm/1.0/testcase/search?maxResults=100&startAt={page}&query=projectKey = \"{_projectKey}\"");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get test cases by project key {Key}. Status code: {StatusCode}. Response: {Response}",
+                    _projectKey, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get test cases by project key {_projectKey}. Status code: {response.StatusCode}");
-        }
+                throw new Exception($"Failed to get test cases by project key {_projectKey}. Status code: {response.StatusCode}");
+            }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var testCases = JsonSerializer.Deserialize<List<ZephyrTestCase>>(content);
+            var content = await response.Content.ReadAsStringAsync();
+            var testCases = JsonSerializer.Deserialize<List<ZephyrTestCase>>(content);
 
-        _logger.LogDebug("Got test cases {@TestCases}", testCases);
+            if (testCases.Any())
+            {
+                _logger.LogDebug("Got test cases {@TestCases} from {Page} page", testCases, page);
+                allTestCases.AddRange(testCases);
+                page++;
+            }
+            else
+            {
+                page = -1;
+            }
+        } while (page >= 0);
 
-        return testCases;
+        return allTestCases;
     }
 
     public async Task<ZephyrTestCase> GetTestCase(string testCaseKey)
@@ -119,7 +132,7 @@ public class Client : IClient
 
         return testCase;
     }
-    
+
     public async Task<List<JiraComponent>> GetComponents(string projectKey)
     {
         _logger.LogInformation("Getting components by project key {Key}", projectKey);
