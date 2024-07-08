@@ -391,14 +391,33 @@ public class Client : IClient
     {
         _logger.LogInformation("Downloading attachment for test case with id {AttachmentId}", attachmentId);
 
-        return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
+        try
+        {
+            return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug("Failed to download attachment for test case with id {AttachmentId}: {@Ex}", attachmentId, ex);
+
+            return [];
+        }
     }
 
     public async Task<byte[]> DownloadAttachmentForSharedStep(int attachmentId)
     {
         _logger.LogInformation("Downloading attachment for shared step with id {AttachmentId}", attachmentId);
 
-        return await _httpClient.GetByteArrayAsync($"api/rs/sharedstep/attachment/{attachmentId}/content?inline=false");
+
+        try
+        {
+            return await _httpClient.GetByteArrayAsync($"api/rs/sharedstep/attachment/{attachmentId}/content?inline=false");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug("Failed to download attachment for shared step with id {AttachmentId}: {@Ex}", attachmentId, ex);
+
+            return [];
+        }
     }
 
     public async Task<List<BaseEntity>> GetTestLayers()
