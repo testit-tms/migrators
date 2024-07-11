@@ -134,12 +134,13 @@ public class Client : IClient
         _logger.LogInformation("Getting test cases for folder {FolderId}", folderId);
 
         var allTestCases = new List<ZephyrTestCase>();
-        var page = 0;
+        var startAt = 0;
+        var maxResults = 100;
         var isLast = false;
 
         do
         {
-            var response = await _httpClient.GetAsync($"testcases?maxResults=100&startAt={page}&projectKey={_projectName}&folderId={folderId}");
+            var response = await _httpClient.GetAsync($"testcases?maxResults={maxResults}&startAt={startAt}&projectKey={_projectName}&folderId={folderId}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -155,9 +156,9 @@ public class Client : IClient
 
             allTestCases.AddRange(testCases.TestCases);
 
-            page++;
+            startAt += maxResults;
 
-            _logger.LogDebug("Got test cases {@TestCases} from {Page} page", testCases, page);
+            _logger.LogDebug("Got test cases {@TestCases}", testCases);
         } while (!isLast);
 
         return allTestCases;

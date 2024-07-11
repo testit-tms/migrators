@@ -79,11 +79,12 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test cases by project key {Key}", _projectKey);
         var allTestCases = new List<ZephyrTestCase>();
-        var page = 0;
+        var startAt = 0;
+        var maxResults = 100;
 
         do
         {
-            var response = await _httpClient.GetAsync($"/rest/atm/1.0/testcase/search?maxResults=100&startAt={page}&query=projectKey = \"{_projectKey}\"");
+            var response = await _httpClient.GetAsync($"/rest/atm/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=projectKey = \"{_projectKey}\"");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -98,15 +99,15 @@ public class Client : IClient
 
             if (testCases.Any())
             {
-                _logger.LogDebug("Got test cases {@TestCases} from {Page} page", testCases, page);
+                _logger.LogDebug("Got test cases {@TestCases}", testCases);
                 allTestCases.AddRange(testCases);
-                page++;
+                startAt += maxResults;
             }
             else
             {
-                page = -1;
+                startAt = -1;
             }
-        } while (page >= 0);
+        } while (startAt >= 0);
 
         return allTestCases;
     }
