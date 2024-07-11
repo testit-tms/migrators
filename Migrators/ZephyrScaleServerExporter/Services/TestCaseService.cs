@@ -36,6 +36,8 @@ public class TestCaseService : ITestCaseService
 
         foreach (var zephyrTestCase in cases)
         {
+            _logger.LogInformation("Converting test case {Name}", zephyrTestCase.Name);
+
             var attachments = new List<string>();
 
             var testCaseId = Guid.NewGuid();
@@ -126,6 +128,8 @@ public class TestCaseService : ITestCaseService
             {
                 foreach (var keyValuePair in zephyrTestCase.CustomFields)
                 {
+                    _logger.LogInformation("Adding attribute \"{Key}\" to the attribute map", keyValuePair.Key);
+
                     var attribute = new Attribute
                     {
                         Id = Guid.NewGuid(),
@@ -152,6 +156,8 @@ public class TestCaseService : ITestCaseService
 
     private async Task<List<Link>> ConvertLinks(List<string> issueKeys)
     {
+        _logger.LogInformation("Converting links for test case");
+
         var newLinks = new List<Link>();
 
         foreach (var issueKey in issueKeys)
@@ -172,19 +178,36 @@ public class TestCaseService : ITestCaseService
 
     private List<CaseAttribute> ConvertAttributes(Dictionary<string, object> fields)
     {
-        return fields
-            .Select(field =>
+        _logger.LogInformation("Converting attributes for test case");
+        var attributes = new List<CaseAttribute>();
+
+        foreach (var field in fields)
+        {
+            _logger.LogInformation("Converting attribute \"{Key}\"", field.Key);
+
+            if (!_attributeMap.ContainsKey(field.Key))
+            {
+                _logger.LogInformation("The attribute \"{Key}\" cannot be obtained from the attribute map", field.Key);
+
+                continue;
+            }
+
+            attributes.Add(
                 new CaseAttribute
                 {
                     Id = _attributeMap[field.Key].Id,
                     Value = field.Value == null ? string.Empty : field.Value.ToString()
                 }
-            )
-            .ToList();
+            );
+        }
+
+        return attributes;
     }
 
-    private static Guid ConvertFolders(string stringFolders, SectionData sectionData)
+    private Guid ConvertFolders(string stringFolders, SectionData sectionData)
     {
+        _logger.LogInformation("Converting folders");
+
         var sectionKey = Constants.MainFolderKey;
 
         if (stringFolders == null)
@@ -217,6 +240,13 @@ public class TestCaseService : ITestCaseService
                     PostconditionSteps = new List<Step>(),
                     PreconditionSteps = new List<Step>()
                 };
+
+                if (!sectionData.AllSections.ContainsKey(sectionKey))
+                {
+                    _logger.LogInformation("The section \"{Key}\" cannot be obtained from the all sections map", sectionKey);
+
+                    continue;
+                }
 
                 sectionData.AllSections[sectionKey].Sections.Add(section);
                 sectionData.SectionMap.Add(sectionKey + "/" + folder, section.Id);
