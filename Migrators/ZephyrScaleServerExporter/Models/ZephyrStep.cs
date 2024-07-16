@@ -18,4 +18,7 @@ public class ZephyrStep
 
     [JsonPropertyName("testCaseKey")]
     public string? TestCaseKey { get; set; }
+
+    [JsonPropertyName("index")]
+    public int Index { get; set; }
 }

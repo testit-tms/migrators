@@ -141,8 +141,9 @@ public class TestCaseService : ITestCaseService
                     };
 
                     _attributeMap.Add(keyValuePair.Key, attribute);
-                    testCase.Attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields));
                 }
+
+                testCase.Attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields));
             }
             testCases.Add(testCase);
         }

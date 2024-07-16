@@ -45,6 +45,19 @@ public class ZephyrTestCase
     public string? Component { get; set; }
 }
 
+public class ZephyrArchivedTestCase
+{
+
+    [JsonPropertyName("key")]
+    public string Key { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("testScript")]
+    public ZephyrArchivedTestScript TestScript { get; set; }
+}
+
 public class Links
 {
     [JsonPropertyName("issues")]
