@@ -98,7 +98,7 @@ public class AttributeService : IAttributeService
         var i = 1;
 
         var tmsAttributes = attributes.ToList();
-        while (tmsAttributes.Any(x => x.Name == newName && x.Type == attribute.Type.ToString()))
+        while (tmsAttributes.Any(x => x.Name == newName))
         {
             newName = $"{attribute.Name} ({i})";
             i++;
