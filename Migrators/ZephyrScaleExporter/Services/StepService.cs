@@ -31,6 +31,11 @@ public class StepService : IStepService
 
             foreach (var step in steps)
             {
+                if (step.Inline == null)
+                {
+                    continue;
+                }
+
                 var action = Utils.ExtractAttachments(step.Inline.Description);
                 var expected = Utils.ExtractAttachments(step.Inline.ExpectedResult);
                 var testData = Utils.ExtractAttachments(step.Inline.TestData);

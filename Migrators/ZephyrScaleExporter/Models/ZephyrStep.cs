@@ -5,7 +5,7 @@ namespace ZephyrScaleExporter.Models;
 public class ZephyrStep
 {
     [JsonPropertyName("inline")]
-    public Inline Inline { get; set; }
+    public Inline? Inline { get; set; }
 }
 
 public class Inline

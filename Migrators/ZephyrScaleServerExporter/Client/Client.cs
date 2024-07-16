@@ -134,6 +134,28 @@ public class Client : IClient
         return testCase;
     }
 
+    public async Task<ZephyrArchivedTestCase> GetArchivedTestCase(string testCaseKey)
+    {
+        _logger.LogInformation("Getting test case by key {Key}", testCaseKey);
+
+        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseKey}?fields=key,name,testScript(id,text,steps(index,reflectRef,description,text,expectedResult,testData,attachments,customFieldValues,id,stepParameters(id,testCaseParameterId,value),testCase(id,key,name,archived,majorVersion,latestVersion,parameters(id,name,defaultValue,index)))),testData,parameters(id,name,defaultValue,index),paramType");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test case by key {Key}. Status code: {StatusCode}. Response: {Response}",
+                testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test case by key {testCaseKey}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testCase = JsonSerializer.Deserialize<ZephyrArchivedTestCase>(content);
+
+        _logger.LogDebug("Got test case {@TestCase}", testCase);
+
+        return testCase;
+    }
+
     public async Task<List<JiraComponent>> GetComponents(string projectKey)
     {
         _logger.LogInformation("Getting components by project key {Key}", projectKey);
