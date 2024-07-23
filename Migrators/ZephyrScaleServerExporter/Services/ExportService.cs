@@ -2,7 +2,6 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
 using ZephyrScaleServerExporter.Client;
-using ZephyrScaleServerExporter.Models;
 
 namespace ZephyrScaleServerExporter.Services;
 
@@ -32,15 +31,13 @@ public class ExportService : IExportService
 
         var project = await _client.GetProject();
         var folders = await _folderService.ConvertSections(project.Name);
-        var attributes = await _attributeService.ConvertAttributes(project.Key);
+        var attributes = await _attributeService.ConvertAttributes(project.Id);
         var testCases = await _testCaseService.ConvertTestCases(folders, attributes.AttributeMap);
 
-        foreach (var testCase in testCases.TestCases)
+        foreach (var testCase in testCases)
         {
             await _writeService.WriteTestCase(testCase);
         }
-
-        attributes.Attributes.AddRange(testCases.Attributes);
 
         var root = new Root
         {
@@ -48,7 +45,7 @@ public class ExportService : IExportService
             Attributes = attributes.Attributes,
             Sections = new List<Section> { folders.MainSection },
             SharedSteps = new List<Guid>(),
-            TestCases = testCases.TestCases.Select(t => t.Id).ToList()
+            TestCases = testCases.Select(t => t.Id).ToList()
         };
 
         await _writeService.WriteMainJson(root);

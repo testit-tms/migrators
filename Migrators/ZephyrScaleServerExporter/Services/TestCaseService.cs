@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Models;
+using System.Linq;
 using ZephyrScaleServerExporter.Client;
 using ZephyrScaleServerExporter.Models;
 using Attribute = Models.Attribute;
@@ -26,7 +27,7 @@ public class TestCaseService : ITestCaseService
         _attributeMap = new Dictionary<string, Attribute>();
     }
 
-    public async Task<TestCaseData> ConvertTestCases(SectionData sectionData, Dictionary<string, Guid> attributeMap)
+    public async Task<List<TestCase>> ConvertTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap)
     {
         _logger.LogInformation("Converting test cases");
 
@@ -86,10 +87,23 @@ public class TestCaseService : ITestCaseService
                 attributes.Add(
                     new()
                     {
-                        Id = attributeMap[Constants.ComponentAttribute],
+                        Id = attributeMap[Constants.ComponentAttribute].Id,
                         Value = zephyrTestCase.Component
                     }
                 );
+            }
+
+            attributes.Add(
+                new()
+                {
+                    Id = attributeMap[Constants.IdZephyrAttribute].Id,
+                    Value = zephyrTestCase.Key
+                }
+            );
+
+            if (zephyrTestCase.CustomFields != null && zephyrTestCase.CustomFields.Count > 0)
+            {
+                attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields, attributeMap));
             }
 
             var testCase = new TestCase
@@ -124,35 +138,10 @@ public class TestCaseService : ITestCaseService
                 SectionId = sectionId
             };
 
-            if (_attributeMap.Count == 0 && zephyrTestCase.CustomFields != null && zephyrTestCase.CustomFields.Count > 0)
-            {
-                foreach (var keyValuePair in zephyrTestCase.CustomFields)
-                {
-                    _logger.LogInformation("Adding attribute \"{Key}\" to the attribute map", keyValuePair.Key);
-
-                    var attribute = new Attribute
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = keyValuePair.Key,
-                        Type = AttributeType.String,
-                        IsActive = true,
-                        IsRequired = false,
-                        Options = new List<string>()
-                    };
-
-                    _attributeMap.Add(keyValuePair.Key, attribute);
-                }
-
-                testCase.Attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields));
-            }
             testCases.Add(testCase);
         }
 
-        return new TestCaseData
-        {
-            TestCases = testCases,
-            Attributes = _attributeMap.Values.ToList()
-        };
+        return testCases;
     }
 
     private async Task<List<Link>> ConvertLinks(List<string> issueKeys)
@@ -177,7 +166,7 @@ public class TestCaseService : ITestCaseService
         return newLinks;
     }
 
-    private List<CaseAttribute> ConvertAttributes(Dictionary<string, object> fields)
+    private List<CaseAttribute> ConvertAttributes(Dictionary<string, object> fields, Dictionary<string, Attribute> attributeMap)
     {
         _logger.LogInformation("Converting attributes for test case");
         var attributes = new List<CaseAttribute>();
@@ -186,23 +175,43 @@ public class TestCaseService : ITestCaseService
         {
             _logger.LogInformation("Converting attribute \"{Key}\"", field.Key);
 
-            if (!_attributeMap.ContainsKey(field.Key))
+            if (!attributeMap.ContainsKey(field.Key))
             {
                 _logger.LogInformation("The attribute \"{Key}\" cannot be obtained from the attribute map", field.Key);
 
                 continue;
             }
 
+            var attribute = attributeMap[field.Key];
+            var zephyrValue = field.Value == null ? string.Empty : field.Value.ToString();
+
             attributes.Add(
                 new CaseAttribute
                 {
-                    Id = _attributeMap[field.Key].Id,
-                    Value = field.Value == null ? string.Empty : field.Value.ToString()
+                    Id = attribute.Id,
+                    Value = attribute.Type == AttributeType.MultipleOptions ? ConvertMultipleValue(zephyrValue, attribute.Options) : zephyrValue,
                 }
             );
         }
 
         return attributes;
+    }
+
+    private List<string> ConvertMultipleValue(string attributeValue, List<string> options)
+    {
+        var testCaseValues = new List<string>();
+
+        foreach (var option in options)
+        {
+            if (attributeValue.Contains(option) && (attributeValue.Contains(option + ", ") || attributeValue.Contains(", " + option) || attributeValue == option))
+            {
+                testCaseValues.Add(option);
+
+                _logger.LogInformation("The option \"{Option}\" add to multiple choice for test case", option);
+            }
+        }
+
+        return testCaseValues;
     }
 
     private Guid ConvertFolders(string stringFolders, SectionData sectionData)

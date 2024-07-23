@@ -75,6 +75,29 @@ public class Client : IClient
         return project;
     }
 
+    public async Task<List<ZephyrCustomFieldForTestCase>> GetCustomFieldsForTestCases(string projectId)
+    {
+        _logger.LogInformation("Getting custom fields by project id {Id}", projectId);
+
+        var response = await _httpClient.GetAsync($"/rest/tests/1.0/project/{projectId}/customfields/testcase");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get custom fields by project id {Id}. Status code: {StatusCode}. Response: {Response}",
+                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get custom fields by project id {projectId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var customFields = JsonSerializer.Deserialize<List<ZephyrCustomFieldForTestCase>>(content)
+            .Where(c => c.Archived == false).Select(c => c).ToList();
+
+        _logger.LogDebug("Got custom fields {@CustomFields}", customFields);
+
+        return customFields;
+    }
+
     public async Task<List<ZephyrTestCase>> GetTestCases()
     {
         _logger.LogInformation("Getting test cases by project key {Key}", _projectKey);
@@ -156,18 +179,18 @@ public class Client : IClient
         return testCase;
     }
 
-    public async Task<List<JiraComponent>> GetComponents(string projectKey)
+    public async Task<List<JiraComponent>> GetComponents()
     {
-        _logger.LogInformation("Getting components by project key {Key}", projectKey);
+        _logger.LogInformation("Getting components by project key {Key}", _projectKey);
 
-        var response = await _httpClient.GetAsync($"/rest/api/2/project/{projectKey}/components");
+        var response = await _httpClient.GetAsync($"/rest/api/2/project/{_projectKey}/components");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
                 "Failed to get components by project key {Key}. Status code: {StatusCode}. Response: {Response}",
-                projectKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+                _projectKey, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get components by project key {projectKey}. Status code: {response.StatusCode}");
+            throw new Exception($"Failed to get components by project key {_projectKey}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();

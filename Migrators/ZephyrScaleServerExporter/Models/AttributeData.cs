@@ -6,5 +6,5 @@ public class AttributeData
 {
     public List<Attribute> Attributes { get; set; }
 
-    public Dictionary<string, Guid> AttributeMap { get; set; }
+    public Dictionary<string, Attribute> AttributeMap { get; set; }
 }
