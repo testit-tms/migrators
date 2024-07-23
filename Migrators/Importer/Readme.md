@@ -16,7 +16,8 @@ You can download the latest version of the Importer from the [releases](https://
     "tms" : {
         "url" : "https://testit.software/",
         "privateToken" : "cmZzWDkYTfBvNvVMcXhzN3Vy",
-        "certValidation" : true
+        "certValidation" : true,
+        "importToExistingProject" : false
     }
 }
 ```
@@ -26,7 +27,8 @@ Where:
 - resultPath - path to the folder where the results will be saved
 - tms.url - url to the Test IT server
 - tms.privateToken - token for access to the Test IT server
-- tms.certValidation - enable/disable certificate validation
+- tms.certValidation - enable/disable certificate validation (Default value - true)
+- tms.importToExistingProject - enable/disable import to existing project in Test IT server (Default value - false)
 
 2. Run the Importer with the following command:
 

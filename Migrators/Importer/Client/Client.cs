@@ -21,7 +21,7 @@ public class Client : IClient
     private readonly WorkItemsApi _workItemsApi;
     private readonly CustomAttributesApi _customAttributesApi;
     private readonly ParametersApi _parametersApi;
-    private Guid _projectId;
+    private bool _importToExistingProject = false;
 
     private const int TenMinutes = 60000;
 
@@ -49,6 +49,12 @@ public class Client : IClient
             certValidation = bool.Parse(certValidationStr);
         }
 
+        var importToExistingProjectStr = tmsSection["importToExistingProject"];
+        if (!string.IsNullOrEmpty(importToExistingProjectStr))
+        {
+            _importToExistingProject = bool.Parse(importToExistingProjectStr);
+        }
+
         var cfg = new Configuration { BasePath = url.TrimEnd('/') };
         cfg.AddApiKeyPrefix("Authorization", "PrivateToken");
         cfg.AddApiKey("Authorization", token);
@@ -66,17 +72,55 @@ public class Client : IClient
         _parametersApi = new ParametersApi(new HttpClient(), cfg, httpClientHandler);
     }
 
-    public async Task CreateProject(string name)
+    public async Task<Guid> GetProject(string name)
+    {
+        _logger.LogInformation("Getting project {Name}", name);
+
+        try
+        {
+            var projects = await _projectsApi.ApiV2ProjectsSearchPostAsync(null, null, null, null, null, new ApiV2ProjectsSearchPostRequest(name: name));
+
+            _logger.LogDebug("Got projects {@Project} by name {Name}", projects, name);
+
+            if (projects.Count != 0)
+            {
+                foreach (var project in projects)
+                {
+                    if (project.Name == name)
+                    {
+                        _logger.LogInformation("Got project {Name} with id {Id}", project.Name, project.Id);
+
+                        if (!_importToExistingProject)
+                        {
+                            throw new Exception("Project with the same name already exists");
+                        }
+
+                        return project.Id;
+                    }
+                }
+            }
+
+            return Guid.Empty;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Project {Name}: {Message}", name, e.Message);
+            throw;
+        }
+    }
+
+    public async Task<Guid> CreateProject(string name)
     {
         _logger.LogInformation("Creating project {Name}", name);
 
         try
         {
             var resp = await _projectsApi.CreateProjectAsync(new CreateProjectRequest(name: name));
-            _projectId = resp.Id;
 
             _logger.LogDebug("Created project {@Project}", resp);
             _logger.LogInformation("Created project {Name} with id {Id}", name, resp.Id);
+
+            return resp.Id;
         }
         catch (Exception e)
         {
@@ -85,13 +129,49 @@ public class Client : IClient
         }
     }
 
-    public async Task<Guid> ImportSection(Guid parentSectionId, Section section)
+    public async Task<Guid> GetSection(Guid projectId, Guid parentSectionId, Section section)
     {
         _logger.LogInformation("Importing section {Name}", section.Name);
 
         try
         {
-            var model = new CreateSectionRequest(name: section.Name, parentId: parentSectionId, projectId: _projectId, attachments: [])
+            var model = new CreateSectionRequest(name: section.Name, parentId: parentSectionId, projectId: projectId, attachments: [])
+            {
+                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
+                {
+                    Action = s.Action,
+                    Expected = s.Expected
+                }).ToList(),
+                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPostModel
+                {
+                    Action = s.Action,
+                    Expected = s.Expected
+                }).ToList()
+            };
+
+            _logger.LogDebug("Importing section {@Section}", model);
+
+            var resp = await _sectionsApi.CreateSectionAsync(model);
+
+            _logger.LogDebug("Imported section {@Section}", resp);
+            _logger.LogInformation("Imported section {Name} with id {Id}", section.Name, resp.Id);
+
+            return resp.Id;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Could not import section {Name}: {Message}", section.Name, e.Message);
+            throw;
+        }
+    }
+
+    public async Task<Guid> ImportSection(Guid projectId, Guid parentSectionId, Section section)
+    {
+        _logger.LogInformation("Importing section {Name}", section.Name);
+
+        try
+        {
+            var model = new CreateSectionRequest(name: section.Name, parentId: parentSectionId, projectId: projectId, attachments: [])
             {
                 PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
                 {
@@ -196,7 +276,7 @@ public class Client : IClient
         }
     }
 
-    public async Task<Guid> ImportSharedStep(Guid parentSectionId, SharedStep sharedStep)
+    public async Task<Guid> ImportSharedStep(Guid projectId, Guid parentSectionId, SharedStep sharedStep)
     {
         try
         {
@@ -232,7 +312,7 @@ public class Client : IClient
                         Type = Enum.Parse<LinkType>(l.Type.ToString())
                     }).ToList(),
                 Name = sharedStep.Name,
-                ProjectId = _projectId,
+                ProjectId = projectId,
                 Attachments = sharedStep.Attachments.Select(a => new AttachmentPutModel(Guid.Parse(a))).ToList()
             };
 
@@ -253,7 +333,7 @@ public class Client : IClient
         }
     }
 
-    public async Task ImportTestCase(Guid parentSectionId, TmsTestCase testCase)
+    public async Task ImportTestCase(Guid projectId, Guid parentSectionId, TmsTestCase testCase)
     {
         _logger.LogInformation("Importing test case {Name}", testCase.Name);
 
@@ -292,7 +372,7 @@ public class Client : IClient
                         WorkItemId = s.SharedStepId,
                         TestData = s.TestData
                     }).ToList(),
-                Attributes = testCase.Attributes
+                Attributes = testCase.Attributes.Where(x => x.Value != null)
                     .ToDictionary(keySelector: a => a.Id.ToString(),
                         elementSelector: a => (object)a.Value),
                 Tags = testCase.Tags.Select(t => new TagPostModel(t)).ToList(),
@@ -304,7 +384,7 @@ public class Client : IClient
                         Type = Enum.Parse<LinkType>(l.Type.ToString())
                     }).ToList(),
                 Name = testCase.Name,
-                ProjectId = _projectId,
+                ProjectId = projectId,
                 Attachments = testCase.Attachments.Select(a => new AttachmentPutModel(Guid.Parse(a))).ToList(),
                 Iterations = testCase.TmsIterations.Select(i =>
                 {
@@ -330,13 +410,13 @@ public class Client : IClient
         }
     }
 
-    public async Task<Guid> GetRootSectionId()
+    public async Task<Guid> GetRootSectionId(Guid projectId)
     {
         _logger.LogInformation("Getting root section id");
 
         try
         {
-            var section = await _projectSectionsApi.GetSectionsByProjectIdAsync(_projectId.ToString());
+            var section = await _projectSectionsApi.GetSectionsByProjectIdAsync(projectId.ToString());
 
             _logger.LogDebug("Got root section {@Section}", section.First());
 
@@ -383,13 +463,13 @@ public class Client : IClient
         }
     }
 
-    public async Task AddAttributesToProject(IEnumerable<Guid> attributeIds)
+    public async Task AddAttributesToProject(Guid projectId, IEnumerable<Guid> attributeIds)
     {
         _logger.LogInformation("Adding attributes to project");
 
         try
         {
-            await _projectsApi.AddGlobaAttributesToProjectAsync(_projectId.ToString(), attributeIds.ToList());
+            await _projectsApi.AddGlobaAttributesToProjectAsync(projectId.ToString(), attributeIds.ToList());
         }
         catch (Exception e)
         {

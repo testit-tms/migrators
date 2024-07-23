@@ -13,6 +13,7 @@ public class ImportService : IImportService
     private readonly ISectionService _sectionService;
     private readonly ISharedStepService _sharedStepService;
     private readonly ITestCaseService _testCaseService;
+    private readonly IProjectService _projectService;
 
     private Dictionary<Guid, TmsAttribute> _attributesMap = new();
 
@@ -22,7 +23,8 @@ public class ImportService : IImportService
         IAttributeService attributeService,
         ISectionService sectionService,
         ISharedStepService sharedStepService,
-        ITestCaseService testCaseService)
+        ITestCaseService testCaseService,
+        IProjectService projectService)
     {
         _logger = logger;
         _parserService = parserService;
@@ -31,6 +33,7 @@ public class ImportService : IImportService
         _sectionService = sectionService;
         _sharedStepService = sharedStepService;
         _testCaseService = testCaseService;
+        _projectService = projectService;
     }
 
     public async Task ImportProject()
@@ -39,16 +42,16 @@ public class ImportService : IImportService
 
         var mainJsonResult = await _parserService.GetMainFile();
 
-        await _client.CreateProject(mainJsonResult.ProjectName);
+        var projectId = await _projectService.ImportProject(mainJsonResult.ProjectName);
 
-        var sections = await _sectionService.ImportSections(mainJsonResult.Sections);
+        var sections = await _sectionService.ImportSections(projectId, mainJsonResult.Sections);
 
-        _attributesMap = await _attributeService.ImportAttributes(mainJsonResult.Attributes);
+        _attributesMap = await _attributeService.ImportAttributes(projectId, mainJsonResult.Attributes);
 
-        var sharedSteps = await _sharedStepService.ImportSharedSteps(mainJsonResult.SharedSteps, sections,
+        var sharedSteps = await _sharedStepService.ImportSharedSteps(projectId, mainJsonResult.SharedSteps, sections,
             _attributesMap);
 
-        await _testCaseService.ImportTestCases(mainJsonResult.TestCases, sections, _attributesMap, sharedSteps);
+        await _testCaseService.ImportTestCases(projectId, mainJsonResult.TestCases, sections, _attributesMap, sharedSteps);
 
         _logger.LogInformation("Project imported");
     }

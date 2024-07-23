@@ -4,5 +4,6 @@ public enum AttributeType
 {
     String,
     Datetime,
-    Options
+    Options,
+    MultipleOptions
 }

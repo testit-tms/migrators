@@ -28,7 +28,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         _parserService = parserService;
     }
 
-    public async Task ImportTestCases(IEnumerable<Guid> testCases, Dictionary<Guid, Guid> sections,
+    public async Task ImportTestCases(Guid projectId, IEnumerable<Guid> testCases, Dictionary<Guid, Guid> sections,
         Dictionary<Guid, TmsAttribute> attributes, Dictionary<Guid, Guid> sharedSteps)
     {
         _attributesMap = attributes;
@@ -42,7 +42,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
             var tc = await _parserService.GetTestCase(testCase);
             try
             {
-                await ImportTestCase(tc);
+                await ImportTestCase(projectId, tc);
             }
             catch (Exception e)
             {
@@ -51,7 +51,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         }
     }
 
-    private async Task ImportTestCase(TestCase testCase)
+    private async Task ImportTestCase(Guid projectId, TestCase testCase)
     {
         var sectionId = _sectionsMap[testCase.SectionId];
 
@@ -97,7 +97,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
 
         tmsTestCase.Steps = AddAttachmentsToSteps(tmsTestCase.Steps, attachments);
 
-        await _client.ImportTestCase(sectionId, tmsTestCase);
+        await _client.ImportTestCase(projectId, sectionId, tmsTestCase);
 
         _logger.LogDebug("Imported test case {Name} to section {Id}", testCase.Name, sectionId);
     }

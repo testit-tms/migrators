@@ -16,7 +16,7 @@ public class AttributeService : IAttributeService
         _client = client;
     }
 
-    public async Task<Dictionary<Guid, TmsAttribute>> ImportAttributes(IEnumerable<Attribute> attributes)
+    public async Task<Dictionary<Guid, TmsAttribute>> ImportAttributes(Guid projectId, IEnumerable<Attribute> attributes)
     {
         _logger.LogInformation("Importing attributes");
 
@@ -26,58 +26,63 @@ public class AttributeService : IAttributeService
 
         foreach (var attribute in attributes)
         {
-            var projectAttribute = projectAttributes.FirstOrDefault(x => x.Name == attribute.Name);
+            var attributeIsNotImported = true;
 
-            if (projectAttribute == null)
+            do
             {
-                _logger.LogInformation("Creating attribute {Name}", attribute.Name);
+                var projectAttribute = projectAttributes.FirstOrDefault(x => x.Name == attribute.Name);
 
-                var attributeId = await _client.ImportAttribute(attribute);
-                attributeId = await _client.GetAttribute(attributeId.Id);
-
-                attributesMap.Add(attribute.Id, attributeId);
-            }
-            else
-            {
-                if (projectAttribute.Type == attribute.Type.ToString())
+                if (projectAttribute == null)
                 {
-                    _logger.LogInformation("Attribute {Name} already exists with id {Id}",
-                        attribute.Name,
-                        attribute.Id);
-
-                    if (string.Equals(projectAttribute.Type, "options", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        var options = projectAttribute.Options.Select(o => o.Value).ToList();
-
-                        foreach (var option in attribute.Options)
-                        {
-                            if (!options.Contains(option))
-                            {
-                                projectAttribute.Options.Add(new TmsAttributeOptions
-                                {
-                                    Value = option,
-                                    IsDefault = false
-                                });
-                            }
-                        }
-
-                        projectAttribute = await _client.UpdateAttribute(projectAttribute);
-                    }
-
-                    attributesMap.Add(attribute.Id, projectAttribute);
-                }
-                else
-                {
-                    var newName = GetNewAttributeName(attribute, projectAttributes);
-                    attribute.Name = newName;
-
                     _logger.LogInformation("Creating attribute {Name}", attribute.Name);
 
                     var attributeId = await _client.ImportAttribute(attribute);
+                    attributeId = await _client.GetAttribute(attributeId.Id);
 
                     attributesMap.Add(attribute.Id, attributeId);
+
+                    attributeIsNotImported = false;
+                }
+                else
+                {
+                    if (projectAttribute.Type == attribute.Type.ToString())
+                    {
+                        _logger.LogInformation("Attribute {Name} already exists with id {Id}",
+                            attribute.Name,
+                            attribute.Id);
+
+                        if (string.Equals(projectAttribute.Type, "options", StringComparison.InvariantCultureIgnoreCase) ||
+                            string.Equals(projectAttribute.Type, "multipleOptions", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            var options = projectAttribute.Options.Select(o => o.Value).ToList();
+
+                            foreach (var option in attribute.Options)
+                            {
+                                if (!options.Contains(option))
+                                {
+                                    projectAttribute.Options.Add(new TmsAttributeOptions
+                                    {
+                                        Value = option,
+                                        IsDefault = false
+                                    });
+                                }
+                            }
+
+                            projectAttribute = await _client.UpdateAttribute(projectAttribute);
+                        }
+
+                        attributesMap.Add(attribute.Id, projectAttribute);
+
+                        attributeIsNotImported = false;
+                    }
+                    else
+                    {
+                        var newName = GetNewAttributeName(attribute, projectAttributes);
+                        attribute.Name = newName;
+                    }
                 }
             }
+            while (attributeIsNotImported);
         }
 
         _logger.LogInformation("Importing attributes finished");
@@ -85,7 +90,7 @@ public class AttributeService : IAttributeService
 
         if (attributesMap.Count > 0)
         {
-            await _client.AddAttributesToProject(attributesMap.Values.Select(x => x.Id));
+            await _client.AddAttributesToProject(projectId, attributesMap.Values.Select(x => x.Id));
         }
 
         return attributesMap;
@@ -98,7 +103,7 @@ public class AttributeService : IAttributeService
         var i = 1;
 
         var tmsAttributes = attributes.ToList();
-        while (tmsAttributes.Any(x => x.Name == newName))
+        while (tmsAttributes.Any(x => x.Name == newName && x.Type != attribute.Type.ToString()))
         {
             newName = $"{attribute.Name} ({i})";
             i++;
