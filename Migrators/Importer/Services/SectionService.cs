@@ -16,32 +16,32 @@ public class SectionService : ISectionService
         _client = client;
     }
 
-    public async Task<Dictionary<Guid, Guid>> ImportSections(IEnumerable<Section> sections)
+    public async Task<Dictionary<Guid, Guid>> ImportSections(Guid projectId, IEnumerable<Section> sections)
     {
         _logger.LogInformation("Importing sections");
 
-        var rootSectionId = await _client.GetRootSectionId();
+        var rootSectionId = await _client.GetRootSectionId(projectId);
 
         foreach (var section in sections)
         {
-            await ImportSection(rootSectionId, section);
+            await ImportSection(projectId, rootSectionId, section);
         }
 
         return _sectionsMap;
     }
 
-    private async Task ImportSection(Guid parentSectionId, Section section)
+    private async Task ImportSection(Guid projectId, Guid parentSectionId, Section section)
     {
         _logger.LogDebug("Importing section {Name} to parent section {Id}",
             section.Name,
             parentSectionId);
 
-        var sectionId = await _client.ImportSection(parentSectionId, section);
+        var sectionId = await _client.ImportSection(projectId, parentSectionId, section);
         _sectionsMap.Add(section.Id, sectionId);
 
         foreach (var sectionSection in section.Sections)
         {
-            await ImportSection(sectionId, sectionSection);
+            await ImportSection(projectId, sectionId, sectionSection);
         }
 
         _logger.LogDebug("Imported section {Name} to parent section {Id}",

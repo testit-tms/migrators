@@ -1,3 +1,6 @@
+using System;
+using System.ComponentModel;
+using System.Text.Json;
 using Importer.Models;
 using Models;
 
@@ -6,6 +9,7 @@ namespace Importer.Services;
 public abstract class BaseWorkItemService
 {
     private const string OptionsType = "options";
+    private const string MultipleOptionsType = "multipleOptions";
 
     protected static List<CaseAttribute> ConvertAttributes(IEnumerable<CaseAttribute> attributes,
         Dictionary<Guid, TmsAttribute> tmsAttributes)
@@ -14,16 +18,35 @@ public abstract class BaseWorkItemService
 
         foreach (var attribute in attributes)
         {
-            var atr = tmsAttributes[attribute.Id];
-            var value = string.Equals(atr.Type, OptionsType, StringComparison.InvariantCultureIgnoreCase)
-                ? Enumerable.FirstOrDefault(atr.Options, o => o.Value == attribute.Value)?.Id
-                    .ToString()
-                : attribute.Value;
+            var tmsAttribute = tmsAttributes[attribute.Id];
+            var value = ConvertAttributeValue(tmsAttribute, attribute);
 
-            list.Add(new CaseAttribute { Id = atr.Id, Value = value });
+            list.Add(new CaseAttribute { Id = tmsAttribute.Id, Value = value });
         }
 
         return list;
+    }
+
+    private static object ConvertAttributeValue(TmsAttribute tmsAttribute, CaseAttribute caseAttribute)
+    {
+        if (string.Equals(tmsAttribute.Type, OptionsType, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return Enumerable.FirstOrDefault(tmsAttribute.Options, o => o.Value == caseAttribute.Value.ToString())?.Id.ToString();
+        }
+        else if (string.Equals(tmsAttribute.Type, MultipleOptionsType, StringComparison.InvariantCultureIgnoreCase))
+        {
+            var ids = new List<string>();
+            var options = JsonSerializer.Deserialize<List<string>>(caseAttribute.Value.ToString());
+
+            foreach (var option in options)
+            {
+                ids.Add(Enumerable.FirstOrDefault(tmsAttribute.Options, o => o.Value == option)?.Id.ToString());
+            }
+
+            return ids;
+        }
+
+        return caseAttribute.Value.ToString();
     }
 
     protected static List<Step> AddAttachmentsToSteps(List<Step> steps, Dictionary<string, Guid> attachments)

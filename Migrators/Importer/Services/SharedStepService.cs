@@ -24,7 +24,7 @@ public class SharedStepService : BaseWorkItemService, ISharedStepService
         _attachmentService = attachmentService;
     }
 
-    public async Task<Dictionary<Guid, Guid>> ImportSharedSteps(IEnumerable<Guid> sharedSteps,
+    public async Task<Dictionary<Guid, Guid>> ImportSharedSteps(Guid projectId, IEnumerable<Guid> sharedSteps,
         Dictionary<Guid, Guid> sections, Dictionary<Guid, TmsAttribute> attributes)
     {
         _attributesMap = attributes;
@@ -35,13 +35,13 @@ public class SharedStepService : BaseWorkItemService, ISharedStepService
         foreach (var sharedStep in sharedSteps)
         {
             var step = await _parserService.GetSharedStep(sharedStep);
-            await ImportSharedStep(step);
+            await ImportSharedStep(projectId, step);
         }
 
         return _sharedSteps;
     }
 
-    private async Task ImportSharedStep(SharedStep step)
+    private async Task ImportSharedStep(Guid projectId, SharedStep step)
     {
         step.Attributes = ConvertAttributes(step.Attributes, _attributesMap);
         var attachments = await _attachmentService.GetAttachments(step.Id, step.Attachments);
@@ -54,7 +54,7 @@ public class SharedStepService : BaseWorkItemService, ISharedStepService
             step.Name,
             sectionId);
 
-        var stepId = await _client.ImportSharedStep(sectionId, step);
+        var stepId = await _client.ImportSharedStep(projectId, sectionId, step);
 
         _sharedSteps.Add(step.Id, stepId);
 

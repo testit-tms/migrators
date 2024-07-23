@@ -40,7 +40,7 @@ namespace Importer
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
                     .MinimumLevel.Debug()
-                    .WriteTo.File("logs/log.txt",
+                    .WriteTo.File("logs/import-log.txt",
                         restrictedToMinimumLevel: LogEventLevel.Debug,
                         outputTemplate:
                         "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
@@ -60,6 +60,7 @@ namespace Importer
                     services.AddSingleton<ISharedStepService, SharedStepService>();
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<IProjectService, ProjectService>();
                 });
         }
 

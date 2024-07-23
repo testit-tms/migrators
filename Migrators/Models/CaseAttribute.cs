@@ -9,5 +9,5 @@ public class CaseAttribute
     public Guid Id { get; set; }
     
     [JsonPropertyName("value")]
-    public string Value { get; set; }
+    public object Value { get; set; }
 }
