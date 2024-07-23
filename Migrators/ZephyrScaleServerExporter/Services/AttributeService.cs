@@ -18,11 +18,12 @@ public class AttributeService : IAttributeService
         _client = client;
     }
 
-    public async Task<AttributeData> ConvertAttributes(string projectKey)
+    public async Task<AttributeData> ConvertAttributes(string projectId)
     {
         _logger.LogInformation("Converting attributes");
 
-        var components = await _client.GetComponents(projectKey);
+        var components = await _client.GetComponents();
+        var customFields = await _client.GetCustomFieldsForTestCases(projectId);
 
         var attributes = new List<Attribute>
         {
@@ -35,14 +36,58 @@ public class AttributeService : IAttributeService
                 IsActive = true,
                 Options = components.Select(x => x.Name).ToList()
             },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = Constants.IdZephyrAttribute,
+                Type = AttributeType.String,
+                IsRequired = false,
+                IsActive = true,
+                Options = new List<string>(),
+            },
         };
+
+        foreach (var customField in customFields)
+        {
+            var attribute = new Attribute()
+            {
+                Id = Guid.NewGuid(),
+                Name = customField.Name,
+                Type = ConvertAttributeType(customField.Type),
+                IsRequired = customField.Required,
+                IsActive = true,
+                Options = new List<string>(),
+            };
+
+            if (attribute.Type == AttributeType.Options || attribute.Type == AttributeType.MultipleOptions)
+            {
+                attribute.Options.AddRange(customField.Options.Select(x => x.Name).ToList());
+            }
+
+            attributes.Add(attribute);
+        }
 
         _logger.LogDebug("Attributes: {@Attribute}", attributes);
 
         return new AttributeData
         {
             Attributes = attributes,
-            AttributeMap = attributes.ToDictionary(x => x.Name, x => x.Id),
+            AttributeMap = attributes.ToDictionary(x => x.Name, x => x),
         };
+    }
+
+    private AttributeType ConvertAttributeType(string zephyrAttributeType)
+    {
+        switch (zephyrAttributeType)
+        {
+            case ZephyrAttributeType.Options:
+                return AttributeType.Options;
+            case ZephyrAttributeType.MultipleOptions:
+                return AttributeType.MultipleOptions;
+            case ZephyrAttributeType.Datetime:
+                return AttributeType.Datetime;
+            default:
+                return AttributeType.String;
+        }
     }
 }

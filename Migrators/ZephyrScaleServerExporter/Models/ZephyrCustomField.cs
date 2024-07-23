@@ -37,3 +37,31 @@ public class ZephyrCustomFieldOption
     [JsonPropertyName("name")]
     public string Name { get; set; }
 }
+
+
+public class ZephyrCustomFieldForTestCase
+{
+    [JsonPropertyName("archived")]
+    public bool Archived { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
+
+    [JsonPropertyName("index")]
+    public int Index { get; set; }
+
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+
+    [JsonPropertyName("type")]
+    public string Type { get; set; }
+
+    [JsonPropertyName("projectId")]
+    public int ProjectId { get; set; }
+
+    [JsonPropertyName("required")]
+    public bool Required { get; set; }
+
+    [JsonPropertyName("options")]
+    public List<ZephyrCustomFieldOption>? Options { get; set; }
+}

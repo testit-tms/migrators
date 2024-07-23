@@ -1,4 +1,4 @@
-﻿using JsonWriter;
+using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,7 +41,7 @@ namespace ZephyrScaleServerExporter
                     .ReadFrom.Services(services)
                     .Enrich.FromLogContext()
                     .MinimumLevel.Debug()
-                    .WriteTo.File("logs/log.txt",
+                    .WriteTo.File("logs/export-log.txt",
                         restrictedToMinimumLevel: LogEventLevel.Debug,
                         outputTemplate:
                         "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
