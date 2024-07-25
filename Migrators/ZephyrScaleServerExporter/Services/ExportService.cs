@@ -32,9 +32,9 @@ public class ExportService : IExportService
         var project = await _client.GetProject();
         var folders = await _folderService.ConvertSections(project.Name);
         var attributes = await _attributeService.ConvertAttributes(project.Id);
-        var testCases = await _testCaseService.ConvertTestCases(folders, attributes.AttributeMap);
+        var testCaseData = await _testCaseService.ConvertTestCases(folders, attributes.AttributeMap);
 
-        foreach (var testCase in testCases)
+        foreach (var testCase in testCaseData.TestCases)
         {
             await _writeService.WriteTestCase(testCase);
         }
@@ -42,10 +42,10 @@ public class ExportService : IExportService
         var root = new Root
         {
             ProjectName = project.Name,
-            Attributes = attributes.Attributes,
+            Attributes = testCaseData.Attributes,
             Sections = new List<Section> { folders.MainSection },
             SharedSteps = new List<Guid>(),
-            TestCases = testCases.Select(t => t.Id).ToList()
+            TestCases = testCaseData.TestCases.Select(t => t.Id).ToList()
         };
 
         await _writeService.WriteMainJson(root);

@@ -14,7 +14,6 @@ public class TestCaseService : ITestCaseService
     private readonly IClient _client;
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
-    private readonly Dictionary<string, Attribute> _attributeMap;
     public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
@@ -24,14 +23,14 @@ public class TestCaseService : ITestCaseService
         _client = client;
         _stepService = stepService;
         _attachmentService = attachmentService;
-        _attributeMap = new Dictionary<string, Attribute>();
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap)
+    public async Task<TestCaseData> ConvertTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap)
     {
         _logger.LogInformation("Converting test cases");
 
         var testCases = new List<TestCase>();
+        var requiredAttributeNames = attributeMap.Values.Where(a => a.IsRequired == true).Select(a => a.Name).ToList();
 
         var cases = await _client.GetTestCases();
 
@@ -104,6 +103,20 @@ public class TestCaseService : ITestCaseService
             if (zephyrTestCase.CustomFields != null && zephyrTestCase.CustomFields.Count > 0)
             {
                 attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields, attributeMap));
+
+                var UsedRequiredAttributeNames = zephyrTestCase.CustomFields.Keys.Where(n => requiredAttributeNames.Contains(n)).ToList();
+
+                requiredAttributeNames.RemoveAll(n => UsedRequiredAttributeNames.Contains(n));
+
+                attributeMap = CheckRequiredAttributes(attributeMap, requiredAttributeNames);
+
+                requiredAttributeNames = UsedRequiredAttributeNames;
+            }
+            else
+            {
+                attributeMap = CheckRequiredAttributes(attributeMap, requiredAttributeNames);
+
+                requiredAttributeNames.Clear();
             }
 
             var testCase = new TestCase
@@ -141,7 +154,11 @@ public class TestCaseService : ITestCaseService
             testCases.Add(testCase);
         }
 
-        return testCases;
+        return new TestCaseData
+        {
+            TestCases = testCases,
+            Attributes = attributeMap.Values.ToList()
+        };
     }
 
     private async Task<List<Link>> ConvertLinks(List<string> issueKeys)
@@ -164,6 +181,24 @@ public class TestCaseService : ITestCaseService
         }
 
         return newLinks;
+    }
+
+    private Dictionary<string, Attribute> CheckRequiredAttributes(Dictionary<string, Attribute> attributeMap, List<string> unusedRequiredAttributeNames)
+    {
+        _logger.LogInformation("Checking required attributes");
+
+        foreach (var unusedRequiredAttributeName in unusedRequiredAttributeNames)
+        {
+            _logger.LogInformation("Required attribute {Name} is not used. Set as optional", unusedRequiredAttributeName);
+
+            var attribute = attributeMap[unusedRequiredAttributeName];
+
+            attribute.IsRequired = false;
+
+            attributeMap[unusedRequiredAttributeName] = attribute;
+        }
+
+        return attributeMap;
     }
 
     private List<CaseAttribute> ConvertAttributes(Dictionary<string, object> fields, Dictionary<string, Attribute> attributeMap)
@@ -194,11 +229,15 @@ public class TestCaseService : ITestCaseService
             );
         }
 
+        _logger.LogInformation("Converted attributes {@Attributes}", attributes);
+
         return attributes;
     }
 
     private List<string> ConvertMultipleValue(string attributeValue, List<string> options)
     {
+        _logger.LogInformation("Converting multiple value {Value} with options {@Options}", attributeValue, options);
+
         var testCaseValues = new List<string>();
 
         foreach (var option in options)
@@ -210,6 +249,8 @@ public class TestCaseService : ITestCaseService
                 _logger.LogInformation("The option \"{Option}\" add to multiple choice for test case", option);
             }
         }
+
+        _logger.LogInformation("Converted multiple value {Value} to options {@Options}", attributeValue, testCaseValues);
 
         return testCaseValues;
     }
