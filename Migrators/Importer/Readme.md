@@ -17,7 +17,8 @@ You can download the latest version of the Importer from the [releases](https://
         "url" : "https://testit.software/",
         "privateToken" : "cmZzWDkYTfBvNvVMcXhzN3Vy",
         "certValidation" : true,
-        "importToExistingProject" : false
+        "importToExistingProject" : false,
+        "projectName" : "CustomProjectName"
     }
 }
 ```
@@ -28,7 +29,8 @@ Where:
 - tms.url - url to the Test IT server
 - tms.privateToken - token for access to the Test IT server
 - tms.certValidation - enable/disable certificate validation (Default value - true)
-- tms.importToExistingProject - enable/disable import to existing project in Test IT server (Default value - false)
+- tms.importToExistingProject - enable/disable import to existing project in the Test IT server (Default value - false)
+- tms.projectName - custom name of the project in the Test IT server (Default value - name of the project in the export system)
 
 2. Run the Importer with the following command:
 

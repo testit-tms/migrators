@@ -21,11 +21,19 @@ public class AttributeService : IAttributeService
         _logger.LogInformation("Importing attributes");
 
         var projectAttributes = await _client.GetProjectAttributes();
+        var unusedRequiredProjectAttributes = await _client.GetRequiredProjectAttributesByProjectId(projectId);
 
         var attributesMap = new Dictionary<Guid, TmsAttribute>();
 
         foreach (var attribute in attributes)
         {
+            var requiredProjectAttribute = unusedRequiredProjectAttributes.FirstOrDefault(x => x.Name == attribute.Name);
+
+            if (requiredProjectAttribute != null && requiredProjectAttribute.Type == attribute.Type.ToString())
+            {
+                unusedRequiredProjectAttributes.Remove(requiredProjectAttribute);
+            }
+
             var attributeIsNotImported = true;
 
             do
@@ -49,7 +57,7 @@ public class AttributeService : IAttributeService
                     {
                         _logger.LogInformation("Attribute {Name} already exists with id {Id}",
                             attribute.Name,
-                            attribute.Id);
+                            projectAttribute.Id);
 
                         if (string.Equals(projectAttribute.Type, "options", StringComparison.InvariantCultureIgnoreCase) ||
                             string.Equals(projectAttribute.Type, "multipleOptions", StringComparison.InvariantCultureIgnoreCase))
@@ -68,7 +76,8 @@ public class AttributeService : IAttributeService
                                 }
                             }
 
-                            projectAttribute = await _client.UpdateAttribute(projectAttribute);
+                            await _client.UpdateAttribute(projectAttribute);
+                            projectAttribute = await _client.GetProjectAttributeById(projectAttribute.Id);
                         }
 
                         attributesMap.Add(attribute.Id, projectAttribute);
@@ -83,6 +92,15 @@ public class AttributeService : IAttributeService
                 }
             }
             while (attributeIsNotImported);
+        }
+
+        foreach (var unusedRequiredProjectAttribute in unusedRequiredProjectAttributes)
+        {
+            _logger.LogInformation("Required project attribute {Name} is not used when importing test cases. Set as optional", unusedRequiredProjectAttribute.Name);
+
+            unusedRequiredProjectAttribute.IsRequired = false;
+
+            await _client.UpdateProjectAttribute(projectId, unusedRequiredProjectAttribute);
         }
 
         _logger.LogInformation("Importing attributes finished");
