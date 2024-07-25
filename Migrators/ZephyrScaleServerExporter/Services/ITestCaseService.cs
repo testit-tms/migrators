@@ -6,5 +6,5 @@ namespace ZephyrScaleServerExporter.Services;
 
 public interface ITestCaseService
 {
-    Task<List<TestCase>> ConvertTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap);
+    Task<TestCaseData> ConvertTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap);
 }
