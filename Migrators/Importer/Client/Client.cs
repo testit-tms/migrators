@@ -2,6 +2,8 @@ using Importer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
+using System;
+using System.Xml.Linq;
 using TestIT.ApiClient.Api;
 using TestIT.ApiClient.Client;
 using TestIT.ApiClient.Model;
@@ -15,13 +17,15 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
     private readonly AttachmentsApi _attachments;
     private readonly ProjectsApi _projectsApi;
+    private readonly ProjectAttributesApi _projectAttributesApi;
     private readonly ProjectSectionsApi _projectSectionsApi;
     private readonly SectionsApi _sectionsApi;
     private readonly CustomAttributesApi _customAttributes;
     private readonly WorkItemsApi _workItemsApi;
     private readonly CustomAttributesApi _customAttributesApi;
     private readonly ParametersApi _parametersApi;
-    private bool _importToExistingProject = false;
+    private readonly bool _importToExistingProject;
+    private readonly string _projectName;
 
     private const int TenMinutes = 60000;
 
@@ -49,6 +53,13 @@ public class Client : IClient
             certValidation = bool.Parse(certValidationStr);
         }
 
+        _projectName = tmsSection["projectName"];
+        if (!string.IsNullOrEmpty(_projectName))
+        {
+            _logger.LogInformation("Import by custom project name {Name}", _projectName);
+        }
+
+        _importToExistingProject = false;
         var importToExistingProjectStr = tmsSection["importToExistingProject"];
         if (!string.IsNullOrEmpty(importToExistingProjectStr))
         {
@@ -64,6 +75,7 @@ public class Client : IClient
 
         _attachments = new AttachmentsApi(new HttpClient(), cfg, httpClientHandler);
         _projectsApi = new ProjectsApi(new HttpClient(), cfg, httpClientHandler);
+        _projectAttributesApi = new ProjectAttributesApi(new HttpClient(), cfg, httpClientHandler);
         _projectSectionsApi = new ProjectSectionsApi(new HttpClient(), cfg, httpClientHandler);
         _sectionsApi = new SectionsApi(new HttpClient(), cfg, httpClientHandler);
         _customAttributes = new CustomAttributesApi(new HttpClient(), cfg, httpClientHandler);
@@ -74,6 +86,11 @@ public class Client : IClient
 
     public async Task<Guid> GetProject(string name)
     {
+        if (!string.IsNullOrEmpty(_projectName))
+        {
+            name = _projectName;
+        }
+
         _logger.LogInformation("Getting project {Name}", name);
 
         try
@@ -111,6 +128,11 @@ public class Client : IClient
 
     public async Task<Guid> CreateProject(string name)
     {
+        if (!string.IsNullOrEmpty(_projectName))
+        {
+            name = _projectName;
+        }
+
         _logger.LogInformation("Creating project {Name}", name);
 
         try
@@ -372,7 +394,7 @@ public class Client : IClient
                         WorkItemId = s.SharedStepId,
                         TestData = s.TestData
                     }).ToList(),
-                Attributes = testCase.Attributes.Where(x => x.Value != null)
+                Attributes = testCase.Attributes
                     .ToDictionary(keySelector: a => a.Id.ToString(),
                         elementSelector: a => (object)a.Value),
                 Tags = testCase.Tags.Select(t => new TagPostModel(t)).ToList(),
@@ -463,6 +485,89 @@ public class Client : IClient
         }
     }
 
+    public async Task<List<TmsAttribute>> GetRequiredProjectAttributesByProjectId(Guid projectId)
+    {
+        _logger.LogInformation("Getting required project attributes by project id {Id}", projectId);
+
+        try
+        {
+            var attributes = await _projectAttributesApi.SearchAttributesInProjectAsync(
+                projectId: projectId.ToString(), searchAttributesInProjectRequest: new SearchAttributesInProjectRequest(
+                    name: "",
+                    isRequired: true,
+                    types: new List<CustomAttributeTypesEnum>()
+                    {
+                        CustomAttributeTypesEnum.String,
+                        CustomAttributeTypesEnum.Options,
+                        CustomAttributeTypesEnum.MultipleOptions,
+                        CustomAttributeTypesEnum.User,
+                        CustomAttributeTypesEnum.Datetime
+                    }
+                ));
+
+            var requiredAttributes = attributes
+                .Select(a => new TmsAttribute
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Type = a.Type.ToString(),
+                        IsEnabled = a.IsEnabled,
+                        IsRequired = a.IsRequired,
+                        IsGlobal = a.IsGlobal,
+                        Options = a.Options.Select(o => new TmsAttributeOptions
+                        {
+                            Id = o.Id,
+                            Value = o.Value,
+                            IsDefault = o.IsDefault
+                        }).ToList()
+                    }).ToList();
+
+            _logger.LogDebug("Got required project attributes by project id {id}: {@Attributes}", projectId, requiredAttributes);
+
+            return requiredAttributes;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Could not get required project attributes by project id {Id}: {Message}", projectId, e.Message);
+            throw;
+        }
+    }
+
+    public async Task<TmsAttribute> GetProjectAttributeById(Guid id)
+    {
+        _logger.LogInformation("Getting project attribute by id {Id}", id);
+
+        try
+        {
+            var attribute = await _customAttributes.ApiV2CustomAttributesIdGetAsync(id);
+
+            var customAttribute = new TmsAttribute
+                {
+                    Id = attribute.Id,
+                    Name = attribute.Name,
+                    Type = attribute.Type.ToString(),
+                    IsEnabled = attribute.IsEnabled,
+                    IsRequired = attribute.IsRequired,
+                    IsGlobal = attribute.IsGlobal,
+                    Options = attribute.Options.Select(o => new TmsAttributeOptions
+                    {
+                        Id = o.Id,
+                        Value = o.Value,
+                        IsDefault = o.IsDefault
+                    }).ToList()
+                };
+
+            _logger.LogDebug("Got project attribute by id {id}: {@Attribute}", id, customAttribute);
+
+            return customAttribute;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Could not get project attribute by id {Id}: {Message}", id, e.Message);
+            throw;
+        }
+    }
+
     public async Task AddAttributesToProject(Guid projectId, IEnumerable<Guid> attributeIds)
     {
         _logger.LogInformation("Adding attributes to project");
@@ -511,6 +616,37 @@ public class Client : IClient
             }).ToList();
 
             return attribute;
+        }
+
+        catch (Exception e)
+        {
+            _logger.LogError("Could not update attribute {Name}: {Message}", attribute.Name, e.Message);
+            throw;
+        }
+    }
+
+    public async Task UpdateProjectAttribute(Guid projectId, TmsAttribute attribute)
+    {
+        _logger.LogInformation("Updating project attribute {Name}", attribute.Name);
+
+        try
+        {
+            var model = new UpdateProjectsAttributeRequest(id: attribute.Id, name: attribute.Name)
+            {
+                IsEnabled = attribute.IsEnabled,
+                IsRequired = attribute.IsRequired,
+                Options = attribute.Options.Select(o => new CustomAttributeOptionModel()
+                {
+                    Id = o.Id,
+                    Value = o.Value,
+                    IsDefault = o.IsDefault
+                }).ToList()
+            };
+
+            _logger.LogDebug("Updating attribute {@Model}", model);
+
+            await _projectAttributesApi.UpdateProjectsAttributeAsync(
+                projectId: projectId.ToString(), updateProjectsAttributeRequest: model);
         }
 
         catch (Exception e)
