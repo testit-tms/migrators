@@ -179,6 +179,63 @@ public class Client : IClient
         return testCase;
     }
 
+    public async Task<ParametersData> GetParametersByTestCaseKey(string testCaseKey)
+    {
+        _logger.LogInformation("Getting parameters by test case key {Key}", testCaseKey);
+
+        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseKey}?fields=testData,parameters(id,name,defaultValue,index),paramType");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get parameters by test case key {Key}. Status code: {StatusCode}. Response: {Response}",
+                testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get parameters by test case key {testCaseKey}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var zephyrParametersData = JsonSerializer.Deserialize<ZephyrParametersData>(content);
+        var testData = new List<Dictionary<string, ZephyrDataParameter>>();
+
+        if (zephyrParametersData.TestData.Count != 0)
+        {
+            foreach (var zephyrIteration in zephyrParametersData.TestData)
+            {
+                var dataParameters = new Dictionary<string, ZephyrDataParameter>();
+
+                foreach (var parameterName in zephyrIteration.Keys)
+                {
+                    try
+                    {
+                        var parameter = JsonSerializer.Deserialize<ZephyrDataParameter>(zephyrIteration[parameterName].ToString());
+
+                        dataParameters[parameterName] = parameter;
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                }
+
+                if (dataParameters.Keys.Count != 0)
+                {
+                    testData.Add(dataParameters);
+                }
+            }
+        }
+
+        var parametersData = new ParametersData
+        {
+            Type = zephyrParametersData.Type,
+            TestData = testData,
+            Parameters = zephyrParametersData.Parameters
+        };
+
+        _logger.LogDebug("Got parameters: {@Parameters}", parametersData);
+
+        return parametersData;
+    }
+
     public async Task<List<JiraComponent>> GetComponents()
     {
         _logger.LogInformation("Getting components by project key {Key}", _projectKey);

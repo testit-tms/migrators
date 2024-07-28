@@ -60,6 +60,7 @@ namespace ZephyrScaleServerExporter
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IWriteService, WriteService>();
                     services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.AddSingleton<IParameterService, ParameterService>();
                 });
         }
 
