@@ -10,18 +10,26 @@ public class StepService : IStepService
 {
     private readonly ILogger<StepService> _logger;
     private readonly IAttachmentService _attachmentService;
+    private readonly IParameterService _parameterService;
     private readonly IClient _client;
+    private List<Iteration> _iterations;
+    private const string START_STEP_PARAMETER = "<span class=\"atwho-inserted\" data-atwho-at-query=\"{\">{";
+    private const string END_STEP_PARAMETER = "}</span>";
 
-    public StepService(ILogger<StepService> logger, IAttachmentService attachmentService, IClient client)
+    public StepService(ILogger<StepService> logger, IAttachmentService attachmentService,
+        IParameterService parameterService, IClient client)
     {
         _logger = logger;
         _attachmentService = attachmentService;
+        _parameterService = parameterService;
         _client = client;
     }
 
-    public async Task<List<Step>> ConvertSteps(Guid testCaseId, ZephyrTestScript testScript)
+    public async Task<StepsData> ConvertSteps(Guid testCaseId, ZephyrTestScript testScript, List<Iteration> iterations)
     {
         _logger.LogInformation("Converting steps from test script {@TestScript}", testScript);
+
+        _iterations = iterations;
 
         if (testScript.Steps != null)
         {
@@ -47,29 +55,41 @@ public class StepService : IStepService
 
             _logger.LogDebug("Steps: {@StepList}", stepList);
 
-            return stepList;
+            return new StepsData
+            {
+                Steps = stepList,
+                Iterations = _iterations
+            };
         }
 
         if (testScript.Text != null)
         {
-            return new List<Step>
+            return new StepsData
             {
-                new()
+                Steps = new List<Step>
                 {
-                    Action = testScript.Text,
-                    Expected = string.Empty,
-                    TestData = string.Empty,
-                    ActionAttachments = new List<string>(),
-                    ExpectedAttachments = new List<string>(),
-                    TestDataAttachments = new List<string>()
-                }
+                    new()
+                    {
+                        Action = testScript.Text,
+                        Expected = string.Empty,
+                        TestData = string.Empty,
+                        ActionAttachments = new List<string>(),
+                        ExpectedAttachments = new List<string>(),
+                        TestDataAttachments = new List<string>()
+                    }
+                },
+                Iterations = _iterations
             };
         }
 
-        return new List<Step>();
+        return new StepsData
+        {
+            Steps = new List<Step>(),
+            Iterations = _iterations
+        };
     }
 
-    public async Task<List<Step>> ConvertSteps(Guid testCaseId, ZephyrArchivedTestScript testScript)
+    private async Task<List<Step>> ConvertArchivedSteps(Guid testCaseId, ZephyrArchivedTestScript testScript)
     {
         _logger.LogInformation("Converting steps from test script {@TestScript}", testScript);
 
@@ -127,9 +147,9 @@ public class StepService : IStepService
 
         var newStep = new Step
         {
-            Action = action.Description,
-            Expected = expected.Description,
-            TestData = testData.Description,
+            Action = AddParametersToStep(action.Description),
+            Expected = AddParametersToStep(expected.Description),
+            TestData = AddParametersToStep(testData.Description),
             ActionAttachments = new List<string>(),
             ExpectedAttachments = new List<string>(),
             TestDataAttachments = new List<string>()
@@ -245,19 +265,38 @@ public class StepService : IStepService
     {
         _logger.LogInformation("Converting shared steps from test case key {testCaseKey}", testCaseKey);
 
+        var sharedStepsIterations = await _parameterService.ConvertParameters(testCaseKey);
+        _iterations = _parameterService.MergeIterations(_iterations, sharedStepsIterations);
+
         try
         {
             var zephyrTestCase = await _client.GetTestCase(testCaseKey);
 
             return zephyrTestCase.TestScript != null ?
-                await ConvertSteps(testCaseId, zephyrTestCase.TestScript) : new List<Step>();
+                (await ConvertSteps(testCaseId, zephyrTestCase.TestScript, _iterations)).Steps : new List<Step>();
         }
         catch (Exception ex)
         {
             var zephyrArchivedTestCase = await _client.GetArchivedTestCase(testCaseKey);
 
             return zephyrArchivedTestCase.TestScript != null ?
-                await ConvertSteps(testCaseId, zephyrArchivedTestCase.TestScript) : new List<Step>();
+                await ConvertArchivedSteps(testCaseId, zephyrArchivedTestCase.TestScript) : new List<Step>();
         }
+    }
+
+    private string AddParametersToStep(string stepText)
+    {
+        if (stepText.Contains(START_STEP_PARAMETER) && stepText.Contains(END_STEP_PARAMETER))
+        {
+            foreach (var iteration in _iterations)
+            {
+                foreach (var parameter in iteration.Parameters)
+                {
+                    stepText = stepText.Replace(START_STEP_PARAMETER + parameter.Name + END_STEP_PARAMETER, $"<<<{parameter.Name}>>>");
+                }
+            }
+        }
+
+        return stepText;
     }
 }

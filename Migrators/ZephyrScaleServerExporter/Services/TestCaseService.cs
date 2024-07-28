@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Models;
-using System.Linq;
 using ZephyrScaleServerExporter.Client;
 using ZephyrScaleServerExporter.Models;
 using Attribute = Models.Attribute;
@@ -14,15 +13,17 @@ public class TestCaseService : ITestCaseService
     private readonly IClient _client;
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
+    private readonly IParameterService _parameterService;
     public const int _duration = 10000;
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
-        IAttachmentService attachmentService)
+        IAttachmentService attachmentService, IParameterService parameterService)
     {
         _logger = logger;
         _client = client;
         _stepService = stepService;
         _attachmentService = attachmentService;
+        _parameterService = parameterService;
     }
 
     public async Task<TestCaseData> ConvertTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap)
@@ -50,8 +51,17 @@ public class TestCaseService : ITestCaseService
                 attachments.Add(fileName);
             }
 
-            var steps = zephyrTestCase.TestScript != null ?
-                await _stepService.ConvertSteps(testCaseId, zephyrTestCase.TestScript) : new List<Step>();
+            var iterations = await _parameterService.ConvertParameters(zephyrTestCase.Key);
+
+            var steps = new List<Step>();
+
+            if (zephyrTestCase.TestScript != null)
+            {
+                var stepsData = await _stepService.ConvertSteps(testCaseId, zephyrTestCase.TestScript, iterations);
+
+                steps = stepsData.Steps;
+                iterations = stepsData.Iterations;
+            }
 
             steps.ForEach(s =>
             {
@@ -145,7 +155,7 @@ public class TestCaseService : ITestCaseService
                 Attributes = attributes,
                 Tags = zephyrTestCase.Labels ?? new List<string>(),
                 Attachments = attachments,
-                Iterations = new List<Iteration>(),
+                Iterations = iterations,
                 Links = links,
                 Name = zephyrTestCase.Name,
                 SectionId = sectionId
