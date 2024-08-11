@@ -79,6 +79,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
                     {
                         s.Action = AddParameter(s.Action, parameters);
                         s.Expected = AddParameter(s.Expected, parameters);
+                        s.TestData = AddParameter(s.TestData, parameters);
                     });
 
                 isStepChanged = true;
@@ -107,12 +108,12 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         if (string.IsNullOrEmpty(line)) return line;
 
         var regexp = new Regex("<<<(.*?)>>>");
-        var match = regexp.Match(line).Groups;
+        var matches = regexp.Matches(line);
 
-        foreach (Group group in match)
+        foreach (var match in matches)
         {
             var param = parameters.FirstOrDefault(p =>
-                string.Equals(p.Name, group.Value, StringComparison.InvariantCultureIgnoreCase));
+                string.Equals("<<<" + p.Name + ">>>", match.ToString(), StringComparison.InvariantCultureIgnoreCase));
             if (param is null) continue;
 
             var repl =
@@ -120,7 +121,7 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
                 $" data-value=\"{param.Name}\"> <span contenteditable=\"false\"><span class=\"ql-mention-denotation-char\">" +
                 $"%</span>{param.Name}</span> </span>";
 
-            line = regexp.Replace(line, repl);
+            line = line.Replace("<<<" + param.Name + ">>>", repl);
         }
 
         return line;
