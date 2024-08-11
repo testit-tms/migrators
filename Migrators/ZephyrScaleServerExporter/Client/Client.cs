@@ -228,7 +228,7 @@ public class Client : IClient
         {
             Type = zephyrParametersData.Type,
             TestData = testData,
-            Parameters = zephyrParametersData.Parameters
+            Parameters = zephyrParametersData.Parameters.Where(p => p.Value != null).ToList()
         };
 
         _logger.LogDebug("Got parameters: {@Parameters}", parametersData);

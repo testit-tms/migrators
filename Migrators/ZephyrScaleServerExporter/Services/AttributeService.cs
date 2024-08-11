@@ -61,6 +61,11 @@ public class AttributeService : IAttributeService
 
             if (attribute.Type == AttributeType.Options || attribute.Type == AttributeType.MultipleOptions)
             {
+                if (customField.Options == null)
+                {
+                    continue;
+                }
+
                 attribute.Options.AddRange(customField.Options.Select(x => x.Name).ToList());
             }
 
