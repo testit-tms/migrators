@@ -101,9 +101,11 @@ public class Client : IClient
     public async Task<List<ZephyrTestCase>> GetTestCases()
     {
         _logger.LogInformation("Getting test cases by project key {Key}", _projectKey);
+
         var allTestCases = new List<ZephyrTestCase>();
         var startAt = 0;
         var maxResults = 100;
+        var countOfTests = 0;
 
         do
         {
@@ -123,8 +125,12 @@ public class Client : IClient
             if (testCases.Any())
             {
                 _logger.LogDebug("Got test cases {@TestCases}", testCases);
+
                 allTestCases.AddRange(testCases);
                 startAt += maxResults;
+                countOfTests += testCases.Count();
+
+                _logger.LogInformation("Got {Count} test cases", countOfTests);
             }
             else
             {
@@ -304,6 +310,15 @@ public class Client : IClient
 
     public async Task<byte[]> DownloadAttachment(string url)
     {
-        return await _httpClient.GetByteArrayAsync(url);
+        try
+        {
+            return await _httpClient.GetByteArrayAsync(url);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Failed to download attachment {url}. Error: {Ex}", url, ex);
+
+            return Array.Empty<byte>();
+        }
     }
 }

@@ -15,6 +15,7 @@ public class StepService : IStepService
     private List<Iteration> _iterations;
     private const string START_STEP_PARAMETER = "<span class=\"atwho-inserted\" data-atwho-at-query=\"{\">{";
     private const string END_STEP_PARAMETER = "}</span>";
+    private readonly Dictionary<string, List<Step>> _sharedStepsData = new Dictionary<string, List<Step>>();
 
     public StepService(ILogger<StepService> logger, IAttachmentService attachmentService,
         IParameterService parameterService, IClient client)
@@ -265,6 +266,13 @@ public class StepService : IStepService
     {
         _logger.LogInformation("Converting shared steps from test case key {testCaseKey}", testCaseKey);
 
+        if (_sharedStepsData.ContainsKey(testCaseKey))
+        {
+            _logger.LogInformation("Return shared steps {@Steps}", _sharedStepsData[testCaseKey]);
+
+            return _sharedStepsData[testCaseKey];
+        }
+
         var sharedStepsIterations = await _parameterService.ConvertParameters(testCaseKey);
         _iterations = _parameterService.MergeIterations(_iterations, sharedStepsIterations);
 
@@ -272,15 +280,23 @@ public class StepService : IStepService
         {
             var zephyrTestCase = await _client.GetTestCase(testCaseKey);
 
-            return zephyrTestCase.TestScript != null ?
+            var sharedSteps = zephyrTestCase.TestScript != null ?
                 (await ConvertSteps(testCaseId, zephyrTestCase.TestScript, _iterations)).Steps : new List<Step>();
+
+            _sharedStepsData.Add(testCaseKey, sharedSteps);
+
+            return sharedSteps;
         }
         catch (Exception ex)
         {
             var zephyrArchivedTestCase = await _client.GetArchivedTestCase(testCaseKey);
 
-            return zephyrArchivedTestCase.TestScript != null ?
+            var archivedSharedSteps = zephyrArchivedTestCase.TestScript != null ?
                 await ConvertArchivedSteps(testCaseId, zephyrArchivedTestCase.TestScript) : new List<Step>();
+
+            _sharedStepsData.Add(testCaseKey, archivedSharedSteps);
+
+            return archivedSharedSteps;
         }
     }
 
