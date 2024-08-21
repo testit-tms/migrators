@@ -46,6 +46,11 @@ public abstract class BaseWorkItemService
             return ids;
         }
 
+        if (Guid.TryParse(caseAttribute.Value.ToString(), out _))
+        {
+            return "uuid " + caseAttribute.Value.ToString();
+        }
+
         return caseAttribute.Value.ToString();
     }
 
