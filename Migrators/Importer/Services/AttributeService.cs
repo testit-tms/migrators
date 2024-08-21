@@ -66,7 +66,7 @@ public class AttributeService : IAttributeService
 
                             foreach (var option in attribute.Options)
                             {
-                                if (!options.Contains(option))
+                                if (!string.IsNullOrEmpty(option) && !options.Contains(option))
                                 {
                                     projectAttribute.Options.Add(new TmsAttributeOptions
                                     {
