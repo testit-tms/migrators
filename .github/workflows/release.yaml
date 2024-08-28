@@ -20,6 +20,7 @@ env:
   PRACTITEST_DIR: ./Migrators/PractiTestExporter
   SPIRA_DIR: ./Migrators/SpiraTestExporter
   HPALM_DIR: ./Migrators/HPALMExporter
+  QASE_DIR: ./Migrators/QaseExporter
 
 jobs:
   importer_build:
@@ -679,3 +680,50 @@ jobs:
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
           overwrite: true        
+  
+  qase_build:
+    needs: hpalm_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: QaseExporter.exe
+            asset_name: QaseExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: QaseExporter
+            asset_name: QaseExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: QaseExporter
+            asset_name: QaseExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.QASE_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.QASE_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true  
