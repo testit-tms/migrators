@@ -5,5 +5,6 @@ public enum AttributeType
     String,
     Datetime,
     Options,
-    MultipleOptions
+    MultipleOptions,
+    Checkbox
 }
