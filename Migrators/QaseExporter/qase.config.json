@@ -1,0 +1,8 @@
+{
+  "resultPath": "/Users/user01/Documents/importer",
+  "qase": {
+    "url": "http://api.qase.io/",
+    "token": "e62b232d32e69d82h53e8f0211209ccf652efdccddf3d1fb11ef764ghi998a4c",
+    "projectKey": "KEY"
+  }
+}

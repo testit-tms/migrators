@@ -10,6 +10,7 @@ public abstract class BaseWorkItemService
 {
     private const string OptionsType = "options";
     private const string MultipleOptionsType = "multipleOptions";
+    private const string Checkbox = "checkbox";
 
     protected static List<CaseAttribute> ConvertAttributes(IEnumerable<CaseAttribute> attributes,
         Dictionary<Guid, TmsAttribute> tmsAttributes)
@@ -44,6 +45,10 @@ public abstract class BaseWorkItemService
             }
 
             return ids;
+        }
+        else if (string.Equals(tmsAttribute.Type, Checkbox, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return bool.Parse(caseAttribute.Value.ToString());
         }
 
         if (Guid.TryParse(caseAttribute.Value.ToString(), out _))
