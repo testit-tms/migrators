@@ -1,4 +1,3 @@
-using Models;
 using ZephyrScaleServerExporter.Models;
 using Attribute = Models.Attribute;
 

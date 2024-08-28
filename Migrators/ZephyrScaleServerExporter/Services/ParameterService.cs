@@ -2,7 +2,6 @@ using ZephyrScaleServerExporter.Client;
 using ZephyrScaleServerExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
-using Microsoft.VisualBasic;
 
 namespace ZephyrScaleServerExporter.Services;
 
