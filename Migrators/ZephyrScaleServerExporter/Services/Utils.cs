@@ -6,7 +6,7 @@ namespace ZephyrScaleServerExporter.Services;
 public static class Utils
 {
     private const string ImgPattern = "<img[^>]*>";
-    private const string UrlPattern = @"src=""([^""]+)""";
+    private const string UrlPattern = @"src=""\.\.([^""]+)""";
 
     public static ZephyrDescriptionData ExtractAttachments(string? description)
     {
@@ -48,7 +48,7 @@ public static class Utils
             data.Attachments.Add(new ZephyrAttachment
             {
                 FileName = fileName,
-                Url = url.Replace("..", "")
+                Url = url
             }); ;
         }
 
