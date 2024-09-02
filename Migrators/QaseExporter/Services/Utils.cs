@@ -5,8 +5,8 @@ namespace QaseExporter.Services;
 
 public static class Utils
 {
-    private const string ImgPattern = @"!\[[^>]*\]\([^>]*\)";
-    private const string UrlPattern = @"\(([^""]+)\)";
+    private const string ImgPattern = @"!\[[\S]*\]\([\S]*\)";
+    private const string UrlPattern = @"\(([\S]+)\)";
 
     public static QaseDescriptionData ExtractAttachments(string? description)
     {
