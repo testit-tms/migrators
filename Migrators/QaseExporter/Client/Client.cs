@@ -164,7 +164,7 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"/v1/shared_step/{_projectKey}");
+            var response = await _httpClient.GetAsync($"/v1/shared_step/{_projectKey}?limit={maxResults}&offset={startAt}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
