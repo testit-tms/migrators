@@ -23,8 +23,8 @@ public class QaseTestCase
     [JsonPropertyName("status")]
     public int Status { get; set; }
 
-    [JsonPropertyName("automation")]
-    public int AutomationStatus { get; set; }
+    [JsonPropertyName("isManual")]
+    public bool isManual { get; set; }
 
     [JsonPropertyName("priority")]
     public int Priority { get; set; }

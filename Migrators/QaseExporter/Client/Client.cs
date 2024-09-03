@@ -259,7 +259,7 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var systemFieldsData = JsonSerializer.Deserialize<QaseSysFieldsData>(content);
 
-        _logger.LogDebug("Got custom fields: {@Fields}", systemFieldsData.Fields);
+        _logger.LogDebug("Got system fields: {@Fields}", systemFieldsData.Fields);
 
         return systemFieldsData.Fields;
     }

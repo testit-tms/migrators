@@ -11,7 +11,7 @@ public class QaseBaseField
     public bool Required { get; set; }
 
     [JsonPropertyName("options")]
-    public List<QaseOption> Options { get; set; }
+    public List<QaseOption>? Options { get; set; }
 }
 
 public class QaseOption
