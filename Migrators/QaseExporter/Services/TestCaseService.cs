@@ -14,6 +14,16 @@ public class TestCaseService : ITestCaseService
     private readonly IAttachmentService _attachmentService;
     private readonly IParameterService _parameterService;
     public const int _duration = 10000;
+    public List<string> _systemAttributeNames = [
+        QaseSystemFieldNames.AutomationStatus,
+        QaseSystemFieldNames.Status,
+        QaseSystemFieldNames.Priority,
+        QaseSystemFieldNames.Type,
+        QaseSystemFieldNames.Layer,
+        QaseSystemFieldNames.IsFlaky,
+        QaseSystemFieldNames.Severity,
+        QaseSystemFieldNames.Behavior,
+        QaseSystemFieldNames.ToBeAutomated];
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService, IParameterService parameterService)
@@ -113,71 +123,95 @@ public class TestCaseService : ITestCaseService
 
     private List<CaseAttribute> ConvertSystemAttributes(Dictionary<QaseSystemField, Guid> attributeMap, QaseTestCase qaseTestCase)
     {
-        var automationStatusAttribute = attributeMap.Keys.First(v => v.Title == "Automation status");
-        var statusAttribute = attributeMap.Keys.First(v => v.Title == "Status");
-        var priorityAttribute = attributeMap.Keys.First(v => v.Title == "Priority");
-        var typeAttribute = attributeMap.Keys.First(v => v.Title == "Type");
-        var layerAttribute = attributeMap.Keys.First(v => v.Title == "Layer");
-        var isFlakyAttribute = attributeMap.Keys.First(v => v.Title == "Is flaky");
-        var severityAttribute = attributeMap.Keys.First(v => v.Title == "Severity");
-        var behaviorAttribute = attributeMap.Keys.First(v => v.Title == "Behavior");
-        var toBeAutomatedAttribute = attributeMap.Keys.First(v => v.Title == "To be automated");
+        _logger.LogInformation("Converting system attributes for test case {Name}", qaseTestCase.Name);
 
-        var attributes = new List<CaseAttribute>()
+        var attributes = new List<CaseAttribute>();
+
+        foreach (var systemAttributeName in _systemAttributeNames)
         {
-            new()
+            var systemAttribute = attributeMap.Keys.FirstOrDefault(v => v.Title == systemAttributeName);
+
+            if (systemAttribute == null)
             {
-                Id = attributeMap[automationStatusAttribute],
-                Value = automationStatusAttribute.Options.First(o => o.Id == qaseTestCase.AutomationStatus).Title,
-            },
-            new()
-            {
-                Id = attributeMap[statusAttribute],
-                Value = statusAttribute.Options.First(o => o.Id == qaseTestCase.Status).Title,
-            },
-            new()
-            {
-                Id = attributeMap[priorityAttribute],
-                Value = priorityAttribute.Options.First(o => o.Id == qaseTestCase.Priority).Title,
-            },
-            new()
-            {
-                Id = attributeMap[typeAttribute],
-                Value = typeAttribute.Options.First(o => o.Id == qaseTestCase.Type).Title,
-            },
-            new()
-            {
-                Id = attributeMap[layerAttribute],
-                Value = layerAttribute.Options.First(o => o.Id == qaseTestCase.Layer).Title,
-            },
-            new()
-            {
-                Id = attributeMap[isFlakyAttribute],
-                Value = isFlakyAttribute.Options.First(o => o.Id == qaseTestCase.IsFlaky).Title,
-            },
-            new()
-            {
-                Id = attributeMap[severityAttribute],
-                Value = severityAttribute.Options.First(o => o.Id == qaseTestCase.Severity).Title,
-            },
-            new()
-            {
-                Id = attributeMap[behaviorAttribute],
-                Value = behaviorAttribute.Options.First(o => o.Id == qaseTestCase.Behavior).Title,
-            },
-            new()
-            {
-                Id = attributeMap[toBeAutomatedAttribute],
-                Value = qaseTestCase.ToBeAutomated,
+                _logger.LogError("Failed to getting \"{Name}\" attribute: {@Attributes}", systemAttributeName, attributeMap.Keys);
+
+                continue;
             }
-        };
+
+            if (systemAttributeName == QaseSystemFieldNames.ToBeAutomated)
+            {
+                attributes.Add(
+                    new()
+                    {
+                        Id = attributeMap[systemAttribute],
+                        Value = qaseTestCase.ToBeAutomated,
+                    }
+                );
+
+                continue;
+            }
+
+            if (systemAttribute.Options == null)
+            {
+                _logger.LogError("Failed to converting option for \"{Name}\" attribute: {@Attribute}", systemAttributeName, systemAttribute);
+
+                continue;
+            }
+
+            var optionId = GetOptionId(systemAttributeName, qaseTestCase);
+            var value = systemAttribute.Options.FirstOrDefault(o => o.Id == optionId)?.Title;
+
+            if (value == null)
+            {
+                _logger.LogError("Failed to getting option by id {Id} from the \"{Name}\" attribute: {@Options}", optionId, systemAttributeName, systemAttribute.Options);
+
+                continue;
+            }
+
+            attributes.Add(
+                new()
+                {
+                    Id = attributeMap[systemAttribute],
+                    Value = value,
+                }
+            );
+        }
 
         return attributes;
+    }
+
+    private int GetOptionId(string attributeName, QaseTestCase qaseTestCase)
+    {
+        switch (attributeName)
+        {
+            case QaseSystemFieldNames.AutomationStatus:
+                return qaseTestCase.isManual ? 0 : 1;
+            case QaseSystemFieldNames.Status:
+                return qaseTestCase.Status;
+            case QaseSystemFieldNames.Priority:
+                return qaseTestCase.Priority;
+            case QaseSystemFieldNames.Type:
+                return qaseTestCase.Type;
+            case QaseSystemFieldNames.Layer:
+                return qaseTestCase.Layer;
+            case QaseSystemFieldNames.IsFlaky:
+                return qaseTestCase.IsFlaky;
+            case QaseSystemFieldNames.Severity:
+                return qaseTestCase.Severity;
+            case QaseSystemFieldNames.Behavior:
+                return qaseTestCase.Behavior;
+            default:
+                _logger.LogError("Problems getting the option id of the \"{Name}\" attribute", attributeName);
+
+                return -1;
+        }
     }
 
     //TODO: need to redo it easier
     private List<CaseAttribute> ConvertCustomAttributes(Dictionary<QaseCustomField, Guid> attributeMap, List<QaseCustomFieldValues> qaseCustomFieldValues)
     {
+        _logger.LogInformation("Converting custom attributes: {@Attributes}", qaseCustomFieldValues);
+
         var attributes = new List<CaseAttribute>();
         var skippedQaseCustomFieldValues = new List<QaseCustomFieldValues>();
 
