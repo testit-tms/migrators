@@ -266,15 +266,6 @@ public class Client : IClient
 
     public async Task<byte[]> DownloadAttachment(string url)
     {
-        try
-        {
-            return await _httpClient.GetByteArrayAsync(url);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError("Failed to download attachment {url}. Error: {Ex}", url, ex);
-
-            return Array.Empty<byte>();
-        }
+        return await _httpClient.GetByteArrayAsync(url);
     }
 }
