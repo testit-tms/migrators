@@ -79,8 +79,8 @@ public class StepService : IStepService
         {
             foreach (var attachment in action.Attachments)
             {
-                var fileName = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.ActionAttachments.Add(fileName.First());
+                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
+                newStep.ActionAttachments.AddRange(fileNames);
             }
         }
 
@@ -107,8 +107,8 @@ public class StepService : IStepService
         {
             foreach (var attachment in action.Attachments)
             {
-                var fileName = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.ActionAttachments.Add(fileName.First());
+                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
+                newStep.ActionAttachments.AddRange(fileNames);
             }
         }
 
@@ -116,8 +116,8 @@ public class StepService : IStepService
         {
             foreach (var attachment in expected.Attachments)
             {
-                var fileName = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.ExpectedAttachments.Add(fileName.First());
+                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
+                newStep.ExpectedAttachments.AddRange(fileNames);
             }
         }
 
@@ -125,8 +125,8 @@ public class StepService : IStepService
         {
             foreach (var attachment in testData.Attachments)
             {
-                var fileName = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.TestDataAttachments.Add(fileName.First());
+                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
+                newStep.TestDataAttachments.AddRange(fileNames);
             }
         }
 
