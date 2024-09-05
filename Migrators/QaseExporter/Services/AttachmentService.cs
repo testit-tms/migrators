@@ -2,6 +2,7 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using QaseExporter.Client;
 using QaseExporter.Models;
+using System;
 
 namespace QaseExporter.Services;
 
@@ -26,11 +27,18 @@ public class AttachmentService : IAttachmentService
         {
             _logger.LogDebug("Downloading attachment: {Name}", qaseAttachment.Name);
 
-            var content = await _client.DownloadAttachment(qaseAttachment.Url);
+            try
+            {
+                var content = await _client.DownloadAttachment(qaseAttachment.Url);
 
-            var name = await _writeService.WriteAttachment(workItemId, content, qaseAttachment.Name);
+                var name = await _writeService.WriteAttachment(workItemId, content, qaseAttachment.Name);
 
-            names.Add(name);
+                names.Add(name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to download attachment {@Attachment}. Error: {Ex}", qaseAttachment, ex);
+            }
         }
 
         _logger.LogDebug("Ending downloading attachments: {@Names}", names);
