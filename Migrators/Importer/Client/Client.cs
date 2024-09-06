@@ -2,8 +2,6 @@ using Importer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
-using System;
-using System.Xml.Linq;
 using TestIT.ApiClient.Api;
 using TestIT.ApiClient.Client;
 using TestIT.ApiClient.Model;

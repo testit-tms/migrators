@@ -37,7 +37,7 @@ public class AttributeService : IAttributeService
                 Id = Guid.NewGuid(),
                 Name = customField.Title,
                 Type = ConvertCustomAttributeType(customField.Type),
-                IsRequired = customField.Required,
+                IsRequired = false,
                 IsActive = true,
                 Options = new List<string>(),
             };
@@ -72,7 +72,7 @@ public class AttributeService : IAttributeService
                 Id = Guid.NewGuid(),
                 Name = systemField.Title,
                 Type = ConvertSystemAttributeType(systemField.Type),
-                IsRequired = systemField.Required,
+                IsRequired = false,
                 IsActive = true,
                 Options = new List<string>(),
             };
