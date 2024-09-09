@@ -44,11 +44,11 @@ public class Client : IClient
             throw new ArgumentException("TMS private token is not specified");
         }
 
-        var certValidation = true;
+        var httpClientHandler = new HttpClientHandler();
         var certValidationStr = tmsSection["certValidation"];
-        if (!string.IsNullOrEmpty(certValidationStr))
+        if (!string.IsNullOrEmpty(certValidationStr) && !bool.Parse(certValidationStr))
         {
-            certValidation = bool.Parse(certValidationStr);
+            httpClientHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => !bool.Parse(certValidationStr);
         }
 
         _projectName = tmsSection["projectName"];
@@ -68,18 +68,15 @@ public class Client : IClient
         cfg.AddApiKeyPrefix("Authorization", "PrivateToken");
         cfg.AddApiKey("Authorization", token);
 
-        var httpClientHandler = new HttpClientHandler();
-        httpClientHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => certValidation;
-
-        _attachments = new AttachmentsApi(new HttpClient(), cfg, httpClientHandler);
-        _projectsApi = new ProjectsApi(new HttpClient(), cfg, httpClientHandler);
-        _projectAttributesApi = new ProjectAttributesApi(new HttpClient(), cfg, httpClientHandler);
-        _projectSectionsApi = new ProjectSectionsApi(new HttpClient(), cfg, httpClientHandler);
-        _sectionsApi = new SectionsApi(new HttpClient(), cfg, httpClientHandler);
-        _customAttributes = new CustomAttributesApi(new HttpClient(), cfg, httpClientHandler);
-        _workItemsApi = new WorkItemsApi(new HttpClient(), cfg, httpClientHandler);
-        _customAttributesApi = new CustomAttributesApi(new HttpClient(), cfg, httpClientHandler);
-        _parametersApi = new ParametersApi(new HttpClient(), cfg, httpClientHandler);
+        _attachments = new AttachmentsApi(new HttpClient(httpClientHandler), cfg);
+        _projectsApi = new ProjectsApi(new HttpClient(httpClientHandler), cfg);
+        _projectAttributesApi = new ProjectAttributesApi(new HttpClient(httpClientHandler), cfg);
+        _projectSectionsApi = new ProjectSectionsApi(new HttpClient(httpClientHandler), cfg);
+        _sectionsApi = new SectionsApi(new HttpClient(httpClientHandler), cfg);
+        _customAttributes = new CustomAttributesApi(new HttpClient(httpClientHandler), cfg);
+        _workItemsApi = new WorkItemsApi(new HttpClient(httpClientHandler), cfg);
+        _customAttributesApi = new CustomAttributesApi(new HttpClient(httpClientHandler), cfg);
+        _parametersApi = new ParametersApi(new HttpClient(httpClientHandler), cfg);
     }
 
     public async Task<Guid> GetProject(string name)
