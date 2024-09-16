@@ -1,7 +1,6 @@
 using QaseExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
-using System.Collections.Generic;
 
 namespace QaseExporter.Services;
 
@@ -77,11 +76,8 @@ public class StepService : IStepService
 
         if (action.Attachments.Count > 0)
         {
-            foreach (var attachment in action.Attachments)
-            {
-                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.ActionAttachments.AddRange(fileNames);
-            }
+            var fileNames = await _attachmentService.DownloadAttachments(action.Attachments, testCaseId);
+            newStep.ActionAttachments.AddRange(fileNames);
         }
 
         return new List<Step>() { newStep };
@@ -105,28 +101,31 @@ public class StepService : IStepService
 
         if (action.Attachments.Count > 0)
         {
-            foreach (var attachment in action.Attachments)
-            {
-                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.ActionAttachments.AddRange(fileNames);
-            }
+            var fileNames = await _attachmentService.DownloadAttachments(action.Attachments, testCaseId);
+            newStep.ActionAttachments.AddRange(fileNames);
         }
 
         if (expected.Attachments.Count > 0)
         {
-            foreach (var attachment in expected.Attachments)
-            {
-                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.ExpectedAttachments.AddRange(fileNames);
-            }
+            var fileNames = await _attachmentService.DownloadAttachments(expected.Attachments, testCaseId);
+            newStep.ExpectedAttachments.AddRange(fileNames);
         }
 
         if (testData.Attachments.Count > 0)
         {
-            foreach (var attachment in testData.Attachments)
+            var fileNames = await _attachmentService.DownloadAttachments(testData.Attachments, testCaseId);
+            newStep.TestDataAttachments.AddRange(fileNames);
+        }
+
+        if (step.Attachments != null && step.Attachments.Count > 0)
+        {
+            var fileNames =
+                await _attachmentService.DownloadAttachments(step.Attachments, testCaseId);
+
+            foreach (var fileName in fileNames)
             {
-                var fileNames = await _attachmentService.DownloadAttachments(new List<QaseAttachment>() { attachment }, testCaseId);
-                newStep.TestDataAttachments.AddRange(fileNames);
+                newStep.ActionAttachments.Add(fileName);
+                newStep.Action += $"<<<{fileName}>>>";
             }
         }
 

@@ -24,4 +24,7 @@ public class QaseStep
 
     [JsonPropertyName("shared_step_nested_hash")]
     public string? SharedStepNestedHash { get; set; }
+
+    [JsonPropertyName("attachments")]
+    public List<QaseAttachment> Attachments { get; set; }
 }
