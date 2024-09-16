@@ -10,7 +10,8 @@ public class SectionService : ISectionService
     private readonly ILogger<SectionService> _logger;
     private readonly IClient _client;
     private readonly Dictionary<int, Guid> _sectionMap;
-        private const string MainSectionName = "Qase";
+    private List<QaseSuite> _allSuites;
+    private const string MainSectionName = "Qase";
 
     public SectionService(ILogger<SectionService> logger, IClient client)
     {
@@ -23,9 +24,9 @@ public class SectionService : ISectionService
     {
         _logger.LogInformation("Converting test suites");
 
-        var allSuites = await _client.GetSuites();
+        _allSuites = await _client.GetSuites();
 
-        _logger.LogDebug("Found {Count} test suites", allSuites.Count);
+        _logger.LogDebug("Found {Count} test suites", _allSuites.Count);
 
         var section = new Section
         {
@@ -33,7 +34,7 @@ public class SectionService : ISectionService
             Name = MainSectionName,
             PreconditionSteps = new List<Step>(),
             PostconditionSteps = new List<Step>(),
-            Sections = ConvertSuitesToSections(allSuites)
+            Sections = ConvertSuitesToSections(_allSuites)
         };
 
         var sectionData = new SectionData
@@ -47,13 +48,13 @@ public class SectionService : ISectionService
         return sectionData;
     }
 
-    private List<Section> ConvertSuitesToSections(List<QaseSuite> suites)
+    private List<Section> ConvertSuitesToSections(List<QaseSuite> childSuites)
     {
         var sections = new List<Section>();
 
-        foreach (var suite in suites)
+        foreach (var childSuite in childSuites)
         {
-            if (_sectionMap.ContainsKey(suite.Id))
+            if (_sectionMap.ContainsKey(childSuite.Id))
             {
                 continue;
             }
@@ -61,17 +62,17 @@ public class SectionService : ISectionService
             var section = new Section
             {
                 Id = Guid.NewGuid(),
-                Name = suite.Name,
+                Name = childSuite.Name,
                 PreconditionSteps = new List<Step> {
                         new() {
-                            Action = suite.Preconditions
+                            Action = childSuite.Preconditions
                         }
                     },
                 PostconditionSteps = new List<Step>(),
-                Sections = ConvertSuitesToSections(suites.Where(s => s.ParentId.Equals(suite.Id)).ToList()),
+                Sections = ConvertSuitesToSections(_allSuites.Where(s => s.ParentId.Equals(childSuite.Id)).ToList()),
             };
 
-            _sectionMap.Add(suite.Id, section.Id);
+            _sectionMap.Add(childSuite.Id, section.Id);
 
             sections.Add(section);
         }
