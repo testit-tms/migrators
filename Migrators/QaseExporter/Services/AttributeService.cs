@@ -30,36 +30,6 @@ public class AttributeService : IAttributeService
         var customFields = await _client.GetCustomFields();
         var systemFields = await _client.GetSystemFields();
 
-        foreach (var customField in customFields)
-        {
-            var attribute = new Attribute()
-            {
-                Id = Guid.NewGuid(),
-                Name = customField.Title,
-                Type = ConvertCustomAttributeType(customField.Type),
-                IsRequired = false,
-                IsActive = true,
-                Options = new List<string>(),
-            };
-
-            if (attribute.Type == AttributeType.Options || attribute.Type == AttributeType.MultipleOptions)
-            {
-                customField.Options = JsonSerializer.Deserialize<List<QaseOption>>(customField.Value);
-
-                if (customField.Options == null)
-                {
-                    _logger.LogError("Problems converting the value {Value} to options for the custom field {Name}", customField.Value, customField.Title);
-
-                    continue;
-                }
-
-                attribute.Options.AddRange(customField.Options.Select(x => x.Title).ToList());
-            }
-
-            attributes.Add(attribute);
-            customAttributeMap.Add(customField, attribute.Id);
-        }
-
         foreach (var systemField in systemFields)
         {
             if (_ignoredAttributeTitles.Contains(systemField.Title))
@@ -84,6 +54,36 @@ public class AttributeService : IAttributeService
 
             attributes.Add(attribute);
             systemAttributeMap.Add(systemField, attribute.Id);
+        }
+
+        foreach (var customField in customFields)
+        {
+            var attribute = new Attribute()
+            {
+                Id = Guid.NewGuid(),
+                Name = ConvertAttributeName(customField, attributes),
+                Type = ConvertCustomAttributeType(customField.Type),
+                IsRequired = false,
+                IsActive = true,
+                Options = new List<string>(),
+            };
+
+            if (attribute.Type == AttributeType.Options || attribute.Type == AttributeType.MultipleOptions)
+            {
+                customField.Options = JsonSerializer.Deserialize<List<QaseOption>>(customField.Value);
+
+                if (customField.Options == null)
+                {
+                    _logger.LogError("Problems converting the value {Value} to options for the custom field {Name}", customField.Value, customField.Title);
+
+                    continue;
+                }
+
+                attribute.Options.AddRange(customField.Options.Select(x => x.Title).ToList());
+            }
+
+            attributes.Add(attribute);
+            customAttributeMap.Add(customField, attribute.Id);
         }
 
         _logger.LogDebug("Attributes: {@Attribute}", attributes);
@@ -124,5 +124,19 @@ public class AttributeService : IAttributeService
             default:
                 return AttributeType.String;
         }
+    }
+
+    private static string ConvertAttributeName(QaseCustomField attribute, List<Attribute> attributes)
+    {
+        var newName = attribute.Title;
+        var i = 1;
+
+        while (attributes.Any(x => x.Name == newName))
+        {
+            newName = $"{attribute.Title} ({i})";
+            i++;
+        }
+
+        return newName;
     }
 }
