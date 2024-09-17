@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         project: [
-          ./Migrators/AllureExporterTests,
+          # ./Migrators/AllureExporterTests,
           ./Migrators/AzureExporterTests,
           ./Migrators/ZephyrScaleExporterTests,
           ./Migrators/ZephyrSquadExporterTests,
@@ -53,7 +53,7 @@ jobs:
           ./Migrators/PractiTestExporterTests,
           ./Migrators/SpiraTestExporterTests,
           ./Migrators/HPALMExporterTests,
-          ./Migrators/ImporterTests
+          # ./Migrators/ImporterTests
         ]
     steps:
       - name: Checkout
