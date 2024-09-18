@@ -30,15 +30,6 @@ public class AttributeService : IAttributeService
             new()
             {
                 Id = Guid.NewGuid(),
-                Name = Constants.ComponentAttribute,
-                Type = AttributeType.Options,
-                IsRequired = false,
-                IsActive = true,
-                Options = components.Select(x => x.Name).ToList()
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
                 Name = Constants.IdZephyrAttribute,
                 Type = AttributeType.String,
                 IsRequired = false,
@@ -46,6 +37,21 @@ public class AttributeService : IAttributeService
                 Options = new List<string>(),
             },
         };
+
+        if (components.Count != 0)
+        {
+            attributes.Add(
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = Constants.ComponentAttribute,
+                    Type = AttributeType.Options,
+                    IsRequired = false,
+                    IsActive = true,
+                    Options = components.Select(x => x.Name).ToList()
+                }
+            );
+        }
 
         foreach (var customField in customFields)
         {
