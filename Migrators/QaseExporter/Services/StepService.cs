@@ -66,7 +66,7 @@ public class StepService : IStepService
 
         var newStep = new Step
         {
-            Action = action.Description,
+            Action = ConvertStepDesctiption(action.Description),
             Expected = string.Empty,
             TestData = string.Empty,
             ActionAttachments = new List<string>(),
@@ -91,9 +91,9 @@ public class StepService : IStepService
 
         var newStep = new Step
         {
-            Action = action.Description,
-            Expected = expected.Description,
-            TestData = testData.Description,
+            Action = ConvertStepDesctiption(action.Description),
+            Expected = ConvertStepDesctiption(expected.Description),
+            TestData = ConvertStepDesctiption(testData.Description),
             ActionAttachments = new List<string>(),
             ExpectedAttachments = new List<string>(),
             TestDataAttachments = new List<string>()
@@ -130,5 +130,13 @@ public class StepService : IStepService
         }
 
         return newStep;
+    }
+
+    private static string ConvertStepDesctiption(string description)
+    {
+        return
+            Utils.ConvertingHyperlinks(
+                Utils.ConvertingFormatCharacters(description)
+            );
     }
 }

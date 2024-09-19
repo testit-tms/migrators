@@ -2,7 +2,6 @@ using QaseExporter.Client;
 using Microsoft.Extensions.Logging;
 using Models;
 using JsonWriter;
-using Attribute = Models.Attribute;
 
 namespace QaseExporter.Services;
 

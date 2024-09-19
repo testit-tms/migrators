@@ -5,8 +5,13 @@ namespace QaseExporter.Services;
 
 public static class Utils
 {
-    private const string ImgPattern = @"!\[[\S]*\]\([\S]*\)";
-    private const string UrlPattern = @"\(([\S]+)\)";
+    private const string ImgPattern = @"!\[[^\[\]]*\]\([^()\s]*\)";
+    private const string UrlPattern = @"\(([^()\s]+)\)";
+    private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
+    private const string titlePattern = @"\[([^\[\]]+)\]";
+    private const string HtmlPattern = @"<.*?>";
+    private const string FormatTabCharacter = "\t";
+    private const string FormatNewLineCharacter = "\n";
 
     public static QaseDescriptionData ExtractAttachments(string? description)
     {
@@ -53,5 +58,55 @@ public static class Utils
         }
 
         return data;
+    }
+
+    public static string ConvertingHyperlinks(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var hyperlinkRegex = new Regex(HyperlinkPattern);
+
+        var matches = hyperlinkRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            var urlRegex = new Regex(UrlPattern);
+            var urlMatch = urlRegex.Match(match.Value);
+
+            if (!urlMatch.Success) continue;
+
+            var url = urlMatch.Groups[1].Value;
+
+            var titleRegex = new Regex(titlePattern);
+            var titleMatch = titleRegex.Match(match.Value);
+
+            var title = titleMatch.Success ? titleMatch.Groups[1].Value : url;
+
+            description = description.Replace(match.Value, $"<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"{url}\">{title}</a>");
+        }
+        return description;
+    }
+
+    public static string ConvertingFormatCharacters(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var descriptionLines = description.Split(FormatNewLineCharacter);
+
+        description = string.Join("", descriptionLines.Select(l => $"<p class=\"tiptap-text\">{l}</p>"));
+        description = description.Replace(FormatTabCharacter, "    ");
+
+        return description;
     }
 }
