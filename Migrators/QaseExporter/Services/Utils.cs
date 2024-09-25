@@ -9,6 +9,7 @@ public static class Utils
     private const string UrlPattern = @"\(([^()\s]+)\)";
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
+    private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}";
     private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)";
     private const string FormatTabCharacter = "\t";
     private const string FormatNewLineCharacter = "\n";
@@ -93,6 +94,57 @@ public static class Utils
             description = description.Replace(match.Value, $"<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"{url}\">{title}</a>");
         }
         return description;
+    }
+
+    public static string ConvertingBlockCodeStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var blockCodeStrRegex = new Regex(BlockCodeStrPattern);
+
+        var matches = blockCodeStrRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            description = description.Replace(match.Value, $"<pre class=\"tiptap-code-block\"><code>{match.Value.Replace("```", "")}</code></pre>");
+        }
+
+        return description;
+    }
+
+    public static string ConvertingFormatCharactersWithBlockCodeStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var blockCodeStrRegex = new Regex(BlockCodeStrPattern);
+
+        var matches = blockCodeStrRegex.Matches(description);
+        var remainingDescription = description;
+        var convertedDescription = string.Empty;
+
+        foreach (Match match in matches)
+        {
+            var descriptionsBetweenBlockCode = remainingDescription.Split(match.Value);
+
+            convertedDescription += ConvertingFormatCharacters(descriptionsBetweenBlockCode[0]) + match.Value;
+
+            remainingDescription = descriptionsBetweenBlockCode[1];
+        }
+
+        convertedDescription += ConvertingFormatCharacters(remainingDescription);
+
+        return convertedDescription;
     }
 
     public static string ConvertingFormatCharacters(string? description)
