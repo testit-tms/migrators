@@ -10,6 +10,7 @@ public static class Utils
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
     private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}";
+    private const string CodeStrPattern = @"(?<!`)\`(.*?)\`(?!`)";
     private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)";
     private const string FormatTabCharacter = "\t";
     private const string FormatNewLineCharacter = "\n";
@@ -115,6 +116,30 @@ public static class Utils
         foreach (Match match in matches)
         {
             description = description.Replace(match.Value, $"<pre class=\"tiptap-code-block\"><code>{match.Value.Replace("```", "")}</code></pre>");
+        }
+
+        return description;
+    }
+
+    public static string ConvertingCodeStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var codeStrRegex = new Regex(CodeStrPattern);
+
+        var matches = codeStrRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            description = description.Replace(match.Value, $"<code class=\"tiptap-inline-code\">{match.Value[1..^1]}</code>");
         }
 
         return description;

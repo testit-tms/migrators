@@ -136,8 +136,9 @@ public class StepService : IStepService
     {
         return
             Utils.RemoveBackslashCharacters(
+            Utils.ConvertingCodeStr(
             Utils.ConvertingBlockCodeStr(
             Utils.ConvertingHyperlinks(
-            Utils.ConvertingFormatCharactersWithBlockCodeStr(description))));
+            Utils.ConvertingFormatCharactersWithBlockCodeStr(description)))));
     }
 }
