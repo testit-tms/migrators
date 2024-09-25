@@ -9,6 +9,7 @@ public static class Utils
     private const string UrlPattern = @"\(([^()\s]+)\)";
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
+    private const string ToggleStrongStrPattern = @"\*\*(.*?)\*\*";
     private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}";
     private const string CodeStrPattern = @"(?<!`)\`(.*?)\`(?!`)";
     private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)";
@@ -94,6 +95,30 @@ public static class Utils
 
             description = description.Replace(match.Value, $"<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"{url}\">{title}</a>");
         }
+        return description;
+    }
+
+    public static string ConvertingToggleStrongStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var toggleStrongStrRegex = new Regex(ToggleStrongStrPattern);
+
+        var matches = toggleStrongStrRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            description = description.Replace(match.Value, $"<strong>{match.Value.Replace("**", "")}</strong>");
+        }
+
         return description;
     }
 
