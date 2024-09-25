@@ -9,7 +9,7 @@ public static class Utils
     private const string UrlPattern = @"\(([^()\s]+)\)";
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
-    private const string HtmlPattern = @"<.*?>";
+    private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)";
     private const string FormatTabCharacter = "\t";
     private const string FormatNewLineCharacter = "\n";
 
@@ -108,5 +108,17 @@ public static class Utils
         description = description.Replace(FormatTabCharacter, "    ");
 
         return description;
+    }
+
+    public static string RemoveBackslashCharacters(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var backslashCharacterRegex = new Regex(BackslashCharacterPattern);
+
+        return backslashCharacterRegex.Replace(description, "");
     }
 }

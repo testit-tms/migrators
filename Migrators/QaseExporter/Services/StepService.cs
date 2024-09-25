@@ -135,8 +135,8 @@ public class StepService : IStepService
     private static string ConvertStepDesctiption(string description)
     {
         return
+            Utils.RemoveBackslashCharacters(
             Utils.ConvertingHyperlinks(
-                Utils.ConvertingFormatCharacters(description)
-            );
+            Utils.ConvertingFormatCharacters(description)));
     }
 }
