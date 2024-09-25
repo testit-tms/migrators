@@ -9,7 +9,10 @@ public static class Utils
     private const string UrlPattern = @"\(([^()\s]+)\)";
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
-    private const string HtmlPattern = @"<.*?>";
+    private const string ToggleStrongStrPattern = @"\*\*(.*?)\*\*";  // Match: "**{anything}**"
+    private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}"; // Match: "```{anything}```"
+    private const string CodeStrPattern = @"(?<!`)\`(.*?)\`(?!`)"; // Match: "`{anything}`", No match: "```{anything}```"
+    private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)"; // Match: "\\", No match: "\\\\"
     private const string FormatTabCharacter = "\t";
     private const string FormatNewLineCharacter = "\n";
 
@@ -95,6 +98,108 @@ public static class Utils
         return description;
     }
 
+    public static string ConvertingToggleStrongStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var toggleStrongStrRegex = new Regex(ToggleStrongStrPattern);
+
+        var matches = toggleStrongStrRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            var matchWithoutToggleStrongFormat = match.Value.Replace("**", "");
+            description = description.Replace(match.Value, $"<strong>{matchWithoutToggleStrongFormat}</strong>");
+        }
+
+        return description;
+    }
+
+    public static string ConvertingBlockCodeStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var blockCodeStrRegex = new Regex(BlockCodeStrPattern);
+
+        var matches = blockCodeStrRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            var matchWithoutBlockCodeFormat = match.Value.Replace("```", "");
+            description = description.Replace(match.Value, $"<pre class=\"tiptap-code-block\"><code>{matchWithoutBlockCodeFormat}</code></pre>");
+        }
+
+        return description;
+    }
+
+    public static string ConvertingCodeStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var codeStrRegex = new Regex(CodeStrPattern);
+
+        var matches = codeStrRegex.Matches(description);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            var matchWithoutCodeFormat = match.Value[1..^1];
+            description = description.Replace(match.Value, $"<code class=\"tiptap-inline-code\">{matchWithoutCodeFormat}</code>");
+        }
+
+        return description;
+    }
+
+    public static string ConvertingFormatCharactersWithBlockCodeStr(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var blockCodeStrRegex = new Regex(BlockCodeStrPattern);
+
+        var matches = blockCodeStrRegex.Matches(description);
+        var remainingDescription = description;
+        var convertedDescription = string.Empty;
+
+        foreach (Match match in matches)
+        {
+            var descriptionsBetweenBlockCode = remainingDescription.Split(match.Value);
+
+            convertedDescription += ConvertingFormatCharacters(descriptionsBetweenBlockCode[0]) + match.Value;
+
+            remainingDescription = descriptionsBetweenBlockCode[1];
+        }
+
+        convertedDescription += ConvertingFormatCharacters(remainingDescription);
+
+        return convertedDescription;
+    }
+
     public static string ConvertingFormatCharacters(string? description)
     {
         if (string.IsNullOrEmpty(description))
@@ -108,5 +213,17 @@ public static class Utils
         description = description.Replace(FormatTabCharacter, "    ");
 
         return description;
+    }
+
+    public static string RemoveBackslashCharacters(string? description)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
+        var backslashCharacterRegex = new Regex(BackslashCharacterPattern);
+
+        return backslashCharacterRegex.Replace(description, "");
     }
 }

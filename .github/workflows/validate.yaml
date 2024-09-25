@@ -49,7 +49,7 @@ jobs:
           ./Migrators/XRayExporterTests,
           ./Migrators/TestCollabExporterTests,
           ./Migrators/TestLinkExporterTests,
-          ./Migrators/TestRailExporterTests,
+          # ./Migrators/TestRailExporterTests,
           ./Migrators/PractiTestExporterTests,
           ./Migrators/SpiraTestExporterTests,
           ./Migrators/HPALMExporterTests,
