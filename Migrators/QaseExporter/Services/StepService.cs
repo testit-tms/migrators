@@ -66,7 +66,7 @@ public class StepService : IStepService
 
         var newStep = new Step
         {
-            Action = ConvertingStepDesctiption(action.Description),
+            Action = ConvertingStepDescription(action.Description),
             Expected = string.Empty,
             TestData = string.Empty,
             ActionAttachments = new List<string>(),
@@ -91,9 +91,9 @@ public class StepService : IStepService
 
         var newStep = new Step
         {
-            Action = ConvertingStepDesctiption(action.Description),
-            Expected = ConvertingStepDesctiption(expected.Description),
-            TestData = ConvertingStepDesctiption(testData.Description),
+            Action = ConvertingStepDescription(action.Description),
+            Expected = ConvertingStepDescription(expected.Description),
+            TestData = ConvertingStepDescription(testData.Description),
             ActionAttachments = new List<string>(),
             ExpectedAttachments = new List<string>(),
             TestDataAttachments = new List<string>()
@@ -132,7 +132,7 @@ public class StepService : IStepService
         return newStep;
     }
 
-    private static string ConvertingStepDesctiption(string description)
+    private static string ConvertingStepDescription(string description)
     {
         return
             Utils.RemoveBackslashCharacters(

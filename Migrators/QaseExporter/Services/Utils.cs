@@ -9,10 +9,10 @@ public static class Utils
     private const string UrlPattern = @"\(([^()\s]+)\)";
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
-    private const string ToggleStrongStrPattern = @"\*\*(.*?)\*\*";
-    private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}";
-    private const string CodeStrPattern = @"(?<!`)\`(.*?)\`(?!`)";
-    private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)";
+    private const string ToggleStrongStrPattern = @"\*\*(.*?)\*\*";  // Match: "**{anything}**"
+    private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}"; // Match: "```{anything}```"
+    private const string CodeStrPattern = @"(?<!`)\`(.*?)\`(?!`)"; // Match: "`{anything}`", No match: "```{anything}```"
+    private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)"; // Match: "\\", No match: "\\\\"
     private const string FormatTabCharacter = "\t";
     private const string FormatNewLineCharacter = "\n";
 
@@ -116,7 +116,8 @@ public static class Utils
 
         foreach (Match match in matches)
         {
-            description = description.Replace(match.Value, $"<strong>{match.Value.Replace("**", "")}</strong>");
+            var matchWithoutToggleStrongFormat = match.Value.Replace("**", "");
+            description = description.Replace(match.Value, $"<strong>{matchWithoutToggleStrongFormat}</strong>");
         }
 
         return description;
@@ -140,7 +141,8 @@ public static class Utils
 
         foreach (Match match in matches)
         {
-            description = description.Replace(match.Value, $"<pre class=\"tiptap-code-block\"><code>{match.Value.Replace("```", "")}</code></pre>");
+            var matchWithoutBlockCodeFormat = match.Value.Replace("```", "");
+            description = description.Replace(match.Value, $"<pre class=\"tiptap-code-block\"><code>{matchWithoutBlockCodeFormat}</code></pre>");
         }
 
         return description;
@@ -164,7 +166,8 @@ public static class Utils
 
         foreach (Match match in matches)
         {
-            description = description.Replace(match.Value, $"<code class=\"tiptap-inline-code\">{match.Value[1..^1]}</code>");
+            var matchWithoutCodeFormat = match.Value[1..^1];
+            description = description.Replace(match.Value, $"<code class=\"tiptap-inline-code\">{matchWithoutCodeFormat}</code>");
         }
 
         return description;
