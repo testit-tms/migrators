@@ -26,6 +26,14 @@ public class WriteService : IWriteService
         {
             throw new ArgumentException("Result path is not specified");
         }
+        if (path.Contains('/') && Path.DirectorySeparatorChar == '\\')
+        {
+            path = path.Replace("/", "\\");
+        }
+        if (path.Contains('\\') && Path.DirectorySeparatorChar == '/')
+        {
+            throw new ArgumentException("resultPath separators on your OS should be /");
+        }
 
         _path = Path.GetFullPath(path);
     }

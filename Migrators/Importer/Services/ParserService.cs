@@ -31,6 +31,14 @@ public class ParserService : IParserService
         {
             throw new ArgumentException("resultPath is not set");
         }
+        if (resultPath.Contains('/') && Path.DirectorySeparatorChar == '\\')
+        {
+            resultPath = resultPath.Replace("/", "\\");
+        }
+        if (resultPath.Contains('\\') && Path.DirectorySeparatorChar == '/')
+        {
+            throw new ArgumentException("resultPath separators on your OS should be /");
+        }
 
         _resultPath = resultPath;
     }
