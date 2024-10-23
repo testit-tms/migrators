@@ -26,4 +26,31 @@ public class AttachmentService : IAttachmentService
 
         return await _writeService.WriteAttachment(id, bytes, attachment.FileName);
     }
+
+    public async Task<List<string>> DownloadAttachments(Guid id, List<ZephyrAttachment> attachments)
+    {
+        var names = new List<string>();
+
+        foreach (var attachment in attachments)
+        {
+            _logger.LogDebug("Downloading attachment: {Name}", attachment.FileName);
+
+            try
+            {
+                var bytes = await _client.DownloadAttachment(attachment.Url);
+
+                var name = await _writeService.WriteAttachment(id, bytes, attachment.FileName);
+
+                names.Add(name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to download attachment {@Attachment}. Error: {Ex}", attachment, ex);
+            }
+        }
+
+        _logger.LogDebug("Ending downloading attachments: {@Names}", names);
+
+        return names;
+    }
 }

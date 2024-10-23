@@ -52,29 +52,20 @@ public class StepService : IStepService
 
                 if (action.Attachments.Count > 0)
                 {
-                    foreach (var attachment in action.Attachments)
-                    {
-                        var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
-                        newStep.ActionAttachments.Add(fileName);
-                    }
+                    var fileNames = await _attachmentService.DownloadAttachments(testCaseId, action.Attachments);
+                    newStep.ActionAttachments.AddRange(fileNames);
                 }
 
                 if (expected.Attachments.Count > 0)
                 {
-                    foreach (var attachment in expected.Attachments)
-                    {
-                        var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
-                        newStep.ExpectedAttachments.Add(fileName);
-                    }
+                    var fileNames = await _attachmentService.DownloadAttachments(testCaseId, expected.Attachments);
+                    newStep.ExpectedAttachments.AddRange(fileNames);
                 }
 
                 if (testData.Attachments.Count > 0)
                 {
-                    foreach (var attachment in testData.Attachments)
-                    {
-                        var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
-                        newStep.TestDataAttachments.Add(fileName);
-                    }
+                    var fileNames = await _attachmentService.DownloadAttachments(testCaseId, testData.Attachments);
+                    newStep.TestDataAttachments.AddRange(fileNames);
                 }
 
                 stepList.Add(newStep);
