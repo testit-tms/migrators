@@ -73,20 +73,12 @@ public class TestCaseService : ITestCaseService
 
                 var description = Utils.ExtractAttachments(zephyrTestCase.Description);
 
-                foreach (var attachment in description.Attachments)
-                {
-                    var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
-                    attachments.Add(fileName);
-                }
+                var fileNames = await _attachmentService.DownloadAttachments(testCaseId, description.Attachments);
+                attachments.AddRange(fileNames);
 
                 var precondition = Utils.ExtractAttachments(zephyrTestCase.Precondition);
-                var preconditionAttachments = new List<string>();
-                foreach (var attachment in precondition.Attachments)
-                {
-                    var fileName = await _attachmentService.DownloadAttachment(testCaseId, attachment);
-                    preconditionAttachments.Add(fileName);
-                    attachments.Add(fileName);
-                }
+                var preconditionAttachments = await _attachmentService.DownloadAttachments(testCaseId, precondition.Attachments);
+                attachments.AddRange(preconditionAttachments);
 
                 var testCase = new TestCase
                 {
