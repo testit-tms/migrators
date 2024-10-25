@@ -11,4 +11,5 @@ public interface IClient
     Task<List<QaseCustomField>> GetCustomFields();
     Task<List<QaseSystemField>> GetSystemFields();
     Task<byte[]> DownloadAttachment(string url);
+    string GetProjectKey();
 }

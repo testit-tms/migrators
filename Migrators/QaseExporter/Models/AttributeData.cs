@@ -8,5 +8,7 @@ public class AttributeData
 
     public Dictionary<QaseCustomField, Guid> CustomAttributeMap { get; set; }
 
-    public Dictionary<QaseSystemField, Guid> SustemAttributeMap { get; set; }
+    public Dictionary<QaseSystemField, Guid> SystemAttributeMap { get; set; }
+
+    public Dictionary<string, Attribute> AttributeMap { get; set; }
 }

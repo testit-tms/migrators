@@ -268,4 +268,9 @@ public class Client : IClient
     {
         return await _httpClient.GetByteArrayAsync(url);
     }
+
+    public string GetProjectKey()
+    {
+        return _projectKey;
+    }
 }
