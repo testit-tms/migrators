@@ -136,10 +136,13 @@ public class StepService : IStepService
     {
         return
             Utils.RemoveBackslashCharacters(
+            Utils.ConvertingAngleBracketsStr(
+            Utils.ConvertingToggleStrikethroughStr(
             Utils.ConvertingCodeStr(
             Utils.ConvertingBlockCodeStr(
             Utils.ConvertingToggleStrongStr(
             Utils.ConvertingHyperlinks(
-            Utils.ConvertingFormatCharactersWithBlockCodeStr(description))))));
+            Utils.ConvertingFormatCharacters(
+            Utils.ConvertingFormatCharactersWithBlockCodeStr(description)))))))));
     }
 }

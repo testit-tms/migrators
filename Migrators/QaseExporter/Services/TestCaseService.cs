@@ -98,7 +98,7 @@ public class TestCaseService : ITestCaseService
                 new TestCase
                 {
                     Id = testCaseId,
-                    Description = qaseTestCase.Description,
+                    Description = ConvertingDescription(qaseTestCase.Description),
                     State = ConvertStatus(qaseTestCase.Status),
                     Priority = ConvertPriority(qaseTestCase.Priority),
                     Steps = steps,
@@ -317,5 +317,13 @@ public class TestCaseService : ITestCaseService
             2 => StateType.NeedsWork,
             _ => StateType.NotReady
         };
+    }
+
+    private static string ConvertingDescription(string description)
+    {
+        return
+            Utils.RemoveBackslashCharacters(
+            Utils.RemoveToggleStrongCharacters(
+            Utils.RemoveToggleStrikethroughCharacters(description)));
     }
 }
