@@ -10,32 +10,26 @@ public static class Utils
     private const string HyperlinkPattern = @"\[[^\[\]]*\]\([^()\s]*\)";
     private const string titlePattern = @"\[([^\[\]]+)\]";
     private const string ToggleStrongStrPattern = @"\*\*(.*?)\*\*";  // Match: "**{anything}**"
+    private const string ToggleStrikethroughStrPattern = @"\~\~(.*?)\~\~";  // Match: "~~{anything}~~"
     private const string BlockCodeStrPattern = @"\`{3}([\s\S]*?)\`{3}"; // Match: "```{anything}```"
     private const string CodeStrPattern = @"(?<!`)\`(.*?)\`(?!`)"; // Match: "`{anything}`", No match: "```{anything}```"
     private const string BackslashCharacterPattern = @"(?<!\\)\\(?!\\)"; // Match: "\\", No match: "\\\\"
+    private const string ToggleStrongCharacterPattern = @"\*\*"; // Match: "**"
+    private const string ToggleStrikethroughCharacterPattern = @"\~\~"; // Match: "~~"
+    private const string CodeCharacterPattern = @"(?<!\\)\`"; // Match: "`", No match: "\\`"
+    private const string AngleBracketCharacterPattern = @"\\<"; // Match: "\<", No match: "<"
     private const string FormatTabCharacter = "\t";
     private const string FormatNewLineCharacter = "\n";
 
     public static QaseDescriptionData ExtractAttachments(string? description)
     {
-        if (string.IsNullOrEmpty(description))
-        {
-            return new QaseDescriptionData
-            {
-                Description = string.Empty,
-                Attachments = new List<QaseAttachment>()
-            };
-        }
-
         var data = new QaseDescriptionData
         {
             Description = description,
             Attachments = new List<QaseAttachment>()
         };
 
-        var imgRegex = new Regex(ImgPattern);
-
-        var matches = imgRegex.Matches(description);
+        var matches = GetAllMatchesByPattern(description, ImgPattern);
 
         if (matches.Count == 0)
         {
@@ -65,14 +59,7 @@ public static class Utils
 
     public static string ConvertingHyperlinks(string? description)
     {
-        if (string.IsNullOrEmpty(description))
-        {
-            return string.Empty;
-        }
-
-        var hyperlinkRegex = new Regex(HyperlinkPattern);
-
-        var matches = hyperlinkRegex.Matches(description);
+        var matches = GetAllMatchesByPattern(description, HyperlinkPattern);
 
         if (matches.Count == 0)
         {
@@ -100,14 +87,7 @@ public static class Utils
 
     public static string ConvertingToggleStrongStr(string? description)
     {
-        if (string.IsNullOrEmpty(description))
-        {
-            return string.Empty;
-        }
-
-        var toggleStrongStrRegex = new Regex(ToggleStrongStrPattern);
-
-        var matches = toggleStrongStrRegex.Matches(description);
+        var matches = GetAllMatchesByPattern(description, ToggleStrongStrPattern);
 
         if (matches.Count == 0)
         {
@@ -116,8 +96,26 @@ public static class Utils
 
         foreach (Match match in matches)
         {
-            var matchWithoutToggleStrongFormat = match.Value.Replace("**", "");
+            var matchWithoutToggleStrongFormat = RemoveToggleStrongCharacters(match.Value);
             description = description.Replace(match.Value, $"<strong>{matchWithoutToggleStrongFormat}</strong>");
+        }
+
+        return description;
+    }
+
+    public static string ConvertingToggleStrikethroughStr(string? description)
+    {
+        var matches = GetAllMatchesByPattern(description, ToggleStrikethroughStrPattern);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            var matchWithoutToggleStrikethroughFormat = RemoveToggleStrikethroughCharacters(match.Value);
+            description = description.Replace(match.Value, $"<s>{matchWithoutToggleStrikethroughFormat}</s>");
         }
 
         return description;
@@ -125,14 +123,7 @@ public static class Utils
 
     public static string ConvertingBlockCodeStr(string? description)
     {
-        if (string.IsNullOrEmpty(description))
-        {
-            return string.Empty;
-        }
-
-        var blockCodeStrRegex = new Regex(BlockCodeStrPattern);
-
-        var matches = blockCodeStrRegex.Matches(description);
+        var matches = GetAllMatchesByPattern(description, BlockCodeStrPattern);
 
         if (matches.Count == 0)
         {
@@ -141,7 +132,7 @@ public static class Utils
 
         foreach (Match match in matches)
         {
-            var matchWithoutBlockCodeFormat = match.Value.Replace("```", "");
+            var matchWithoutBlockCodeFormat = RemoveCodeCharacters(match.Value);
             description = description.Replace(match.Value, $"<pre class=\"tiptap-code-block\"><code>{matchWithoutBlockCodeFormat}</code></pre>");
         }
 
@@ -150,14 +141,7 @@ public static class Utils
 
     public static string ConvertingCodeStr(string? description)
     {
-        if (string.IsNullOrEmpty(description))
-        {
-            return string.Empty;
-        }
-
-        var codeStrRegex = new Regex(CodeStrPattern);
-
-        var matches = codeStrRegex.Matches(description);
+        var matches = GetAllMatchesByPattern(description, CodeStrPattern);
 
         if (matches.Count == 0)
         {
@@ -166,7 +150,7 @@ public static class Utils
 
         foreach (Match match in matches)
         {
-            var matchWithoutCodeFormat = match.Value[1..^1];
+            var matchWithoutCodeFormat = RemoveCodeCharacters(match.Value);
             description = description.Replace(match.Value, $"<code class=\"tiptap-inline-code\">{matchWithoutCodeFormat}</code>");
         }
 
@@ -175,14 +159,13 @@ public static class Utils
 
     public static string ConvertingFormatCharactersWithBlockCodeStr(string? description)
     {
-        if (string.IsNullOrEmpty(description))
+        var matches = GetAllMatchesByPattern(description, BlockCodeStrPattern);
+
+        if (matches.Count == 0)
         {
-            return string.Empty;
+            return description;
         }
 
-        var blockCodeStrRegex = new Regex(BlockCodeStrPattern);
-
-        var matches = blockCodeStrRegex.Matches(description);
         var remainingDescription = description;
         var convertedDescription = string.Empty;
 
@@ -215,15 +198,64 @@ public static class Utils
         return description;
     }
 
+    public static string ConvertingAngleBracketsStr(string? description)
+    {
+        var matches = GetAllMatchesByPattern(description, AngleBracketCharacterPattern);
+
+        if (matches.Count == 0)
+        {
+            return description;
+        }
+
+        foreach (Match match in matches)
+        {
+            description = description.Replace(match.Value, "&lt;");
+        }
+
+        return description;
+    }
+
+    private static List<Match> GetAllMatchesByPattern(string? description, string pattern)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return new List<Match>();
+        }
+
+        var regex = new Regex(pattern);
+
+        return regex.Matches(description).ToList();
+    }
+
     public static string RemoveBackslashCharacters(string? description)
+    {
+        return RemoveCharactersFromDescriptionByPattern(description, BackslashCharacterPattern);
+    }
+
+    public static string RemoveToggleStrongCharacters(string? description)
+    {
+        return RemoveCharactersFromDescriptionByPattern(description, ToggleStrongCharacterPattern);
+    }
+
+    public static string RemoveToggleStrikethroughCharacters(string? description)
+    {
+        return RemoveCharactersFromDescriptionByPattern(description, ToggleStrikethroughCharacterPattern);
+    }
+
+    public static string RemoveCodeCharacters(string? description)
+    {
+        return RemoveCharactersFromDescriptionByPattern(description, CodeCharacterPattern);
+    }
+
+    private static string RemoveCharactersFromDescriptionByPattern(string? description, string pattern)
     {
         if (string.IsNullOrEmpty(description))
         {
             return string.Empty;
         }
 
-        var backslashCharacterRegex = new Regex(BackslashCharacterPattern);
+        var regex = new Regex(pattern);
 
-        return backslashCharacterRegex.Replace(description, "");
+        return regex.Replace(description, "");
     }
 }
