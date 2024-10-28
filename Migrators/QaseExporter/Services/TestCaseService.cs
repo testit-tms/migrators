@@ -3,6 +3,7 @@ using Models;
 using QaseExporter.Client;
 using QaseExporter.Models;
 using System.Text.Json;
+using Constants = QaseExporter.Models.Constants;
 
 namespace QaseExporter.Services;
 
@@ -70,6 +71,7 @@ public class TestCaseService : ITestCaseService
         {
             _logger.LogInformation("Converting test case {Name}", qaseTestCase.Name);
 
+            var projectKey = _client.GetProjectKey();
             var testCaseId = Guid.NewGuid();
             var attachments = await _attachmentService.DownloadAttachments(qaseTestCase.Attachments, testCaseId);
             var steps = await _stepService.ConvertSteps(qaseTestCase.Steps, sharedSteps, testCaseId);
@@ -91,8 +93,17 @@ public class TestCaseService : ITestCaseService
                 attachments.AddRange(s.ActionAttachments);
             });
 
-            var systemAttributes = ConvertSystemAttributes(attributes.SustemAttributeMap, qaseTestCase);
+            var systemAttributes = ConvertSystemAttributes(attributes.SystemAttributeMap, qaseTestCase);
             var customAttributes = ConvertCustomAttributes(attributes.CustomAttributeMap, qaseTestCase.CustomFields);
+            var testCaseAttributes = systemAttributes.Concat(customAttributes).ToList();
+
+            testCaseAttributes.Add(
+                new()
+                {
+                    Id = attributes.AttributeMap[Constants.IdQaseAttribute].Id,
+                    Value = projectKey + "-" + qaseTestCase.Id
+                }
+            );
 
             testCases.Add(
                 new TestCase
@@ -105,7 +116,7 @@ public class TestCaseService : ITestCaseService
                     PreconditionSteps = preconditionSteps,
                     PostconditionSteps = postconditionSteps,
                     Duration = _duration,
-                    Attributes = systemAttributes.Concat(customAttributes).ToList(),
+                    Attributes = testCaseAttributes,
                     Tags = qaseTestCase.Tags.Select(t => t.Title).ToList(),
                     Attachments = attachments,
                     Iterations = qaseTestCase.Parameters.ToString() != "[]"

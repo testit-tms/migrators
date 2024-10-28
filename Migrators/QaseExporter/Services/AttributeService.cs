@@ -4,6 +4,7 @@ using QaseExporter.Client;
 using QaseExporter.Models;
 using System.Text.Json;
 using Attribute = Models.Attribute;
+using Constants = QaseExporter.Models.Constants;
 
 namespace QaseExporter.Services;
 
@@ -23,7 +24,19 @@ public class AttributeService : IAttributeService
     {
         _logger.LogInformation("Converting attributes");
 
-        var attributes = new List<Attribute>();
+        var attributes = new List<Attribute>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = Constants.IdQaseAttribute,
+                Type = AttributeType.String,
+                IsRequired = false,
+                IsActive = true,
+                Options = new List<string>(),
+            },
+        };
+
         var customAttributeMap = new Dictionary<QaseCustomField, Guid>();
         var systemAttributeMap = new Dictionary<QaseSystemField, Guid>();
 
@@ -92,7 +105,8 @@ public class AttributeService : IAttributeService
         {
             Attributes = attributes,
             CustomAttributeMap = customAttributeMap,
-            SustemAttributeMap = systemAttributeMap,
+            SystemAttributeMap = systemAttributeMap,
+            AttributeMap = attributes.ToDictionary(x => x.Name, x => x),
         };
     }
 
