@@ -97,6 +97,8 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
         tmsTestCase.Attachments = attachments.Select(a => a.Value.ToString()).ToList();
 
         tmsTestCase.Steps = AddAttachmentsToSteps(tmsTestCase.Steps, attachments);
+        tmsTestCase.PreconditionSteps =  AddAttachmentsToSteps(tmsTestCase.PreconditionSteps, attachments);
+        tmsTestCase.PostconditionSteps =  AddAttachmentsToSteps(tmsTestCase.PostconditionSteps, attachments);
 
         await _client.ImportTestCase(projectId, sectionId, tmsTestCase);
 
