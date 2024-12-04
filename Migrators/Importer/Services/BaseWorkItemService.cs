@@ -59,6 +59,84 @@ public abstract class BaseWorkItemService
         return caseAttribute.Value.ToString();
     }
 
+    /// <summary>
+    /// Searches for a specific value within an HTML string (input).
+    /// If the value is found inside an HTML tag, the function moves this value to a position
+    /// after the closing tag of the current HTML element.
+    /// </summary>
+    private static string UpImageLinkIfNeeded(string source, string matchValue)
+    {
+        try
+        {
+            // Find the position of the value in the string
+            int valueIndex = source.IndexOf(matchValue, StringComparison.Ordinal);
+            if (valueIndex == -1)
+            {
+                return source; // If value is not found, return input unchanged
+            }
+
+            // Find the last opening tag before the value
+            int openingTagStart = source.LastIndexOf('<', valueIndex);
+            int openingTagEnd = source.IndexOf('>', openingTagStart);
+            if (openingTagStart == -1 || openingTagEnd == -1)
+            {
+                return source; // If the structure is invalid, return input unchanged
+            }
+
+            // Extract the tag name
+            string tagName = source.Substring(openingTagStart + 1,
+                openingTagEnd - openingTagStart - 1).Split(' ')[0];
+
+            // Find the corresponding closing tag
+            string closingTag = $"</{tagName}>";
+            int closingTagIndex = source.IndexOf(closingTag, valueIndex, StringComparison.Ordinal);
+            if (closingTagIndex == -1)
+            {
+                return source; // If no closing tag found, return input unchanged
+            }
+
+            int closingTagLength = closingTag.Length;
+
+            // Remove the value from its current position
+            source = source.Remove(valueIndex, matchValue.Length);
+
+            // Recalculate the position of the closing tag after the removal
+            closingTagIndex = source.IndexOf(closingTag, openingTagStart,
+                StringComparison.Ordinal) + closingTagLength;
+
+            // Insert the value after the identified closing tag
+            source = source.Insert(closingTagIndex, matchValue);
+
+            return source;
+        }
+        catch (Exception)
+        {
+            return source;
+        }
+    }
+
+    private static string HandleStepImageLink(string source, string a, Dictionary<string, Guid> attachments)
+    {
+        if (source.Contains($"<<<{a}>>>"))
+        {
+            source = source.Replace($"<<<{a}>>>", $"%%%{a}%%%");
+            source = UpImageLinkIfNeeded(source, $"%%%{a}%%%");
+            source = source.Replace($"%%%{a}%%%", $"<p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>");
+        }
+        else
+        {
+            if (IsImage(a))
+            {
+                source += $" <p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>";
+            }
+            else
+            {
+                source += $" <p> File attached to test case: {a} </p>";
+            }
+        }
+        return source;
+    }
+
     protected static List<Step> AddAttachmentsToSteps(List<Step> steps, Dictionary<string, Guid> attachments)
     {
         steps.ToList().ForEach(
@@ -66,59 +144,17 @@ public abstract class BaseWorkItemService
             {
                 s.ActionAttachments?.ForEach(a =>
                 {
-                    if (s.Action.Contains($"<<<{a}>>>"))
-                    {
-                        s.Action = s.Action.Replace($"<<<{a}>>>", $"<p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>");
-                    }
-                    else
-                    {
-                        if (IsImage(a))
-                        {
-                            s.Action += $" <p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>";
-                        }
-                        else
-                        {
-                            s.Action += $" <p> File attached to test case: {a} </p>";
-                        }
-                    }
+                    s.Action = HandleStepImageLink(s.Action, a, attachments);
                 });
 
                 s.ExpectedAttachments?.ForEach(a =>
                 {
-                    if (s.Expected.Contains($"<<<{a}>>>"))
-                    {
-                        s.Expected = s.Expected.Replace($"<<<{a}>>>", $"<p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>");
-                    }
-                    else
-                    {
-                        if (IsImage(a))
-                        {
-                            s.Expected += $" <p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>";
-                        }
-                        else
-                        {
-                            s.Expected += $" <p> File attached to test case: {a} </p>";
-                        }
-                    }
+                    s.Expected = HandleStepImageLink(s.Expected, a, attachments);
                 });
 
                 s.TestDataAttachments?.ForEach(a =>
                 {
-                    if (s.TestData.Contains($"<<<{a}>>>"))
-                    {
-                        s.TestData = s.TestData.Replace($"<<<{a}>>>", $"<p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>");
-                    }
-                    else
-                    {
-                        if (IsImage(a))
-                        {
-                            s.TestData += $" <p> <img src=\"/api/Attachments/{attachments[a]}\"> </p>";
-                        }
-                        else
-                        {
-                            s.TestData += $" <p> File attached to test case: {a} </p>";
-                        }
-                    }
+                    s.TestData = HandleStepImageLink(s.TestData, a, attachments);
                 });
             });
 
