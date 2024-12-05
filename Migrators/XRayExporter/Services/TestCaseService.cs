@@ -139,7 +139,7 @@ public class TestCaseService : ITestCaseService
         var attributes = new List<CaseAttribute>();
 
         if (!_attributeMap[Constants.XrayType].Options
-                .Any(o => o.Equals(test.Type, StringComparison.InvariantCultureIgnoreCase)))
+                .Any(o => o.Equals(test.Type)))
         {
             _attributeMap[Constants.XrayType].Options.Add(test.Type);
         }
@@ -151,7 +151,7 @@ public class TestCaseService : ITestCaseService
         });
 
         if (!_attributeMap[Constants.XrayStatus].Options
-                .Any(o => o.Equals(test.Status, StringComparison.InvariantCultureIgnoreCase)))
+                .Any(o => o.Equals(test.Status)))
         {
             _attributeMap[Constants.XrayStatus].Options.Add(test.Status);
         }
@@ -163,7 +163,7 @@ public class TestCaseService : ITestCaseService
         });
 
         if (!_attributeMap[Constants.XrayArchived].Options
-                .Any(o => o.Equals(test.Archived.ToString(), StringComparison.InvariantCultureIgnoreCase)))
+                .Any(o => o.Equals(test.Archived.ToString())))
         {
             _attributeMap[Constants.XrayArchived].Options.Add(test.Archived.ToString());
         }
@@ -189,7 +189,7 @@ public class TestCaseService : ITestCaseService
 
         foreach (var step in test.Definition.Steps)
         {
-            if (step.Step.Rendered.Contains(SharedStepMark, StringComparison.InvariantCultureIgnoreCase))
+            if (step.Step.Rendered.Contains(SharedStepMark))
             {
                 var match = Regex.Match(step.Step.Rendered, SharedStepRegex);
 

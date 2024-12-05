@@ -57,7 +57,7 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var projects = JsonSerializer.Deserialize<List<JiraProject>>(content);
         var project = projects!.FirstOrDefault(p =>
-            string.Equals(p.Key, _projectKey, StringComparison.InvariantCultureIgnoreCase));
+            string.Equals(p.Key, _projectKey));
 
         if (project != null) return project;
 
