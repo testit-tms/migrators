@@ -10,6 +10,9 @@ public class QaseSuite
     [JsonPropertyName("title")]
     public string Name { get; set; }
 
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
+
     [JsonPropertyName("preconditions")]
     public string Preconditions { get; set; }
 
