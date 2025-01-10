@@ -18,6 +18,7 @@ public class SectionService : ISectionService
         _logger = logger;
         _client = client;
         _sectionMap = new Dictionary<int, Guid>();
+        _allSuites = new List<QaseSuite>();
     }
 
     public async Task<SectionData> ConvertSections()

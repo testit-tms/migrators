@@ -9,16 +9,16 @@ public class QaseTestCase
     public int Id { get; set; }
 
     [JsonPropertyName("title")]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = null!;
 
     [JsonPropertyName("preconditions")]
-    public string Preconditions { get; set; }
+    public string Preconditions { get; set; } = null!;
 
     [JsonPropertyName("postconditions")]
-    public string Postconditions { get; set; }
+    public string Postconditions { get; set; } = null!;
 
     [JsonPropertyName("status")]
     public int Status { get; set; }
@@ -36,22 +36,22 @@ public class QaseTestCase
     //public List<QaseLink> Links { get; set; }
 
     [JsonPropertyName("steps")]
-    public List<QaseStep> Steps { get; set; }
+    public List<QaseStep> Steps { get; set; } = new();
 
     [JsonPropertyName("custom_fields")]
-    public List<QaseCustomFieldValues> CustomFields { get; set; }
+    public List<QaseCustomFieldValues> CustomFields { get; set; } = new();
 
     [JsonPropertyName("params")]
-    public object Parameters { get; set; }
+    public object Parameters { get; set; } = null!;
 
     [JsonPropertyName("steps_type")]
-    public string StepsType { get; set; }
+    public string StepsType { get; set; } = null!;
 
     [JsonPropertyName("attachments")]
-    public List<QaseAttachment> Attachments { get; set; }
+    public List<QaseAttachment> Attachments { get; set; } = new();
 
     [JsonPropertyName("tags")]
-    public List<QaseTag> Tags { get; set; }
+    public List<QaseTag> Tags { get; set; } = new();
 
     [JsonPropertyName("type")]
     public int Type { get; set; }
@@ -78,7 +78,7 @@ public class QaseCustomFieldValues
     public int FieldId { get; set; }
 
     [JsonPropertyName("value")]
-    public string Value { get; set; }
+    public string Value { get; set; } = null!;
 }
 
 public class QaseCases
@@ -93,11 +93,11 @@ public class QaseCases
     public int Filtered { get; set; }
 
     [JsonPropertyName("entities")]
-    public List<QaseTestCase> Cases { get; set; }
+    public List<QaseTestCase> Cases { get; set; } = new();
 }
 
 public class QaseCasesData
 {
     [JsonPropertyName("result")]
-    public QaseCases CasesData { get; set; }
+    public QaseCases CasesData { get; set; } = null!;
 }

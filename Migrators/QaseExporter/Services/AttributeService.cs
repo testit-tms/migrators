@@ -83,9 +83,9 @@ public class AttributeService : IAttributeService
 
             if (attribute.Type == AttributeType.Options || attribute.Type == AttributeType.MultipleOptions)
             {
-                customField.Options = JsonSerializer.Deserialize<List<QaseOption>>(customField.Value);
+                customField.Options = JsonSerializer.Deserialize<List<QaseOption>>(customField.Value)!;
 
-                if (customField.Options == null)
+                if (customField.Options.Count == 0)
                 {
                     _logger.LogError("Problems converting the value {Value} to options for the custom field {Name}", customField.Value, customField.Title);
 

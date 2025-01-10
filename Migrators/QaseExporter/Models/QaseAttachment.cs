@@ -8,17 +8,17 @@ public class QaseAttachment
     public int Size { get; set; }
 
     [JsonPropertyName("mime")]
-    public string Type { get; set; }
+    public string Type { get; set; } = null!;
 
     [JsonPropertyName("filename")]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("url")]
-    public string Url { get; set; }
+    public string Url { get; set; } = null!;
 }
 
 public class QaseDescriptionData
 {
-    public string Description { get; set; }
-    public List<QaseAttachment> Attachments { get; set; }
+    public string? Description { get; set; }
+    public List<QaseAttachment> Attachments { get; set; } = new();
 }

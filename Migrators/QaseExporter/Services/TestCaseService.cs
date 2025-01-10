@@ -120,7 +120,7 @@ public class TestCaseService : ITestCaseService
                     Tags = qaseTestCase.Tags.Select(t => t.Title).ToList(),
                     Attachments = attachments,
                     Iterations = qaseTestCase.Parameters.ToString() != "[]"
-                        ? _parameterService.ConvertParameters(JsonSerializer.Deserialize<Dictionary<string, List<string>>>(qaseTestCase.Parameters.ToString()))
+                        ? _parameterService.ConvertParameters(JsonSerializer.Deserialize<Dictionary<string, List<string>>>(qaseTestCase.Parameters.ToString()!)!)
                         : new List<Iteration>(),
                     Links = new List<Link>(),
                     Name = qaseTestCase.Name,
@@ -264,7 +264,10 @@ public class TestCaseService : ITestCaseService
                 {
                     var qaseOption = qaseCustomField.Options.FirstOrDefault(o => o.Id.ToString().Equals(customFieldValue.Value));
 
-                    value.Add(qaseCustomField.Options.FirstOrDefault(o => o.Id.ToString().Equals(customFieldValue.Value)).Title);
+                    if (qaseOption != null)
+                    {
+                        value.Add(qaseOption.Title);
+                    }
                 }
 
                 attribute.Value = value;
@@ -280,7 +283,12 @@ public class TestCaseService : ITestCaseService
                     continue;
                 }
 
-                attribute.Value = qaseCustomField.Options.FirstOrDefault(o => o.Id.ToString().Equals(qaseCustomFieldValue.Value)).Title;
+                var qaseOption = qaseCustomField.Options.FirstOrDefault(o => o.Id.ToString().Equals(qaseCustomFieldValue.Value));
+
+                if (qaseOption != null)
+                {
+                    attribute.Value = qaseOption.Title;
+                }
             }
             else if (qaseCustomField.Type == QaseAttributeType.Checkbox)
             {

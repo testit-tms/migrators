@@ -8,10 +8,10 @@ public class QaseCustomField : QaseBaseField
     public int Id { get; set; }
 
     [JsonPropertyName("type")]
-    public string Type { get; set; }
+    public string Type { get; set; } = null!;
 
     [JsonPropertyName("value")]
-    public string Value { get; set; }
+    public string Value { get; set; } = null!;
 }
 
 public class QaseFields
@@ -26,11 +26,11 @@ public class QaseFields
     public int Filtered { get; set; }
 
     [JsonPropertyName("entities")]
-    public List<QaseCustomField> Fields { get; set; }
+    public List<QaseCustomField> Fields { get; set; } = new();
 }
 
 public class QaseFieldsData
 {
     [JsonPropertyName("result")]
-    public QaseFields FieldsData { get; set; }
+    public QaseFields FieldsData { get; set; } = null!;
 }
