@@ -11,5 +11,5 @@ public class QaseSystemField : QaseBaseField
 public class QaseSysFieldsData
 {
     [JsonPropertyName("result")]
-    public List<QaseSystemField> Fields { get; set; }
+    public List<QaseSystemField> Fields { get; set; } = new();
 }

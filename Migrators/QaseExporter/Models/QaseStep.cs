@@ -5,7 +5,7 @@ namespace QaseExporter.Models;
 public class QaseStep
 {
     [JsonPropertyName("action")]
-    public string Action { get; set; }
+    public string Action { get; set; } = null!;
 
     [JsonPropertyName("expected_result")]
     public string? ExpectedResult { get; set; }
@@ -26,5 +26,5 @@ public class QaseStep
     public string? SharedStepNestedHash { get; set; }
 
     [JsonPropertyName("attachments")]
-    public List<QaseAttachment> Attachments { get; set; }
+    public List<QaseAttachment> Attachments { get; set; } = new();
 }

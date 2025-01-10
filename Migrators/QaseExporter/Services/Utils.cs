@@ -46,7 +46,7 @@ public static class Utils
             var url = urlMatch.Groups[1].Value;
             var fileName = url.Split('/').Last();
 
-            data.Description = data.Description.Replace(match.Value, $"<<<{fileName}>>>");
+            data.Description = data.Description!.Replace(match.Value, $"<<<{fileName}>>>");
             data.Attachments.Add(new QaseAttachment
             {
                 Name = fileName,
@@ -57,7 +57,7 @@ public static class Utils
         return data;
     }
 
-    public static string ConvertingHyperlinks(string? description)
+    public static string ConvertingHyperlinks(string description)
     {
         var matches = GetAllMatchesByPattern(description, HyperlinkPattern);
 
@@ -85,7 +85,7 @@ public static class Utils
         return description;
     }
 
-    public static string ConvertingToggleStrongStr(string? description)
+    public static string ConvertingToggleStrongStr(string description)
     {
         var matches = GetAllMatchesByPattern(description, ToggleStrongStrPattern);
 
@@ -103,7 +103,7 @@ public static class Utils
         return description;
     }
 
-    public static string ConvertingToggleStrikethroughStr(string? description)
+    public static string ConvertingToggleStrikethroughStr(string description)
     {
         var matches = GetAllMatchesByPattern(description, ToggleStrikethroughStrPattern);
 
@@ -121,7 +121,7 @@ public static class Utils
         return description;
     }
 
-    public static string ConvertingBlockCodeStr(string? description)
+    public static string ConvertingBlockCodeStr(string description)
     {
         var matches = GetAllMatchesByPattern(description, BlockCodeStrPattern);
 
@@ -139,7 +139,7 @@ public static class Utils
         return description;
     }
 
-    public static string ConvertingCodeStr(string? description)
+    public static string ConvertingCodeStr(string description)
     {
         var matches = GetAllMatchesByPattern(description, CodeStrPattern);
 
@@ -157,7 +157,7 @@ public static class Utils
         return description;
     }
 
-    public static string ConvertingFormatCharactersWithBlockCodeStr(string? description)
+    public static string ConvertingFormatCharactersWithBlockCodeStr(string description)
     {
         var matches = GetAllMatchesByPattern(description, BlockCodeStrPattern);
 
@@ -198,7 +198,7 @@ public static class Utils
         return description;
     }
 
-    public static string ConvertingAngleBracketsStr(string? description)
+    public static string ConvertingAngleBracketsStr(string description)
     {
         var matches = GetAllMatchesByPattern(description, AngleBracketCharacterPattern);
 
@@ -227,27 +227,27 @@ public static class Utils
         return regex.Matches(description).ToList();
     }
 
-    public static string RemoveBackslashCharacters(string? description)
+    public static string RemoveBackslashCharacters(string description)
     {
         return RemoveCharactersFromDescriptionByPattern(description, BackslashCharacterPattern);
     }
 
-    public static string RemoveToggleStrongCharacters(string? description)
+    public static string RemoveToggleStrongCharacters(string description)
     {
         return RemoveCharactersFromDescriptionByPattern(description, ToggleStrongCharacterPattern);
     }
 
-    public static string RemoveToggleStrikethroughCharacters(string? description)
+    public static string RemoveToggleStrikethroughCharacters(string description)
     {
         return RemoveCharactersFromDescriptionByPattern(description, ToggleStrikethroughCharacterPattern);
     }
 
-    public static string RemoveCodeCharacters(string? description)
+    public static string RemoveCodeCharacters(string description)
     {
         return RemoveCharactersFromDescriptionByPattern(description, CodeCharacterPattern);
     }
 
-    private static string RemoveCharactersFromDescriptionByPattern(string? description, string pattern)
+    private static string RemoveCharactersFromDescriptionByPattern(string description, string pattern)
     {
         if (string.IsNullOrEmpty(description))
         {

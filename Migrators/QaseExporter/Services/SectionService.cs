@@ -18,6 +18,7 @@ public class SectionService : ISectionService
         _logger = logger;
         _client = client;
         _sectionMap = new Dictionary<int, Guid>();
+        _allSuites = new List<QaseSuite>();
     }
 
     public async Task<SectionData> ConvertSections()
@@ -63,14 +64,29 @@ public class SectionService : ISectionService
             {
                 Id = Guid.NewGuid(),
                 Name = childSuite.Name,
-                PreconditionSteps = new List<Step> {
-                        new() {
-                            Action = childSuite.Preconditions
-                        }
-                    },
+                PreconditionSteps = new List<Step>(),
                 PostconditionSteps = new List<Step>(),
                 Sections = ConvertSuitesToSections(_allSuites.Where(s => s.ParentId.Equals(childSuite.Id)).ToList()),
             };
+
+            if (childSuite.Description != "")
+            {
+                section.PreconditionSteps.Add(
+                    new() {
+                        Action = childSuite.Description
+                    }
+                );
+            }
+
+            if (childSuite.Preconditions != "")
+            {
+                section.PreconditionSteps.Add(
+                    new()
+                    {
+                        Action = childSuite.Preconditions
+                    }
+                );
+            }
 
             _sectionMap.Add(childSuite.Id, section.Id);
 

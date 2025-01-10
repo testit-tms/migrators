@@ -5,6 +5,6 @@ namespace QaseExporter.Models;
 
 public class TestCaseData
 {
-    public List<TestCase> TestCases { get; set; }
-    public List<Attribute> Attributes { get; set; }
+    public List<TestCase> TestCases { get; set; } = new();
+    public List<Attribute> Attributes { get; set; } = new();
 }

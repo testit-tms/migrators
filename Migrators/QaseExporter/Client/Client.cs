@@ -55,7 +55,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var projectData = JsonSerializer.Deserialize<QaseProjectData>(content);
+        var projectData = JsonSerializer.Deserialize<QaseProjectData>(content)!;
 
         _logger.LogDebug("Found project {@Project}", projectData.Project);
 
@@ -85,7 +85,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var suitesData = JsonSerializer.Deserialize<QaseSuitesData>(content);
+            var suitesData = JsonSerializer.Deserialize<QaseSuitesData>(content)!;
 
             if (suitesData.SuitesData.Count > 0)
             {
@@ -130,7 +130,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var qaseCasesData = JsonSerializer.Deserialize<QaseCasesData>(content);
+            var qaseCasesData = JsonSerializer.Deserialize<QaseCasesData>(content)!;
 
             if (qaseCasesData.CasesData.Count > 0)
             {
@@ -175,7 +175,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var sharedStepData = JsonSerializer.Deserialize<SharedStepData>(content);
+            var sharedStepData = JsonSerializer.Deserialize<SharedStepData>(content)!;
 
             if (sharedStepData.SharedStepsData.Count > 0)
             {
@@ -220,7 +220,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var fieldsData = JsonSerializer.Deserialize<QaseFieldsData>(content);
+            var fieldsData = JsonSerializer.Deserialize<QaseFieldsData>(content)!;
 
             if (fieldsData.FieldsData.Count > 0)
             {
@@ -257,7 +257,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var systemFieldsData = JsonSerializer.Deserialize<QaseSysFieldsData>(content);
+        var systemFieldsData = JsonSerializer.Deserialize<QaseSysFieldsData>(content)!;
 
         _logger.LogDebug("Got system fields: {@Fields}", systemFieldsData.Fields);
 

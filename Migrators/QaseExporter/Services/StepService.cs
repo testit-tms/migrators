@@ -132,8 +132,13 @@ public class StepService : IStepService
         return newStep;
     }
 
-    private static string ConvertingStepDescription(string description)
+    private static string ConvertingStepDescription(string? description)
     {
+        if (string.IsNullOrEmpty(description))
+        {
+            return string.Empty;
+        }
+
         return
             Utils.RemoveBackslashCharacters(
             Utils.ConvertingAngleBracketsStr(
