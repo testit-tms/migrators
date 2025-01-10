@@ -26,8 +26,9 @@ public class TestCaseService : ITestCaseService
         int projectId,
         Dictionary<string, Guid> sharedStepMap,
         Dictionary<string, Guid> attributes,
-        Dictionary<int, Guid> sectionIdMap)
+        SectionInfo sectionInfo)
     {
+        var sectionIdMap = sectionInfo.SectionDictionary;
         _logger.LogInformation("Converting test cases");
 
         var testCases = new List<TestCase>();
@@ -46,7 +47,7 @@ public class TestCaseService : ITestCaseService
             foreach (var testCaseId in ids)
             {
                 var testCase = await ConvertTestCase(testCaseId, sharedStepMap, section.Value, attributes);
-
+                ProcessFeatureSection(testCase, attributes, sectionInfo);
                 testCases.Add(testCase);
             }
         }
@@ -55,6 +56,47 @@ public class TestCaseService : ITestCaseService
 
         return testCases;
     }
+
+    private string GetAttributeNameById(Guid id, List<CaseAttribute> caseAttributes)
+    {
+        var attr = caseAttributes.FirstOrDefault(x =>
+            x.Id == id);
+        return attr?.Value.ToString() ?? string.Empty;
+    }
+
+    /// <summary>
+    /// create feauture and story sections, attach testCase to the story;
+    /// </summary>
+    /// <returns>true if processed successfully</returns>
+    protected virtual bool ProcessFeatureSection(TestCase testCase,
+        Dictionary<string, Guid> attributes,
+        SectionInfo sectionInfo)
+    {
+        string featureString = GetAttributeNameById(attributes[Constants.Feature], testCase.Attributes);
+        string storyString = GetAttributeNameById(attributes[Constants.Story], testCase.Attributes);
+        if (featureString == "" || storyString == "") return false;
+
+        Section currentSection = Section.FindSection(s => s.Id == testCase.SectionId, sectionInfo.MainSection)!;
+
+        var featureSection = Section.FindSection(
+            s => s.Name == featureString, currentSection);
+        if (featureSection == null)
+        {
+            featureSection = Section.CreateSection(featureString);
+            currentSection.Sections.Add(featureSection);
+        }
+        var storySection = Section.FindSection(
+            s => s.Name == storyString, featureSection);
+        if (storySection == null)
+        {
+            storySection = Section.CreateSection(storyString);
+            featureSection.Sections.Add(storySection);
+        }
+        testCase.SectionId = storySection.Id;
+
+        return true;
+    }
+
 
     protected virtual async Task<TestCase> ConvertTestCase(
         int testCaseId,
@@ -111,7 +153,7 @@ public class TestCaseService : ITestCaseService
             new CaseAttribute
             {
                 Id = attributes[Constants.AllureStatus],
-                Value = testCase.Status.Name
+                Value = testCase.Status!.Name
             },
             new CaseAttribute
             {
@@ -129,7 +171,8 @@ public class TestCaseService : ITestCaseService
                 continue;
             }
 
-            var customField = customFields.FirstOrDefault(cf => cf.CustomField.Name == attribute.Key);
+            var customField = customFields.FirstOrDefault(
+                cf => cf.CustomField!.Name == attribute.Key);
 
             if (customField != null)
             {

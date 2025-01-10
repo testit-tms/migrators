@@ -1,6 +1,7 @@
 using Importer.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Models;
 using TestIT.ApiClient.Api;
 using TestIT.ApiClient.Client;
@@ -23,7 +24,7 @@ public class Client : IClient
     private readonly CustomAttributesApi _customAttributesApi;
     private readonly ParametersApi _parametersApi;
     private readonly bool _importToExistingProject;
-    private readonly string _projectName;
+    private readonly string? _projectName;
 
     private const int TenMinutes = 60000;
 
@@ -90,7 +91,10 @@ public class Client : IClient
 
         try
         {
-            var projects = await _projectsApi.ApiV2ProjectsSearchPostAsync(null, null, null, null, null, new ApiV2ProjectsSearchPostRequest(name: name));
+            var projects = await
+                _projectsApi.ApiV2ProjectsSearchPostAsync(
+                    null, null, null!, null!, null!,
+                    new ApiV2ProjectsSearchPostRequest(name: name));
 
             _logger.LogDebug("Got projects {@Project} by name {Name}", projects, name);
 
@@ -231,6 +235,13 @@ public class Client : IClient
                 IsEnabled = attribute.IsActive,
                 Options = attribute.Options.Select(o => new CustomAttributeOptionPostModel(value: o)).ToList()
             };
+            if (model.Options.Count == 0 && (
+                    model.Type == CustomAttributeTypesEnum.Options
+                 || model.Type == CustomAttributeTypesEnum.MultipleOptions
+            ))
+            {
+                model.Options.Add(new CustomAttributeOptionPostModel("null"));
+            }
 
             _logger.LogDebug("Importing attribute {@Attribute}", model);
 

@@ -32,23 +32,25 @@ public abstract class BaseWorkItemService
     {
         if (string.Equals(tmsAttribute.Type, OptionsType, StringComparison.InvariantCultureIgnoreCase))
         {
-            return Enumerable.FirstOrDefault(tmsAttribute.Options, o => o.Value == caseAttribute.Value.ToString())?.Id.ToString();
+            return Enumerable.FirstOrDefault(tmsAttribute.Options,
+                o => o.Value == caseAttribute.Value.ToString())?.Id.ToString()!;
         }
         else if (string.Equals(tmsAttribute.Type, MultipleOptionsType, StringComparison.InvariantCultureIgnoreCase))
         {
             var ids = new List<string>();
-            var options = JsonSerializer.Deserialize<List<string>>(caseAttribute.Value.ToString());
+            var options = JsonSerializer.Deserialize<List<string>>(caseAttribute.Value.ToString()!)!;
 
             foreach (var option in options)
             {
-                ids.Add(Enumerable.FirstOrDefault(tmsAttribute.Options, o => o.Value == option)?.Id.ToString());
+                ids.Add(Enumerable.FirstOrDefault(tmsAttribute.Options,
+                    o => o.Value == option)?.Id.ToString()!);
             }
 
             return ids;
         }
         else if (string.Equals(tmsAttribute.Type, Checkbox, StringComparison.InvariantCultureIgnoreCase))
         {
-            return bool.Parse(caseAttribute.Value.ToString());
+            return bool.Parse(caseAttribute.Value.ToString()!);
         }
 
         if (Guid.TryParse(caseAttribute.Value.ToString(), out _))
@@ -56,7 +58,7 @@ public abstract class BaseWorkItemService
             return "uuid " + caseAttribute.Value.ToString();
         }
 
-        return caseAttribute.Value.ToString();
+        return caseAttribute.Value.ToString()!;
     }
 
     /// <summary>

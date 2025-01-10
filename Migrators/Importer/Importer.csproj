@@ -9,6 +9,9 @@
         <SelfContained>true</SelfContained>
         <RuntimeIdentifiers>win-x64;linux-x64;osx-x64</RuntimeIdentifiers>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <PublishSingleFile>false</PublishSingleFile>
+    </PropertyGroup>
 
     <ItemGroup>
       <None Update="tms.config.json">

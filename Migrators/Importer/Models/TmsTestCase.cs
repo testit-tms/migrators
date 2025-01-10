@@ -5,7 +5,7 @@ namespace Importer.Models;
 
 public class TmsTestCase : TestCase
 {
-    public List<TmsIterations> TmsIterations { get; set; }
+    public List<TmsIterations> TmsIterations { get; set; } = new();
 
     public static TmsTestCase Convert(TestCase testCase)
     {

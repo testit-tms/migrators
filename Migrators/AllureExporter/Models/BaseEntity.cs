@@ -8,13 +8,13 @@ public class BaseEntity
     public int Id { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
 
 public class BaseEntities
 {
     [JsonPropertyName("content")]
-    public List<BaseEntity> Content { get; set; }
+    public List<BaseEntity> Content { get; set; } = new();
 }
 
 

@@ -39,7 +39,7 @@ public class ExportService : IExportService
         var sharedSteps = await _sharedStepService.ConvertSharedSteps(project.Id, section.MainSection.Id, attributes);
         var sharedStepsMap = sharedSteps.ToDictionary(k => k.Key.ToString(), v => v.Value.Id);
         var testCases =
-            await _testCaseService.ConvertTestCases(project.Id, sharedStepsMap, customAttributes, section.SectionDictionary);
+            await _testCaseService.ConvertTestCases(project.Id, sharedStepsMap, customAttributes, section);
 
         foreach (var sharedStep in sharedSteps)
         {

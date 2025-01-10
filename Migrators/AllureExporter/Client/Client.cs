@@ -102,7 +102,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
+            var testCases = JsonSerializer.Deserialize<AllureTestCases>(content)!;
             totalPages = testCases.TotalPages;
 
             testCaseIds.AddRange(testCases.Content
@@ -141,7 +141,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var testCases = JsonSerializer.Deserialize<AllureTestCases>(content);
+            var testCases = JsonSerializer.Deserialize<AllureTestCases>(content)!;
             totalPages = testCases.TotalPages;
 
             testCaseIds.AddRange(testCases.Content
@@ -180,7 +180,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var sharedSteps = JsonSerializer.Deserialize<AllureSharedSteps>(content);
+            var sharedSteps = JsonSerializer.Deserialize<AllureSharedSteps>(content)!;
             totalPages = sharedSteps.TotalPages;
 
             allSharedSteps.AddRange(sharedSteps.Content);
@@ -211,7 +211,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<AllureTestCase>(content);
+        return JsonSerializer.Deserialize<AllureTestCase>(content)!;
     }
 
     public async Task<List<AllureStep>> GetSteps(int testCaseId)
@@ -230,7 +230,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var steps = JsonSerializer.Deserialize<AllureSteps>(content);
+        var steps = JsonSerializer.Deserialize<AllureSteps>(content)!;
 
         return steps.Steps;
     }
@@ -251,7 +251,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var stepsInfo = JsonSerializer.Deserialize<AllureStepsInfo>(content);
+        var stepsInfo = JsonSerializer.Deserialize<AllureStepsInfo>(content)!;
 
         return stepsInfo;
     }
@@ -272,7 +272,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var sharedStepsInfo = JsonSerializer.Deserialize<AllureSharedStepsInfo>(content);
+        var sharedStepsInfo = JsonSerializer.Deserialize<AllureSharedStepsInfo>(content)!;
 
         return sharedStepsInfo;
     }
@@ -299,7 +299,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content);
+            var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content)!;
             totalPages = attachments.TotalPages;
 
             allAttachments.AddRange(attachments.Content);
@@ -334,7 +334,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content);
+            var attachments = JsonSerializer.Deserialize<AllureAttachmentContent>(content)!;
             totalPages = attachments.TotalPages;
 
             allAttachments.AddRange(attachments.Content);
@@ -363,7 +363,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<AllureLink>>(content);
+        return JsonSerializer.Deserialize<List<AllureLink>>(content)!;
     }
 
     public async Task<List<BaseEntity>> GetSuites(int projectId)
@@ -382,7 +382,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var suites = JsonSerializer.Deserialize<BaseEntities>(content);
+        var suites = JsonSerializer.Deserialize<BaseEntities>(content)!;
 
         return suites.Content.ToList();
     }
@@ -436,7 +436,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var layers = JsonSerializer.Deserialize<BaseEntities>(content);
+        var layers = JsonSerializer.Deserialize<BaseEntities>(content)!;
 
         return layers.Content.ToList();
     }
@@ -457,7 +457,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var customFields = JsonSerializer.Deserialize<List<BaseEntity>>(content);
+        var customFields = JsonSerializer.Deserialize<List<BaseEntity>>(content)!;
 
         return customFields;
     }
@@ -478,7 +478,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var values = JsonSerializer.Deserialize<BaseEntities>(content);
+        var values = JsonSerializer.Deserialize<BaseEntities>(content)!;
 
         return values.Content.ToList();
     }
@@ -499,7 +499,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var customFields = JsonSerializer.Deserialize<List<AllureCustomField>>(content);
+        var customFields = JsonSerializer.Deserialize<List<AllureCustomField>>(content)!;
 
         return customFields;
     }
