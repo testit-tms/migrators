@@ -11,8 +11,8 @@ public class SharedStepService : BaseWorkItemService, ISharedStepService
     private readonly IClient _client;
     private readonly IParserService _parserService;
     private readonly IAttachmentService _attachmentService;
-    private Dictionary<Guid, TmsAttribute> _attributesMap;
-    private Dictionary<Guid, Guid> _sectionsMap;
+    private Dictionary<Guid, TmsAttribute> _attributesMap = new();
+    private Dictionary<Guid, Guid> _sectionsMap = new();
     private readonly Dictionary<Guid, Guid> _sharedSteps = new();
 
     public SharedStepService(ILogger<SharedStepService> logger, IClient client, IParserService parserService,

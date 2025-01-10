@@ -6,7 +6,7 @@ namespace AllureExporter.Models;
 public class AllureTestCases
 {
     [JsonPropertyName("content")]
-    public List<AllureTestCaseBase> Content { get; set; }
+    public List<AllureTestCaseBase> Content { get; set; } = new();
 
     [JsonPropertyName("totalPages")]
     public int TotalPages { get; set; }
@@ -24,16 +24,16 @@ public class AllureTestCaseBase
 public class AllureTestCase : AllureTestCaseBase
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 
     [JsonPropertyName("tags")]
-    public List<Tags> Tags { get; set; }
+    public List<Tags> Tags { get; set; } = new();
 
     [JsonPropertyName("status")]
-    public Status Status { get; set; }
+    public Status? Status { get; set; }
 
     [JsonPropertyName("testLayer")]
     public TestLayer? Layer { get; set; }
@@ -45,17 +45,17 @@ public class AllureTestCase : AllureTestCaseBase
 public class Tags
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
 
 public class Status
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
 
 public class TestLayer
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 }

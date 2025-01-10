@@ -14,9 +14,9 @@ class TestCaseService : BaseWorkItemService, ITestCaseService
     private readonly IClient _client;
     private readonly IParserService _parserService;
 
-    private Dictionary<Guid, TmsAttribute> _attributesMap;
-    private Dictionary<Guid, Guid> _sectionsMap;
-    private Dictionary<Guid, Guid> _sharedSteps;
+    private Dictionary<Guid, TmsAttribute> _attributesMap = new();
+    private Dictionary<Guid, Guid> _sectionsMap = new();
+    private Dictionary<Guid, Guid> _sharedSteps = new();
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IParserService parserService,
         IParameterService parameterService, IAttachmentService attachmentService)

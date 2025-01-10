@@ -5,25 +5,25 @@ namespace AllureExporter.Models;
 public class AllureStep
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [JsonPropertyName("attachments")]
     public List<AllureAttachment>? Attachments { get; set; }
 
     [JsonPropertyName("steps")]
-    public List<AllureStep> Steps { get; set; }
+    public List<AllureStep> Steps { get; set; } = new();
 
     [JsonPropertyName("keyword")]
-    public string Keyword { get; set; }
+    public string Keyword { get; set; } = string.Empty;
 
     [JsonPropertyName("expectedResult")]
-    public string ExpectedResult { get; set; }
+    public string ExpectedResult { get; set; } = string.Empty;
 }
 
 public class AllureSteps
 {
     [JsonPropertyName("steps")]
-    public List<AllureStep> Steps { get; set; }
+    public List<AllureStep> Steps { get; set; } = new();
 }
 
 public class AllureScenarioStep
@@ -50,11 +50,11 @@ public class AllureScenarioStep
 public class AllureStepsInfo : AllureSharedStepsInfo
 {
     [JsonPropertyName("scenarioSteps")]
-    public Dictionary<string, AllureScenarioStep> ScenarioStepsDictionary { get; set; }
+    public Dictionary<string, AllureScenarioStep> ScenarioStepsDictionary { get; set; } = new();
 
     [JsonPropertyName("attachments")]
-    public Dictionary<string, AllureAttachment> AttachmentsDictionary { get; set; }
+    public Dictionary<string, AllureAttachment> AttachmentsDictionary { get; set; } = new();
 
     [JsonPropertyName("sharedSteps")]
-    public Dictionary<string, AllureSharedStepInfo> SharedStepsDictionary { get; set; }
+    public Dictionary<string, AllureSharedStepInfo> SharedStepsDictionary { get; set; } = new();
 }

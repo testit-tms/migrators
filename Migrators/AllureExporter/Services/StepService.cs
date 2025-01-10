@@ -58,7 +58,7 @@ public class StepService : IStepService
 
         _logger.LogDebug("Found stepsInfo by test case id {TestCaseId}: {@StepsInfo}", testCaseId, stepsInfo);
 
-        return ConvertStepsFromStepsInfo(stepsInfo.Root.NestedStepIds, stepsInfo, commonAttachments, sharedStepMap);
+        return ConvertStepsFromStepsInfo(stepsInfo.Root!.NestedStepIds, stepsInfo, commonAttachments, sharedStepMap);
     }
 
     private static List<Step> ConvertStepsFromStepsInfo(
@@ -84,14 +84,14 @@ public class StepService : IStepService
 
             if (allureStep.SharedStepId != null)
             {
-                step.SharedStepId = sharedStepMap[allureStep.SharedStepId.ToString()];
+                step.SharedStepId = sharedStepMap[allureStep.SharedStepId.ToString()!];
             }
 
             if (allureStep.AttachmentId != null)
             {
                 step.ActionAttachments.AddRange(
                     GetAttachments(
-                        [stepsInfo.AttachmentsDictionary[allureStep.AttachmentId.ToString()]],
+                        [stepsInfo.AttachmentsDictionary[allureStep.AttachmentId.ToString()!]],
                         commonAttachments));
             }
 
@@ -115,7 +115,7 @@ public class StepService : IStepService
 
         _logger.LogDebug("Found stepsInfo by shared step id {SharedStepId}: {@StepsInfo}", sharedStepId, stepsInfo);
 
-        return ConvertStepsFromSharedStepsInfo(stepsInfo.Root.NestedStepIds, stepsInfo, commonAttachments);
+        return ConvertStepsFromSharedStepsInfo(stepsInfo.Root!.NestedStepIds, stepsInfo, commonAttachments);
     }
 
     private static List<Step> ConvertStepsFromSharedStepsInfo(
@@ -147,7 +147,7 @@ public class StepService : IStepService
             {
                 step.ActionAttachments.AddRange(
                     GetAttachments(
-                        [stepsInfo.SharedStepAttachmentsDictionary[allureStep.AttachmentId.ToString()]],
+                        [stepsInfo.SharedStepAttachmentsDictionary[allureStep.AttachmentId.ToString()!]],
                         commonAttachments));
             }
 

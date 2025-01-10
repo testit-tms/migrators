@@ -46,9 +46,7 @@ public class AttributeService : IAttributeService
 
                     var attributeId = await _client.ImportAttribute(attribute);
                     attributeId = await _client.GetAttribute(attributeId.Id);
-
                     attributesMap.Add(attribute.Id, attributeId);
-
                     attributeIsNotImported = false;
                 }
                 else
