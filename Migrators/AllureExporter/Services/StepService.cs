@@ -3,6 +3,7 @@ using AllureExporter.Client;
 using AllureExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
+using Serilog;
 
 namespace AllureExporter.Services;
 
@@ -61,13 +62,74 @@ public class StepService : IStepService
         return ConvertStepsFromStepsInfo(stepsInfo.Root!.NestedStepIds, stepsInfo, commonAttachments, sharedStepMap);
     }
 
-    private static List<Step> ConvertStepsFromStepsInfo(
+    /// <summary>
+    /// fills allureStep with expectedBody and return steps attachments
+    /// </summary>
+    private Dictionary<string, List<int>> FillExpectedResult(Dictionary<string, AllureScenarioStep> stepsDictionary)
+    {
+        Dictionary<string, List<int>> expectedAttachments = new();
+        var stepsList = stepsDictionary.Values.ToList();
+        stepsList.Sort((x, y) => x.Id.CompareTo(y.Id));
+
+        stepsList
+            .AsParallel()
+            .Where(step => step.Body == "Expected Result")
+            .ForAll(step =>
+            {
+                try
+                {
+                    var allureStep = stepsDictionary[(step.Id - 1).ToString()];
+
+                    var expectedRes = "";
+                    var expectedAttachmentIds = new List<int>();
+                    foreach (var expectedId in step.NestedStepIds!)
+                    {
+                        AllureScenarioStep expectedStep = stepsDictionary[expectedId.ToString()];
+                        if (expectedStep.Body != null) expectedRes += expectedStep.Body + ";";
+                        if (expectedStep.AttachmentId != null)
+                            expectedAttachmentIds.Add(expectedStep.AttachmentId.Value);
+                    }
+
+                    if (expectedRes.Length > 0)
+                    {
+                        expectedRes = expectedRes.Substring(0, expectedRes.Length - 1);
+                    }
+
+                    allureStep.ExpectedResult = expectedRes;
+                    expectedAttachments.Add(allureStep.Id.ToString(), expectedAttachmentIds);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogWarning(e.ToString());
+                }
+            });
+        return expectedAttachments;
+    }
+
+    private void FillExpectedAttachments(
+        Step step,
+        List<int>? expectedAttachmentIds,
+        Dictionary<string,AllureAttachment> attachmentsDirectory,
+        List<AllureAttachment> commonAttachments)
+    {
+        if (expectedAttachmentIds != null)
+        {
+            var expAtts = expectedAttachmentIds.Select(x =>
+                attachmentsDirectory[x.ToString()]).ToList();
+            step.ExpectedAttachments.AddRange(
+                GetAttachments(expAtts, commonAttachments));
+        }
+    }
+
+
+    private List<Step> ConvertStepsFromStepsInfo(
         List<int> nestedStepIds,
         AllureStepsInfo stepsInfo,
         List<AllureAttachment> commonAttachments,
         Dictionary<string, Guid> sharedStepMap)
     {
         var steps = new List<Step>();
+        var expectedAttachments = FillExpectedResult(stepsInfo.ScenarioStepsDictionary);
 
         foreach (int stepId in nestedStepIds)
         {
@@ -81,6 +143,12 @@ public class StepService : IStepService
                 ExpectedAttachments = new List<string>(),
                 TestDataAttachments = new List<string>(),
             };
+
+            expectedAttachments.TryGetValue(allureStep.Id.ToString(),
+                out var expectedAttachmentIds);
+            FillExpectedAttachments(step, expectedAttachmentIds,
+                stepsInfo.AttachmentsDictionary, commonAttachments);
+
 
             if (allureStep.SharedStepId != null)
             {
@@ -99,7 +167,8 @@ public class StepService : IStepService
 
             if (allureStep.NestedStepIds != null)
             {
-                var nestedSteps = ConvertStepsFromStepsInfo(allureStep.NestedStepIds, stepsInfo, commonAttachments, sharedStepMap);
+                var nestedSteps = ConvertStepsFromStepsInfo(
+                    allureStep.NestedStepIds, stepsInfo, commonAttachments, sharedStepMap);
 
                 steps.AddRange(nestedSteps);
             }
@@ -118,12 +187,13 @@ public class StepService : IStepService
         return ConvertStepsFromSharedStepsInfo(stepsInfo.Root!.NestedStepIds, stepsInfo, commonAttachments);
     }
 
-    private static List<Step> ConvertStepsFromSharedStepsInfo(
+    private List<Step> ConvertStepsFromSharedStepsInfo(
     List<int> nestedStepIds,
     AllureSharedStepsInfo stepsInfo,
     List<AllureAttachment> commonAttachments)
     {
         var steps = new List<Step>();
+        var expectedAttachments = FillExpectedResult(stepsInfo.SharedStepScenarioStepsDictionary);
 
         foreach (int stepId in nestedStepIds)
         {
@@ -142,6 +212,11 @@ public class StepService : IStepService
                 ExpectedAttachments = new List<string>(),
                 TestDataAttachments = new List<string>(),
             };
+
+            expectedAttachments.TryGetValue(allureStep.Id.ToString(),
+                out var expectedAttachmentIds);
+            FillExpectedAttachments(step, expectedAttachmentIds,
+                stepsInfo.SharedStepAttachmentsDictionary, commonAttachments);
 
             if (allureStep.AttachmentId != null)
             {
