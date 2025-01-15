@@ -118,6 +118,14 @@ public class TestCaseService : ITestCaseService
         var steps = await _stepService.ConvertStepsForTestCase(testCaseId, sharedStepMap);
         var caseAttributes = await ConvertAttributes(testCaseId, testCase, attributes);
 
+        // max suite/story/feature length in allure 255 symbols already
+        // TODO: add somewhere marker about cutting here
+        var isNameCut = testCase.Name.Length > 255;
+        if (isNameCut)
+        {
+            testCase.Name = CutToCharacters(testCase.Name, 255);
+        }
+
         var allureTestCase = new TestCase
         {
             Id = testCaseGuid,
@@ -143,6 +151,14 @@ public class TestCaseService : ITestCaseService
         _logger.LogDebug("Converted test case: {@TestCase}", allureTestCase);
 
         return allureTestCase;
+    }
+
+    public static string CutToCharacters(string input, int charCount)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input; // Return the input as-is if it's null or empty.
+
+        return input.Length <= charCount ? input : input.Substring(0, charCount-3) + "...";
     }
 
     private async Task<List<CaseAttribute>> ConvertAttributes(int testCaseId, AllureTestCase testCase,
