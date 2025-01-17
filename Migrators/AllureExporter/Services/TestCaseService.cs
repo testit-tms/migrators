@@ -135,7 +135,7 @@ public class TestCaseService : ITestCaseService
         var isNameCut = testCase.Name.Length > 255;
         if (isNameCut)
         {
-            testCase.Name = CutToCharacters(testCase.Name, 255);
+            testCase.Name = "[CUT] " + CutToCharacters(testCase.Name, 255);
         }
 
         var allureTestCase = new TestCase
@@ -166,7 +166,7 @@ public class TestCaseService : ITestCaseService
         if (string.IsNullOrEmpty(input))
             return input; // Return the input as-is if it's null or empty.
 
-        return input.Length <= charCount ? input : input.Substring(0, charCount-3) + "...";
+        return input.Length <= charCount ? input : input.Substring(0, charCount-9) + "...";
     }
 
     private async Task<List<CaseAttribute>> ConvertAttributes(long testCaseId, AllureTestCase testCase,
