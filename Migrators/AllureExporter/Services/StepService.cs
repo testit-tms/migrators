@@ -18,7 +18,7 @@ public class StepService : IStepService
         _client = client;
     }
 
-    public async Task<List<Step>> ConvertStepsForTestCase(int testCaseId, Dictionary<string, Guid> sharedStepMap)
+    public async Task<List<Step>> ConvertStepsForTestCase(long testCaseId, Dictionary<string, Guid> sharedStepMap)
     {
         var steps = await _client.GetSteps(testCaseId);
         var commonAttachments = await _client.GetAttachmentsByTestCaseId(testCaseId);
@@ -65,9 +65,9 @@ public class StepService : IStepService
     /// <summary>
     /// fills allureStep with expectedBody and return steps attachments
     /// </summary>
-    private Dictionary<string, List<int>> FillExpectedResult(Dictionary<string, AllureScenarioStep> stepsDictionary)
+    private Dictionary<string, List<long>> FillExpectedResult(Dictionary<string, AllureScenarioStep> stepsDictionary)
     {
-        Dictionary<string, List<int>> expectedAttachments = new();
+        Dictionary<string, List<long>> expectedAttachments = new();
         var stepsList = stepsDictionary.Values.ToList();
         stepsList.Sort((x, y) => x.Id.CompareTo(y.Id));
 
@@ -81,7 +81,7 @@ public class StepService : IStepService
                     var allureStep = stepsDictionary[(step.Id - 1).ToString()];
 
                     var expectedRes = "";
-                    var expectedAttachmentIds = new List<int>();
+                    var expectedAttachmentIds = new List<long>();
                     foreach (var expectedId in step.NestedStepIds!)
                     {
                         AllureScenarioStep expectedStep = stepsDictionary[expectedId.ToString()];
@@ -108,7 +108,7 @@ public class StepService : IStepService
 
     private void FillExpectedAttachments(
         Step step,
-        List<int>? expectedAttachmentIds,
+        List<long>? expectedAttachmentIds,
         Dictionary<string,AllureAttachment> attachmentsDirectory,
         List<AllureAttachment> commonAttachments)
     {
@@ -123,7 +123,7 @@ public class StepService : IStepService
 
 
     private List<Step> ConvertStepsFromStepsInfo(
-        List<int> nestedStepIds,
+        List<long> nestedStepIds,
         AllureStepsInfo stepsInfo,
         List<AllureAttachment> commonAttachments,
         Dictionary<string, Guid> sharedStepMap)
@@ -131,7 +131,7 @@ public class StepService : IStepService
         var steps = new List<Step>();
         var expectedAttachments = FillExpectedResult(stepsInfo.ScenarioStepsDictionary);
 
-        foreach (int stepId in nestedStepIds)
+        foreach (long stepId in nestedStepIds)
         {
             var allureStep = stepsInfo.ScenarioStepsDictionary[stepId.ToString()];
 
@@ -177,7 +177,7 @@ public class StepService : IStepService
         return steps;
     }
 
-    public async Task<List<Step>> ConvertStepsForSharedStep(int sharedStepId)
+    public async Task<List<Step>> ConvertStepsForSharedStep(long sharedStepId)
     {
         var stepsInfo = await _client.GetStepsInfoBySharedStepId(sharedStepId);
         var commonAttachments = await _client.GetAttachmentsBySharedStepId(sharedStepId);
@@ -188,14 +188,14 @@ public class StepService : IStepService
     }
 
     private List<Step> ConvertStepsFromSharedStepsInfo(
-    List<int> nestedStepIds,
+    List<long> nestedStepIds,
     AllureSharedStepsInfo stepsInfo,
     List<AllureAttachment> commonAttachments)
     {
         var steps = new List<Step>();
         var expectedAttachments = FillExpectedResult(stepsInfo.SharedStepScenarioStepsDictionary);
 
-        foreach (int stepId in nestedStepIds)
+        foreach (long stepId in nestedStepIds)
         {
             var allureStep = stepsInfo.SharedStepScenarioStepsDictionary[stepId.ToString()];
 

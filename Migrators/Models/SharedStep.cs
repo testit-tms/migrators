@@ -9,7 +9,7 @@ public class SharedStep
     public Guid Id { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = string.Empty;
 
     [JsonPropertyName("state")]
     [JsonRequired]
@@ -20,26 +20,26 @@ public class SharedStep
     public PriorityType Priority { get; set; }
 
     [JsonPropertyName("steps")]
-    public List<Step> Steps { get; set; }
+    public List<Step> Steps { get; set; } = new();
 
     [JsonPropertyName("attributes")]
-    public List<CaseAttribute> Attributes { get; set; }
+    public List<CaseAttribute> Attributes { get; set; } = new();
 
     [JsonPropertyName("links")]
-    public List<Link> Links { get; set; }
+    public List<Link> Links { get; set; } = new();
 
     [JsonPropertyName("name")]
     [JsonRequired]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("sectionId")]
     [JsonRequired]
     public Guid SectionId { get; set; }
 
     [JsonPropertyName("tags")]
-    public List<string> Tags { get; set; }
+    public List<string> Tags { get; set; } = new();
 
     [JsonPropertyName("attachments")]
-    public List<string> Attachments { get; set; }
+    public List<string> Attachments { get; set; } = new();
 }
 

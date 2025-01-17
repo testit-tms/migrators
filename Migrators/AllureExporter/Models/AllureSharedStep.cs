@@ -9,13 +9,13 @@ public class AllureSharedSteps
     public List<AllureSharedStep> Content { get; set; } = new();
 
     [JsonPropertyName("totalPages")]
-    public int TotalPages { get; set; }
+    public long TotalPages { get; set; }
 }
 
 public class AllureSharedStepBase
 {
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 }
 
 public class AllureSharedStep : AllureSharedStepBase
@@ -30,13 +30,13 @@ public class AllureSharedStepInfo : AllureSharedStepBase
     public string Name { get; set; } = string.Empty;
 
     [JsonPropertyName("children")]
-    public List<int> NestedStepIds { get; set; } = new();
+    public List<long> NestedStepIds { get; set; } = new();
 }
 
 public class AllureScenarioRoot
 {
     [JsonPropertyName("children")]
-    public List<int> NestedStepIds { get; set; } = new();
+    public List<long> NestedStepIds { get; set; } = new();
 }
 
 public class AllureSharedStepsInfo

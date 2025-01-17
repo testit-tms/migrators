@@ -7,7 +7,7 @@ public class CaseAttribute
     [JsonPropertyName("id")]
     [JsonRequired]
     public Guid Id { get; set; }
-    
+
     [JsonPropertyName("value")]
-    public object Value { get; set; }
+    public object Value { get; set; } = null!;
 }

@@ -43,11 +43,13 @@ public class Client : IClient
 
         if (!string.IsNullOrEmpty(apiToken))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Api-Token", apiToken);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Api-Token", apiToken);
         }
         else if (!string.IsNullOrEmpty(bearerToken))
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", bearerToken);
         }
         else
         {
@@ -81,17 +83,18 @@ public class Client : IClient
     }
 
 
-    public async Task<List<int>> GetTestCaseIdsFromMainSuite(int projectId)
+    public async Task<List<long>> GetTestCaseIdsFromMainSuite(long projectId)
     {
-        var testCaseIds = new List<int>();
+        var testCaseIds = new List<long>();
         var page = 0;
-        var totalPages = -1;
+        long totalPages = -1;
 
         _logger.LogInformation("Getting test case ids from main suite");
 
         do
         {
-            var response = await _httpClient.GetAsync($"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&page={page}");
+            var response = await _httpClient.GetAsync(
+                $"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&page={page}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -112,24 +115,26 @@ public class Client : IClient
 
             page++;
 
-            _logger.LogInformation("Got test case ids from main suite from {Page} page out of {TotalPages} pages", page, testCases.TotalPages);
+            _logger.LogInformation("Got test case ids from main suite from {Page} " +
+                                   "page out of {TotalPages} pages", page, testCases.TotalPages);
         } while (page < totalPages);
 
         return testCaseIds;
     }
 
-    public async Task<List<int>> GetTestCaseIdsFromSuite(int projectId, int suiteId)
+    public async Task<List<long>> GetTestCaseIdsFromSuite(long projectId, long suiteId)
     {
-        var testCaseIds = new List<int>();
+        var testCaseIds = new List<long>();
         var page = 0;
-        var totalPages = -1;
+        long totalPages = -1L;
 
         _logger.LogInformation("Getting test case ids from suite {SuiteId}", suiteId);
 
         do
         {
             var response =
-            await _httpClient.GetAsync($"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&path={suiteId}&page={page}");
+            await _httpClient.GetAsync(
+                $"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&path={suiteId}&page={page}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -151,17 +156,18 @@ public class Client : IClient
 
             page++;
 
-            _logger.LogInformation("Got test case ids from suite {SuiteId} from {Page} page out of {TotalPages} pages", suiteId, page, totalPages);
+            _logger.LogInformation("Got test case ids from suite {SuiteId} " +
+                                   "from {Page} page out of {TotalPages} pages", suiteId, page, totalPages);
         } while (page < totalPages);
 
         return testCaseIds;
     }
 
-    public async Task<List<AllureSharedStep>> GetSharedStepsByProjectId(int projectId)
+    public async Task<List<AllureSharedStep>> GetSharedStepsByProjectId(long projectId)
     {
         var allSharedSteps = new List<AllureSharedStep>();
         var page = 0;
-        var totalPages = -1;
+        long totalPages = -1L;
 
         _logger.LogInformation("Getting shared step ids by project id {ProjectId}", projectId);
 
@@ -172,7 +178,8 @@ public class Client : IClient
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
-                    "Failed to get shared step ids by project id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
+                    "Failed to get shared step ids by project id {ProjectId}. " +
+                    "Status code: {StatusCode}. Response: {Response}",
                     projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
                 throw new Exception(
@@ -187,101 +194,70 @@ public class Client : IClient
 
             page++;
 
-            _logger.LogInformation("Got shared step ids by project id {ProjectId} from {Page} page out of {TotalPages} pages", projectId, page, totalPages);
+            _logger.LogInformation("Got shared step ids by project id {ProjectId} from {Page} " +
+                                   "page out of {TotalPages} pages", projectId, page, totalPages);
         } while (page < totalPages);
 
         return allSharedSteps;
     }
 
 
-
-    public async Task<AllureTestCase> GetTestCaseById(int testCaseId)
+    private async Task<T> GetGenericTcData<T>(string requestUri, long id, string logDomain, string logBaseDomain)
     {
-        _logger.LogInformation("Getting test case with id {TestCaseId}", testCaseId);
+        _logger.LogInformation("Getting {logDomain} for {logBaseDomain} with id {Id}",
+            logDomain, logBaseDomain, id);
 
-        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}");
+        var response = await _httpClient.GetAsync(requestUri);
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
-                "Failed to get test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
-                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
+                "Failed to get {logDomain} for {logBaseDomain} with id {Id}. " +
+                "Status code: {StatusCode}. Response: {Response}",
+                logDomain, logBaseDomain, id, response.StatusCode, await response.Content.ReadAsStringAsync());
 
             throw new Exception(
-                $"Failed to get test case with id {testCaseId}. Status code: {response.StatusCode}");
+                $"Failed to get {logDomain} for {logBaseDomain} with id {id}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<AllureTestCase>(content)!;
+        return JsonSerializer.Deserialize<T>(content)!;
     }
 
-    public async Task<List<AllureStep>> GetSteps(int testCaseId)
+
+    public async Task<AllureTestCase> GetTestCaseById(long testCaseId)
     {
-        _logger.LogInformation("Getting steps for test case with id {TestCaseId}", testCaseId);
+        var requestUri = $"api/rs/testcase/{testCaseId}";
+        return await GetGenericTcData<AllureTestCase>(requestUri, testCaseId,
+            "test case", "");
+    }
 
-        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/scenario");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get steps for test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
-                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get steps for test case with id {testCaseId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        var steps = JsonSerializer.Deserialize<AllureSteps>(content)!;
-
+    public async Task<List<AllureStep>> GetSteps(long testCaseId)
+    {
+        var requestUri = $"api/rs/testcase/{testCaseId}/scenario";
+        var steps = await GetGenericTcData<AllureSteps>(requestUri, testCaseId,
+            "steps", "test case");
         return steps.Steps;
     }
 
-    public async Task<AllureStepsInfo> GetStepsInfoByTestCaseId(int testCaseId)
+    public async Task<AllureStepsInfo> GetStepsInfoByTestCaseId(long testCaseId)
     {
-        _logger.LogInformation("Getting steps info by test case id {TestCaseId}", testCaseId);
-
-        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/step");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get steps info by test case id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
-                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get steps info by test case id {testCaseId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        var stepsInfo = JsonSerializer.Deserialize<AllureStepsInfo>(content)!;
-
-        return stepsInfo;
+        var requestUri = $"api/rs/testcase/{testCaseId}/step";
+        return await GetGenericTcData<AllureStepsInfo>(requestUri, testCaseId,
+            "steps info", "test case");
     }
 
-    public async Task<AllureSharedStepsInfo> GetStepsInfoBySharedStepId(int sharedStepId)
+    public async Task<AllureSharedStepsInfo> GetStepsInfoBySharedStepId(long sharedStepId)
     {
-        _logger.LogInformation("Getting steps info by shared step id {SharedStepId}", sharedStepId);
-
-        var response = await _httpClient.GetAsync($"api/rs/sharedstep/{sharedStepId}/step");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get steps info by shared step id {SharedStepId}. Status code: {StatusCode}. Response: {Response}",
-                sharedStepId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get steps info by shared step id {sharedStepId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        var sharedStepsInfo = JsonSerializer.Deserialize<AllureSharedStepsInfo>(content)!;
-
-        return sharedStepsInfo;
+        var requestUri = $"api/rs/sharedstep/{sharedStepId}/step";
+        return await GetGenericTcData<AllureStepsInfo>(requestUri, sharedStepId,
+            "steps info", "shared step");
     }
 
-    public async Task<List<AllureAttachment>> GetAttachmentsByTestCaseId(int testCaseId)
+    public async Task<List<AllureAttachment>> GetAttachmentsByTestCaseId(long testCaseId)
     {
         var allAttachments = new List<AllureAttachment>();
         var page = 0;
-        var totalPages = -1;
+        long totalPages = -1L;
 
         _logger.LogInformation("Getting attachments by test case id {TestCaseId}", testCaseId);
 
@@ -312,11 +288,11 @@ public class Client : IClient
         return allAttachments;
     }
 
-    public async Task<List<AllureAttachment>> GetAttachmentsBySharedStepId(int sharedStepId)
+    public async Task<List<AllureAttachment>> GetAttachmentsBySharedStepId(long sharedStepId)
     {
         var allAttachments = new List<AllureAttachment>();
         var page = 0;
-        var totalPages = -1;
+        long totalPages = -1L;
 
         _logger.LogInformation("Getting attachments by shared step id {SharedStepId}", sharedStepId);
 
@@ -347,53 +323,44 @@ public class Client : IClient
         return allAttachments;
     }
 
-    public async Task<List<AllureLink>> GetLinks(int testCaseId)
+    public async Task<List<AllureLink>> GetIssueLinks(long testCaseId)
     {
-        _logger.LogInformation("Getting links for test case with id {TestCaseId}", testCaseId);
-
-        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/issue");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get links for test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
-                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get links for test case with id {testCaseId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<List<AllureLink>>(content)!;
+        var requestUri = $"api/rs/testcase/{testCaseId}/issue";
+        return await GetGenericTcData<List<AllureLink>>(requestUri, testCaseId,
+            "issue links", "test case");
     }
 
-    public async Task<List<BaseEntity>> GetSuites(int projectId)
+    public async Task<List<AllureRelation>> GetRelations(long testCaseId)
     {
-        _logger.LogInformation("Getting suites for project with id {ProjectId}", projectId);
+        var requestUri = $"api/rs/testcase/{testCaseId}/relation";
+        return await GetGenericTcData<List<AllureRelation>>(requestUri, testCaseId,
+            "relations", "test case");
+    }
 
-        var response = await _httpClient.GetAsync($"api/rs/testcasetree/group?projectId={projectId}&treeId=2");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get suites for project with id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
-                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception(
-                $"Failed to get suites for project with id {projectId}. Status code: {response.StatusCode}");
-        }
+    public async Task<TcCommentsSection> GetComments(long testCaseId)
+    {
+        var requestUri = $"api/rs/comment?testCaseId={testCaseId}&page=0&size=25";
+        return await GetGenericTcData<TcCommentsSection>(requestUri, testCaseId,
+            "comments", "test case");
+    }
 
-        var content = await response.Content.ReadAsStringAsync();
-        var suites = JsonSerializer.Deserialize<BaseEntities>(content)!;
-
+    public async Task<List<BaseEntity>> GetSuites(long projectId)
+    {
+        var requestUri = $"api/rs/testcasetree/group?projectId={projectId}&treeId=2";
+        var suites = await GetGenericTcData<BaseEntities>(requestUri, projectId,
+            "suites", "project");
         return suites.Content.ToList();
     }
 
-    public async Task<byte[]> DownloadAttachmentForTestCase(int attachmentId)
+    public async Task<byte[]> DownloadAttachmentForTestCase(long attachmentId)
     {
         _logger.LogInformation("Downloading attachment for test case with id {AttachmentId}", attachmentId);
 
         try
         {
-            return await _httpClient.GetByteArrayAsync($"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
+            return await _httpClient.GetByteArrayAsync(
+                $"api/rs/testcase/attachment/{attachmentId}/content?inline=false");
         }
         catch (Exception ex)
         {
@@ -403,14 +370,14 @@ public class Client : IClient
         }
     }
 
-    public async Task<byte[]> DownloadAttachmentForSharedStep(int attachmentId)
+    public async Task<byte[]> DownloadAttachmentForSharedStep(long attachmentId)
     {
         _logger.LogInformation("Downloading attachment for shared step with id {AttachmentId}", attachmentId);
 
-
         try
         {
-            return await _httpClient.GetByteArrayAsync($"api/rs/sharedstep/attachment/{attachmentId}/content?inline=false");
+            return await _httpClient.GetByteArrayAsync(
+                $"api/rs/sharedstep/attachment/{attachmentId}/content?inline=false");
         }
         catch (Exception ex)
         {
@@ -441,66 +408,25 @@ public class Client : IClient
         return layers.Content.ToList();
     }
 
-    public async Task<List<BaseEntity>> GetCustomFieldNames(int projectId)
+    public async Task<List<BaseEntity>> GetCustomFieldNames(long projectId)
     {
-        _logger.LogInformation("Get custom field names for project with id {ProjectId}", projectId);
-
-        var response = await _httpClient.GetAsync($"api/rs/cf?projectId={projectId}");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get custom field names for project with id {ProjectId}. Status code: {StatusCode}. Response: {Response}",
-                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get custom field names for project with id {projectId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        var customFields = JsonSerializer.Deserialize<List<BaseEntity>>(content)!;
-
-        return customFields;
+        var requestUri = $"api/rs/cf?projectId={projectId}";
+        return await GetGenericTcData<List<BaseEntity>>(requestUri, projectId,
+            "custom field names", "project");
     }
 
-    public async Task<List<BaseEntity>> GetCustomFieldValues(int fieldId)
+    public async Task<List<BaseEntity>> GetCustomFieldValues(long fieldId)
     {
-        _logger.LogInformation("Get custom field values for field with id {FieldId}", fieldId);
-
-        var response = await _httpClient.GetAsync($"api/rs/cfv?customFieldId={fieldId}");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get custom field values for field with id {FieldId}. Status code: {StatusCode}. Response: {Response}",
-                fieldId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get custom field values for field with id {fieldId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        var values = JsonSerializer.Deserialize<BaseEntities>(content)!;
-
+        var requestUri = $"api/rs/cfv?customFieldId={fieldId}";
+        var values = await GetGenericTcData<BaseEntities>(requestUri, fieldId,
+            "custom field values", "field");
         return values.Content.ToList();
     }
 
-    public async Task<List<AllureCustomField>> GetCustomFieldsFromTestCase(int testCaseId)
+    public async Task<List<AllureCustomField>> GetCustomFieldsFromTestCase(long testCaseId)
     {
-        _logger.LogInformation("Get custom fields from test case with id {TestCaseId}", testCaseId);
-
-        var response = await _httpClient.GetAsync($"api/rs/testcase/{testCaseId}/cfv");
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get custom fields from test case with id {TestCaseId}. Status code: {StatusCode}. Response: {Response}",
-                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get custom fields from test case with id {testCaseId}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        var customFields = JsonSerializer.Deserialize<List<AllureCustomField>>(content)!;
-
-        return customFields;
+        var requestUri = $"api/rs/testcase/{testCaseId}/cfv";
+        return await GetGenericTcData<List<AllureCustomField>>(requestUri, testCaseId,
+            "custom fields", "test case");
     }
 }

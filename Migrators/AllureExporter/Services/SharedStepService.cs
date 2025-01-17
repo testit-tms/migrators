@@ -24,8 +24,8 @@ public class SharedStepService : ISharedStepService
         _attachmentService = attachmentService;
     }
 
-    public async Task<Dictionary<int, SharedStep>> ConvertSharedSteps(
-        int projectId,
+    public async Task<Dictionary<long, SharedStep>> ConvertSharedSteps(
+        long projectId,
         Guid sectionId,
         List<Attribute> attributes)
     {
@@ -35,7 +35,7 @@ public class SharedStepService : ISharedStepService
 
         _logger.LogDebug("Found {Count} shared steps: {@SharedSteps}", sharedSteps.Count, sharedSteps);
 
-        var tmsSharedSteps = new Dictionary<int, SharedStep>();
+        var tmsSharedSteps = new Dictionary<long, SharedStep>();
 
         foreach (var sharedStep in sharedSteps)
         {

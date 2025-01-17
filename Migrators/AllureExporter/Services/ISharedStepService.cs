@@ -5,5 +5,5 @@ namespace AllureExporter.Services;
 
 public interface ISharedStepService
 {
-    Task<Dictionary<int, SharedStep>> ConvertSharedSteps(int projectId, Guid sectionId, List<Attribute> attributes);
+    Task<Dictionary<long, SharedStep>> ConvertSharedSteps(long projectId, Guid sectionId, List<Attribute> attributes);
 }
