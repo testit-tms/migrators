@@ -10,16 +10,16 @@ public class Section
 
     [JsonPropertyName("name")]
     [JsonRequired]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("preconditionSteps")]
-    public List<Step> PreconditionSteps { get; set; }
+    public List<Step> PreconditionSteps { get; set; } = new();
 
     [JsonPropertyName("postconditionSteps")]
-    public List<Step> PostconditionSteps { get; set; }
+    public List<Step> PostconditionSteps { get; set; } = new();
 
     [JsonPropertyName("sections")]
-    public List<Section> Sections { get; set; }
+    public List<Section> Sections { get; set; } = new();
 
     public static Section CreateSection(string name) => new()
     {

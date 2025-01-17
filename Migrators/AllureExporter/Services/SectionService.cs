@@ -19,11 +19,11 @@ public class SectionService : ISectionService
         _client = client;
     }
 
-    public async Task<SectionInfo> ConvertSection(int projectId)
+    public async Task<SectionInfo> ConvertSection(long projectId)
     {
         _logger.LogInformation("Converting sections");
 
-        var sectionIdMap = new Dictionary<int, Guid>();
+        var sectionIdMap = new Dictionary<long, Guid>();
         var sections = await _client.GetSuites(projectId);
 
         _logger.LogDebug("Found {Count} sections: {@Sections}", sections.Count, sections);

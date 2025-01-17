@@ -19,7 +19,7 @@ public class AttachmentService : IAttachmentService
         _writeService = writeService;
     }
 
-    public async Task<List<string>> DownloadAttachmentsforTestCase(int testCaseId, Guid id)
+    public async Task<List<string>> DownloadAttachmentsforTestCase(long testCaseId, Guid id)
     {
         _logger.LogInformation("Downloading attachments by test case id {Id}", testCaseId);
 
@@ -43,7 +43,7 @@ public class AttachmentService : IAttachmentService
         return names;
     }
 
-    public async Task<List<string>> DownloadAttachmentsforSharedStep(int sharedStepId, Guid id)
+    public async Task<List<string>> DownloadAttachmentsforSharedStep(long sharedStepId, Guid id)
     {
         _logger.LogInformation("Downloading attachments by shared step id {Id}", sharedStepId);
 

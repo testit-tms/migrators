@@ -23,7 +23,7 @@ public class TestCaseService : ITestCaseService
     }
 
     public async Task<List<TestCase>> ConvertTestCases(
-        int projectId,
+        long projectId,
         Dictionary<string, Guid> sharedStepMap,
         Dictionary<string, Guid> attributes,
         SectionInfo sectionInfo)
@@ -34,7 +34,7 @@ public class TestCaseService : ITestCaseService
         var testCases = new List<TestCase>();
         foreach (var section in sectionIdMap)
         {
-            List<int> ids;
+            List<long> ids;
             if (section.Key == Constants.MainSectionId)
             {
                 ids = await _client.GetTestCaseIdsFromMainSuite(projectId);
@@ -99,7 +99,7 @@ public class TestCaseService : ITestCaseService
 
 
     protected virtual async Task<TestCase> ConvertTestCase(
-        int testCaseId,
+        long testCaseId,
         Dictionary<string, Guid> sharedStepMap,
         Guid sectionId,
         Dictionary<string, Guid> attributes)
@@ -108,15 +108,35 @@ public class TestCaseService : ITestCaseService
 
         _logger.LogDebug("Found test case: {@TestCase}", testCase);
 
-        var links = await _client.GetLinks(testCaseId);
+        var regularLinks = testCase.Links;
+        var issueLinks = await _client.GetIssueLinks(testCaseId);
+        // TODO: add relations somewhere (P: 1)
+        // var relations = await _client.GetRelations(testCaseId);
+        // var comments = await _client.GetComments(testCaseId);
 
-        _logger.LogDebug("Found links: {@Links}", links);
+        _logger.LogDebug("Found regular links: {@Links}", regularLinks);
+        _logger.LogDebug("Found issue links: {@Links}", issueLinks);
+        // _logger.LogDebug("Found relations: {@Links}", relations);
+        // _logger.LogDebug("Found comments: {@Links}", comments);
+
+        var tcIssueLinks = issueLinks.Select(l =>
+            new Link { Url = l.Url, Title = l.Name, }).ToList();
+        var tcLinks = regularLinks.Select(l =>
+            new Link { Url = l.Url, Title = l.Name }).ToList();
 
         var testCaseGuid = Guid.NewGuid();
         var tmsAttachments = await _attachmentService.DownloadAttachmentsforTestCase(testCaseId, testCaseGuid);
         var preconditionSteps = testCase.Precondition != null ? [new Step { Action = testCase.Precondition }] : new List<Step>();
         var steps = await _stepService.ConvertStepsForTestCase(testCaseId, sharedStepMap);
         var caseAttributes = await ConvertAttributes(testCaseId, testCase, attributes);
+
+        // max suite/story/feature length in allure 255 symbols already
+        // TODO: add somewhere marker about cutting here
+        var isNameCut = testCase.Name.Length > 255;
+        if (isNameCut)
+        {
+            testCase.Name = "[CUT] " + CutToCharacters(testCase.Name, 255);
+        }
 
         var allureTestCase = new TestCase
         {
@@ -130,11 +150,7 @@ public class TestCaseService : ITestCaseService
             Tags = testCase.Tags.Select(t => t.Name).ToList(),
             Iterations = new List<Iteration>(),
             SectionId = sectionId,
-            Links = links.Select(l => new Link
-            {
-                Url = l.Url,
-                Title = l.Name,
-            }).ToList(),
+            Links = tcLinks.Concat(tcIssueLinks).ToList(),
             Attributes = caseAttributes,
             Attachments = tmsAttachments,
             Steps = steps
@@ -145,7 +161,15 @@ public class TestCaseService : ITestCaseService
         return allureTestCase;
     }
 
-    private async Task<List<CaseAttribute>> ConvertAttributes(int testCaseId, AllureTestCase testCase,
+    public static string CutToCharacters(string input, int charCount)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input; // Return the input as-is if it's null or empty.
+
+        return input.Length <= charCount ? input : input.Substring(0, charCount-9) + "...";
+    }
+
+    private async Task<List<CaseAttribute>> ConvertAttributes(long testCaseId, AllureTestCase testCase,
         Dictionary<string, Guid> attributes)
     {
         var caseAttributes = new List<CaseAttribute>

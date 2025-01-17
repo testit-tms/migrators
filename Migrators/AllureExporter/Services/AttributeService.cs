@@ -17,7 +17,7 @@ public class AttributeService : IAttributeService
         _client = client;
     }
 
-    public async Task<List<Attribute>> GetCustomAttributes(int projectId)
+    public async Task<List<Attribute>> GetCustomAttributes(long projectId)
     {
         _logger.LogInformation("Getting custom attributes");
 
