@@ -118,7 +118,7 @@ public class TestCaseService : ITestCaseService
         _logger.LogDebug("Found issue links: {@Links}", issueLinks);
         // _logger.LogDebug("Found relations: {@Links}", relations);
         // _logger.LogDebug("Found comments: {@Links}", comments);
-        
+
         var tcIssueLinks = issueLinks.Select(l =>
             new Link { Url = l.Url, Title = l.Name, }).ToList();
         var tcLinks = regularLinks.Select(l =>

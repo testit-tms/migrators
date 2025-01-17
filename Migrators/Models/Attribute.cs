@@ -10,7 +10,7 @@ public class Attribute
 
     [JsonPropertyName("name")]
     [JsonRequired]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("type")]
     [JsonRequired]
@@ -25,5 +25,5 @@ public class Attribute
     public bool IsActive { get; set; }
 
     [JsonPropertyName("options")]
-    public List<string> Options { get; set; }
+    public List<string> Options { get; set; } = new();
 }

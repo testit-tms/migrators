@@ -6,8 +6,8 @@ public class Parameter
 {
     [JsonPropertyName("name")]
     [JsonRequired]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("value")]
-    public string Value { get; set; }
+    public string Value { get; set; } = string.Empty;
 }
