@@ -4,6 +4,6 @@ namespace AllureExporter.Services;
 
 public interface IAttachmentService
 {
-    Task<List<string>> DownloadAttachmentsforTestCase(int testCaseId, Guid id);
-    Task<List<string>> DownloadAttachmentsforSharedStep(int sharedStepId, Guid id);
+    Task<List<string>> DownloadAttachmentsforTestCase(long testCaseId, Guid id);
+    Task<List<string>> DownloadAttachmentsforSharedStep(long sharedStepId, Guid id);
 }

@@ -29,22 +29,22 @@ public class AllureSteps
 public class AllureScenarioStep
 {
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     [JsonPropertyName("body")]
     public string? Body { get; set; }
 
     [JsonPropertyName("attachmentId")]
-    public int? AttachmentId { get; set; }
+    public long? AttachmentId { get; set; }
 
     [JsonPropertyName("children")]
-    public List<int>? NestedStepIds { get; set; }
+    public List<long>? NestedStepIds { get; set; }
 
     [JsonPropertyName("expectedResult")]
     public string? ExpectedResult { get; set; }
 
     [JsonPropertyName("sharedStepId")]
-    public int? SharedStepId { get; set; }
+    public long? SharedStepId { get; set; }
 }
 
 public class AllureStepsInfo : AllureSharedStepsInfo
