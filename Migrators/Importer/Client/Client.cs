@@ -156,14 +156,15 @@ public class Client : IClient
 
         try
         {
-            var model = new CreateSectionRequest(name: section.Name, parentId: parentSectionId, projectId: projectId, attachments: [])
+            var model = new CreateSectionRequest(
+                name: section.Name, parentId: parentSectionId, projectId: projectId)
             {
-                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
+                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPutModel
                 {
                     Action = s.Action,
                     Expected = s.Expected
                 }).ToList(),
-                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPostModel
+                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPutModel
                 {
                     Action = s.Action,
                     Expected = s.Expected
@@ -192,14 +193,15 @@ public class Client : IClient
 
         try
         {
-            var model = new CreateSectionRequest(name: section.Name, parentId: parentSectionId, projectId: projectId, attachments: [])
+            var model = new CreateSectionRequest(
+                name: section.Name, parentId: parentSectionId, projectId: projectId)
             {
-                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
+                PostconditionSteps = section.PostconditionSteps.Select(s => new StepPutModel
                 {
                     Action = s.Action,
                     Expected = s.Expected
                 }).ToList(),
-                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPostModel
+                PreconditionSteps = section.PreconditionSteps.Select(s => new StepPutModel
                 {
                     Action = s.Action,
                     Expected = s.Expected
@@ -309,12 +311,12 @@ public class Client : IClient
         try
         {
             var model = new CreateWorkItemRequest(
-                steps: new List<StepPostModel>(),
-                preconditionSteps: new List<StepPostModel>(),
-                postconditionSteps: new List<StepPostModel>(),
+                steps: new List<StepPutModel>(),
+                preconditionSteps: new List<StepPutModel>(),
+                postconditionSteps: new List<StepPutModel>(),
                 attributes: new Dictionary<string, object>(),
                 links: new List<LinkPostModel>(),
-                tags: new List<TagPostModel>(),
+                tags: new List<TagShortModel>(),
                 name: sharedStep.Name)
             {
                 EntityTypeName = WorkItemEntityTypes.SharedSteps,
@@ -323,7 +325,7 @@ public class Client : IClient
                 State = Enum.Parse<WorkItemStates>(sharedStep.State.ToString()),
                 Priority = Enum.Parse<WorkItemPriorityModel>(sharedStep.Priority.ToString()),
                 Steps = sharedStep.Steps.Select(s =>
-                    new StepPostModel
+                    new StepPutModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
@@ -331,7 +333,7 @@ public class Client : IClient
                 Attributes = sharedStep.Attributes
                     .ToDictionary(keySelector: a => a.Id.ToString(),
                         elementSelector: a => (object)a.Value),
-                Tags = sharedStep.Tags.Select(t => new TagPostModel(t)).ToList(),
+                Tags = sharedStep.Tags.Select(t => new TagShortModel(t)).ToList(),
                 Links = sharedStep.Links.Select(l =>
                     new LinkPostModel(url: l.Url)
                     {
@@ -368,12 +370,12 @@ public class Client : IClient
         try
         {
             var model = new CreateWorkItemRequest(
-                steps: new List<StepPostModel>(),
-                preconditionSteps: new List<StepPostModel>(),
-                postconditionSteps: new List<StepPostModel>(),
+                steps: new List<StepPutModel>(),
+                preconditionSteps: new List<StepPutModel>(),
+                postconditionSteps: new List<StepPutModel>(),
                 attributes: new Dictionary<string, object>(),
                 links: new List<LinkPostModel>(),
-                tags: new List<TagPostModel>(),
+                tags: new List<TagShortModel>(),
                 name: testCase.Name)
             {
                 EntityTypeName = WorkItemEntityTypes.TestCases,
@@ -381,19 +383,19 @@ public class Client : IClient
                 State = Enum.Parse<WorkItemStates>(testCase.State.ToString()),
                 Priority = Enum.Parse<WorkItemPriorityModel>(testCase.Priority.ToString()),
                 PreconditionSteps = testCase.PreconditionSteps.Select(s =>
-                    new StepPostModel
+                    new StepPutModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
                     }).ToList(),
                 PostconditionSteps = testCase.PostconditionSteps.Select(s =>
-                    new StepPostModel
+                    new StepPutModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
                     }).ToList(),
                 Steps = testCase.Steps.Select(s =>
-                    new StepPostModel
+                    new StepPutModel
                     {
                         Action = s.Action,
                         Expected = s.Expected,
@@ -403,7 +405,7 @@ public class Client : IClient
                 Attributes = testCase.Attributes
                     .ToDictionary(keySelector: a => a.Id.ToString(),
                         elementSelector: a => (object)a.Value),
-                Tags = testCase.Tags.Select(t => new TagPostModel(t)).ToList(),
+                Tags = testCase.Tags.Select(t => new TagShortModel(t)).ToList(),
                 Links = testCase.Links.Select(l =>
                     new LinkPostModel(url: l.Url)
                     {
