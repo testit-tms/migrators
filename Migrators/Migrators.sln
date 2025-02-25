@@ -63,9 +63,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPALMExporter", "HPALMExpor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HPALMExporterTests", "HPALMExporterTests\HPALMExporterTests.csproj", "{960B55F6-7F29-4051-9BD2-04ACEF8423D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailExporterTests", "TestRailExporterTests\TestRailExporterTests.csproj", "{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailXmlExporterTests", "TestRailXmlExporterTests\TestRailXmlExporterTests.csproj", "{1D57695B-47AC-4F59-B7A7-CC62E02AB03E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailExporter", "TestRailExporter\TestRailExporter.csproj", "{1FD6902A-9ADC-4FAE-B528-39012EE755AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailXmlExporter", "TestRailXmlExporter\TestRailXmlExporter.csproj", "{1FD6902A-9ADC-4FAE-B528-39012EE755AF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrSquadServerExporter", "ZephyrSquadServerExporter\ZephyrSquadServerExporter.csproj", "{EEE73191-7836-4171-9357-FCA9A06F7529}"
 EndProject
