@@ -26,6 +26,7 @@ public class Client : IClient
     private readonly bool _importToExistingProject;
     private readonly string? _projectName;
 
+    private const int DefaultTimeout = 150;
     private const int TenMinutes = 60000;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
@@ -33,24 +34,6 @@ public class Client : IClient
         _logger = logger;
 
         var tmsSection = configuration.GetSection("tms");
-        var url = tmsSection["url"];
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new ArgumentException("TMS url is not specified");
-        }
-
-        var token = tmsSection["privateToken"];
-        if (string.IsNullOrEmpty(token))
-        {
-            throw new ArgumentException("TMS private token is not specified");
-        }
-
-        var httpClientHandler = new HttpClientHandler();
-        var certValidationStr = tmsSection["certValidation"];
-        if (!string.IsNullOrEmpty(certValidationStr) && !bool.Parse(certValidationStr))
-        {
-            httpClientHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => !bool.Parse(certValidationStr);
-        }
 
         _projectName = tmsSection["projectName"];
         if (!string.IsNullOrEmpty(_projectName))
@@ -65,19 +48,62 @@ public class Client : IClient
             _importToExistingProject = bool.Parse(importToExistingProjectStr);
         }
 
+        var deps = InitApiDependencies(tmsSection);
+        var handler = deps.Handler;
+        var timeout = deps.Timeout;
+        var cfg = deps.Config;
+
+        _attachments = new AttachmentsApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _projectsApi = new ProjectsApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _projectAttributesApi = new ProjectAttributesApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _projectSectionsApi = new ProjectSectionsApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _sectionsApi = new SectionsApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _customAttributes = new CustomAttributesApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _workItemsApi = new WorkItemsApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _customAttributesApi = new CustomAttributesApi(HttpClientFactory.Create(handler, timeout), cfg);
+        _parametersApi = new ParametersApi(HttpClientFactory.Create(handler, timeout), cfg);
+    }
+
+    private ApiDependencies InitApiDependencies(
+        IConfigurationSection tmsSection)
+    {
+        var url = tmsSection["url"];
+        if (string.IsNullOrEmpty(url))
+        {
+            throw new ArgumentException("TMS url is not specified");
+        }
+
+        var token = tmsSection["privateToken"];
+        if (string.IsNullOrEmpty(token))
+        {
+            throw new ArgumentException("TMS private token is not specified");
+        }
+
         var cfg = new Configuration { BasePath = url.TrimEnd('/') };
         cfg.AddApiKeyPrefix("Authorization", "PrivateToken");
         cfg.AddApiKey("Authorization", token);
 
-        _attachments = new AttachmentsApi(new HttpClient(httpClientHandler), cfg);
-        _projectsApi = new ProjectsApi(new HttpClient(httpClientHandler), cfg);
-        _projectAttributesApi = new ProjectAttributesApi(new HttpClient(httpClientHandler), cfg);
-        _projectSectionsApi = new ProjectSectionsApi(new HttpClient(httpClientHandler), cfg);
-        _sectionsApi = new SectionsApi(new HttpClient(httpClientHandler), cfg);
-        _customAttributes = new CustomAttributesApi(new HttpClient(httpClientHandler), cfg);
-        _workItemsApi = new WorkItemsApi(new HttpClient(httpClientHandler), cfg);
-        _customAttributesApi = new CustomAttributesApi(new HttpClient(httpClientHandler), cfg);
-        _parametersApi = new ParametersApi(new HttpClient(httpClientHandler), cfg);
+        var httpClientHandler = new HttpClientHandler();
+        var certValidationStr = tmsSection["certValidation"];
+        if (!string.IsNullOrEmpty(certValidationStr) && !bool.Parse(certValidationStr))
+        {
+            httpClientHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => !bool.Parse(certValidationStr);
+        }
+
+        var timeoutString = tmsSection["timeout"];
+        if (string.IsNullOrEmpty(timeoutString) || !uint.TryParse(timeoutString, out _))
+        {
+            timeoutString = DefaultTimeout.ToString();
+        }
+        uint.TryParse(timeoutString, out var timeoutSec);
+        var timeout = TimeSpan.FromSeconds(timeoutSec);
+
+        return new ApiDependencies
+        {
+            Config = cfg,
+            Timeout = timeout,
+            Handler = httpClientHandler
+        };
     }
 
     public async Task<Guid> GetProject(string name)
