@@ -5,34 +5,24 @@ using TestRailExporter.Models;
 
 namespace TestRailExporter.Services;
 
-public class SharedStepService : ISharedStepService
+public class SharedStepService(
+    ILogger<SharedStepService> logger,
+    IClient client,
+    IStepService stepService,
+    IAttachmentService attachmentService)
+    : ISharedStepService
 {
-    private readonly ILogger<SharedStepService> _logger;
-    private readonly IClient _client;
-    private readonly IStepService _stepService;
-    private readonly IAttachmentService _attachmentService;
-
-    public SharedStepService(
-        ILogger<SharedStepService> logger,
-        IClient client,
-        IStepService stepService,
-        IAttachmentService attachmentService)
-    {
-        _logger = logger;
-        _client = client;
-        _stepService = stepService;
-        _attachmentService = attachmentService;
-    }
+    private readonly IAttachmentService _attachmentService = attachmentService;
 
     public async Task<SharedStepInfo> ConvertSharedSteps(
         int projectId,
         Guid sectionId)
     {
-        _logger.LogInformation("Converting shared steps");
+        logger.LogInformation("Converting shared steps");
 
-        var testRailSharedSteps = await _client.GetSharedStepIdsByProjectId(projectId);
+        var testRailSharedSteps = await client.GetSharedStepIdsByProjectId(projectId);
 
-        _logger.LogDebug("Found {Count} shared steps", testRailSharedSteps.Count);
+        logger.LogDebug("Found {Count} shared steps", testRailSharedSteps.Count);
 
         var sharedSteps = new List<SharedStep>();
         var sharedStepsMap = new Dictionary<int, SharedStep>();
@@ -40,7 +30,7 @@ public class SharedStepService : ISharedStepService
         foreach (var testRailSharedStep in testRailSharedSteps)
         {
             var sharedStepGuid = Guid.NewGuid();
-            var stepsInfo = await _stepService.ConvertStepsForSharedStep(testRailSharedStep, sharedStepGuid);
+            var stepsInfo = await stepService.ConvertStepsForSharedStep(testRailSharedStep, sharedStepGuid);
 
             var sharedStep = new SharedStep
             {
@@ -57,7 +47,7 @@ public class SharedStepService : ISharedStepService
                 SectionId = sectionId
             };
 
-            _logger.LogDebug("Converted shared step: {@SharedStep}", sharedStep);
+            logger.LogDebug("Converted shared step: {@SharedStep}", sharedStep);
 
             sharedSteps.Add(sharedStep);
             sharedStepsMap.Add(testRailSharedStep.Id, sharedStep);

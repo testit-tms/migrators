@@ -6,32 +6,23 @@ using System.Collections.Generic;
 
 namespace TestRailExporter.Services;
 
-public class TestCaseService : ITestCaseService
+public class TestCaseService(
+    ILogger<TestCaseService> logger,
+    IClient client,
+    IAttachmentService attachmentService,
+    IStepService stepService)
+    : ITestCaseService
 {
-    private readonly ILogger<TestCaseService> _logger;
-    private readonly IClient _client;
-    private readonly IAttachmentService _attachmentService;
-    private readonly IStepService _stepService;
-
-    public TestCaseService(ILogger<TestCaseService> logger, IClient client, IAttachmentService attachmentService,
-        IStepService stepService)
-    {
-        _logger = logger;
-        _client = client;
-        _attachmentService = attachmentService;
-        _stepService = stepService;
-    }
-
     public async Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<int, SharedStep> sharedStepMap,
         SectionInfo sectionInfo)
     {
         var sectionIdMap = sectionInfo.SectionsMap;
-        _logger.LogInformation("Converting test cases");
+        logger.LogInformation("Converting test cases");
 
         var testCases = new List<TestCase>();
         foreach (var section in sectionIdMap)
         {
-            var testRailCases = await _client.GetTestCaseIdsByProjectIdAndSectionId(projectId, section.Key);
+            var testRailCases = await client.GetTestCaseIdsByProjectIdAndSectionId(projectId, section.Key);
 
             foreach (var testRailCase in testRailCases)
             {
@@ -40,7 +31,7 @@ public class TestCaseService : ITestCaseService
             }
         }
 
-        _logger.LogInformation("Ending converting test cases");
+        logger.LogInformation("Ending converting test cases");
 
         return testCases;
     }
@@ -50,12 +41,12 @@ public class TestCaseService : ITestCaseService
         Dictionary<int, SharedStep> sharedStepMap,
         Guid sectionId)
     {
-        _logger.LogDebug("Converting test case: {@Case}", testRailCase);
+        logger.LogDebug("Converting test case: {@Case}", testRailCase);
 
         var testCaseGuid = Guid.NewGuid();
-        var attachmentsInfo = await _attachmentService.DownloadAttachmentsByCaseId(testRailCase.Id, testCaseGuid);
+        var attachmentsInfo = await attachmentService.DownloadAttachmentsByCaseId(testRailCase.Id, testCaseGuid);
         var preconditionSteps = testRailCase.TextPreconds != null ? [new Step { Action = testRailCase.TextPreconds }] : new List<Step>();
-        var steps = await _stepService.ConvertStepsForTestCase(testRailCase, testCaseGuid, sharedStepMap, attachmentsInfo.AttachmentsMap);
+        var steps = await stepService.ConvertStepsForTestCase(testRailCase, testCaseGuid, sharedStepMap, attachmentsInfo.AttachmentsMap);
 
         // max suite/story/feature length in allure 255 symbols already
         // TODO: add somewhere marker about cutting here
@@ -80,7 +71,7 @@ public class TestCaseService : ITestCaseService
             Steps = steps,
         };
 
-        _logger.LogDebug("Converted test case: {@TestCase}", testCase);
+        logger.LogDebug("Converted test case: {@TestCase}", testCase);
 
         return testCase;
     }

@@ -8,12 +8,11 @@ using System.Collections.Generic;
 
 namespace TestRailExporter.Services;
 
-public class StepService : IStepService
+public class StepService(ILogger<StepService> logger, IClient client, IAttachmentService attachmentService)
+    : IStepService
 {
-    private readonly ILogger<StepService> _logger;
-    private readonly IClient _client;
-    private readonly IAttachmentService _attachmentService;
-    private Dictionary<int, string> _attachmentsMap;
+    private readonly IClient _client = client;
+    private Dictionary<int, string> _attachmentsMap = new();
     private static readonly Regex _ImgRegex = new Regex(@"!\[\]\(([^)]*)\)");
     private static readonly Regex _HyperlinkRegex = new Regex(@"\[[^\[\]]*\]\([^()\s]*\)");
     private static readonly Regex _UrlRegex = new Regex(@"\(([^()\s]+)\)");
@@ -21,17 +20,9 @@ public class StepService : IStepService
     private static readonly Regex _TableRegex = new Regex(@"(\|{2,}[^\n]*\n)+");
     private static readonly Regex _CellRegex = new Regex(@"\|([^\|\n]+)");
 
-    public StepService(ILogger<StepService> logger, IClient client, IAttachmentService attachmentService)
-    {
-        _logger = logger;
-        _client = client;
-        _attachmentService = attachmentService;
-        _attachmentsMap = new Dictionary<int, string>();
-    }
-
     public async Task<List<Step>> ConvertStepsForTestCase(TestRailCase testCase, Guid testCaseId, Dictionary<int, SharedStep> sharedStepMap, Dictionary<int, string> attachmentsMap)
     {
-        _logger.LogDebug("Converting steps for test case {Name}", testCase.Title);
+        logger.LogDebug("Converting steps for test case {Name}", testCase.Title);
 
         _attachmentsMap = attachmentsMap;
 
@@ -63,7 +54,7 @@ public class StepService : IStepService
 
     public async Task<StepsInfo> ConvertStepsForSharedStep(TestRailSharedStep sharedStep, Guid sharedStepId)
     {
-        _logger.LogDebug("Converting steps for shared step {Name}", sharedStep.Title);
+        logger.LogDebug("Converting steps for shared step {Name}", sharedStep.Title);
 
         var steps = new List<Step>();
         var attachmentNames = new List<string>();
@@ -176,7 +167,7 @@ public class StepService : IStepService
 
             if (!_attachmentsMap.TryGetValue(attachmentId, out fileName))
             {
-                fileName = await _attachmentService.DownloadAttachmentById(attachmentId, id);
+                fileName = await attachmentService.DownloadAttachmentById(attachmentId, id);
             }
 
             info.Description = info.Description.Replace(match.Value, $"<<<{fileName}>>>");

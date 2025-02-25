@@ -4,39 +4,30 @@ using TestRailXmlExporter.Services;
 
 namespace TestRailXmlExporter;
 
-public class App
+public class App(
+    IConfiguration configuration,
+    ILogger<App> logger,
+    ImportService importService,
+    ExportService exportService)
 {
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<App> _logger;
-    private readonly ImportService _importService;
-    private readonly ExportService _exportService;
-
-    public App(IConfiguration configuration, ILogger<App> logger, ImportService importService, ExportService exportService)
-    {
-        _configuration = configuration;
-        _logger = logger;
-        _importService = importService;
-        _exportService = exportService;
-    }
-
     public async Task RunAsync()
     {
-        _logger.LogInformation("Starting application");
-        var filePath = _configuration["xmlPath"];
+        logger.LogInformation("Starting application");
+        var filePath = configuration["xmlPath"];
 
         try
         {
-            (var testRailsXmlSuite, var customAttributes) = await _importService.ImportXmlAsync(filePath)
+            (var testRailsXmlSuite, var customAttributes) = await importService.ImportXmlAsync(filePath)
                 .ConfigureAwait(false);
-            await _exportService.ExportProjectAsync(testRailsXmlSuite, customAttributes).ConfigureAwait(false);
+            await exportService.ExportProjectAsync(testRailsXmlSuite, customAttributes).ConfigureAwait(false);
 
-            _logger.LogInformation("Xml file '{filePath}' import success", filePath);
+            logger.LogInformation("Xml file '{filePath}' import success", filePath);
         }
         catch (Exception exception)
         {
-            _logger.LogError("Xml file '{filePath}' import failed: {exception}", filePath, exception);
+            logger.LogError("Xml file '{filePath}' import failed: {exception}", filePath, exception);
         }
 
-        _logger.LogInformation("Ending application");
+        logger.LogInformation("Ending application");
     }
 }

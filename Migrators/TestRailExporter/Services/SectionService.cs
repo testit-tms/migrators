@@ -5,27 +5,18 @@ using Models;
 
 namespace TestRailExporter.Services;
 
-public class SectionService : ISectionService
+public class SectionService(ILogger<SectionService> logger, IClient client) : ISectionService
 {
-    private readonly ILogger<SectionService> _logger;
-    private readonly IClient _client;
-    private readonly Dictionary<int, Guid> _sectionIdMap;
+    private readonly Dictionary<int, Guid> _sectionIdMap = new();
     private const string _mainSectionName = "TestRail";
-
-    public SectionService(ILogger<SectionService> logger, IClient client)
-    {
-        _logger = logger;
-        _client = client;
-        _sectionIdMap = new Dictionary<int, Guid>();
-    }
 
     public async Task<SectionInfo> ConvertSections(int projectId)
     {
-        _logger.LogInformation("Converting sections");
+        logger.LogInformation("Converting sections");
 
-        var testRailSections = await _client.GetSectionsByProjectId(projectId);
+        var testRailSections = await client.GetSectionsByProjectId(projectId);
 
-        _logger.LogDebug("Found {Count} sections: {@Sections}", testRailSections.Count, testRailSections);
+        logger.LogDebug("Found {Count} sections: {@Sections}", testRailSections.Count, testRailSections);
 
         var childSections = await ConvertSections(testRailSections, null);
 
@@ -38,9 +29,9 @@ public class SectionService : ISectionService
             Sections = childSections,
         };
 
-        _logger.LogDebug("Converted sections: {@MainSection}", mainSection);
+        logger.LogDebug("Converted sections: {@MainSection}", mainSection);
 
-        _logger.LogInformation("Ending converting sections");
+        logger.LogInformation("Ending converting sections");
 
         return new SectionInfo
         {

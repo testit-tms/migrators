@@ -17,15 +17,6 @@ public class TestRailSharedStep
     public List<int> CaseIds { get; set; } = new();
 }
 
-//public class TestRailShortSharedStep
-//{
-//    [JsonPropertyName("id")]
-//    public int Id { get; set; }
-
-//    [JsonPropertyName("title")]
-//    public string Title { get; set; } = string.Empty;
-//}
-
 public class TestRailSharedSteps : TastRailBaseEntity
 {
     [JsonPropertyName("shared_steps")]
