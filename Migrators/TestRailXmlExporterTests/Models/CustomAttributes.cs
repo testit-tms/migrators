@@ -1,4 +1,4 @@
-using TestRailExporter.Models;
+using TestRailXmlExporter.Models;
 
 namespace TestRailXmlExporterTests.Models;
 

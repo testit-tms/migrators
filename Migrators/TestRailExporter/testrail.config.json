@@ -1,0 +1,9 @@
+{
+  "resultPath": "/Users/user01/Documents/importer",
+  "testrail": {
+    "url": "https://instance.testrail.io/",
+    "login": "User",
+    "password": "pass",
+    "projectName": "ProjectName"
+  }
+}

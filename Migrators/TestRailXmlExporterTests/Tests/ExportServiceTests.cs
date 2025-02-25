@@ -5,8 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
 using NUnit.Framework;
-using TestRailExporter.Models;
-using TestRailExporter.Services;
+using TestRailXmlExporter.Models;
+using TestRailXmlExporter.Services;
 using TestRailXmlExporterTests.Models;
 using TestRailXmlExporterTests.Tests.Base;
 

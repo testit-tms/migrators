@@ -17,6 +17,7 @@ env:
   TESTCOLLAB_DIR: ./Migrators/TestCollabExporter
   TESTLINK_DIR: ./Migrators/TestLinkExporter
   TESTRAIL_DIR: ./Migrators/TestRailExporter
+  TESTRAIL_XML_DIR: ./Migrators/TestRailXmlExporter
   PRACTITEST_DIR: ./Migrators/PractiTestExporter
   SPIRA_DIR: ./Migrators/SpiraTestExporter
   HPALM_DIR: ./Migrators/HPALMExporter
@@ -483,6 +484,53 @@ jobs:
           --self-contained true \
           --output ./publish \
           --no-restore ${{ env.TESTRAIL_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true   
+          
+  testrail_xml_build:
+    needs: testrail_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestRailXmlExporter.exe
+            asset_name: TestRailXmlExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: TestRailXmlExporter
+            asset_name: TestRailXmlExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: TestRailXmlExporter
+            asset_name: TestRailXmlExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTRAIL_XML_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTRAIL_XML_DIR }} 
         
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2

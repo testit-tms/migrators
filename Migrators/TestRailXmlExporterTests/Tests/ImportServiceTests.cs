@@ -3,8 +3,8 @@ using FluentAssertions.Execution;
 using Models;
 using NUnit.Framework;
 using System.Xml.Serialization;
-using TestRailExporter.Models;
-using TestRailExporter.Services;
+using TestRailXmlExporter.Models;
+using TestRailXmlExporter.Services;
 using TestRailXmlExporterTests.Models;
 using TestRailXmlExporterTests.Tests.Base;
 
