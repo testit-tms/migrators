@@ -1,4 +1,4 @@
-using TestRailExporter.Models;
+using TestRailExporter.Models.Client;
 
 namespace TestRailExporter.Client;
 

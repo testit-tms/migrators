@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace TestRailExporter.Models;
+namespace TestRailExporter.Models.Client;
 
 public class TestRailSharedStep
 {
@@ -11,10 +11,7 @@ public class TestRailSharedStep
     public string Title { get; set; } = string.Empty;
 
     [JsonPropertyName("custom_steps_separated")]
-    public List<TestRailStep> Steps { get; set; } = new();
-
-    [JsonPropertyName("case_ids")]
-    public List<int> CaseIds { get; set; } = new();
+    public List<TestRailStep>? Steps { get; set; }
 }
 
 public class TestRailSharedSteps : TastRailBaseEntity

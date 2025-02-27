@@ -1,9 +1,9 @@
 using TestRailExporter.Client;
 using Microsoft.Extensions.Logging;
 using Models;
-using TestRailExporter.Models;
+using TestRailExporter.Models.Commons;
 
-namespace TestRailExporter.Services;
+namespace TestRailExporter.Services.Implementations;
 
 public class SharedStepService(
     ILogger<SharedStepService> logger,
@@ -53,7 +53,8 @@ public class SharedStepService(
             sharedStepsMap.Add(testRailSharedStep.Id, sharedStep);
         }
 
-        return new SharedStepInfo {
+        return new SharedStepInfo
+        {
             SharedSteps = sharedSteps,
             SharedStepsMap = sharedStepsMap
         };

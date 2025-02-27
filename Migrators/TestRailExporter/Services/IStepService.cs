@@ -1,5 +1,6 @@
 using Models;
-using TestRailExporter.Models;
+using TestRailExporter.Models.Client;
+using TestRailExporter.Models.Commons;
 
 namespace TestRailExporter.Services;
 

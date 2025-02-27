@@ -1,6 +1,3 @@
-using TestRailExporter.Client;
-using TestRailExporter.Services;
-using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,6 +5,11 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using TestRailExporter.Client;
+using TestRailExporter.Models.Client;
+using TestRailExporter.Services.Extensions;
 
 namespace TestRailExporter
 {
@@ -50,16 +52,28 @@ namespace TestRailExporter
                 )
                 .ConfigureServices((_, services) =>
                 {
+                    services.RegisterAppConfig();
+
+                    services.AddHttpClient("DefaultHttpClient")
+                        .AddHttpMessageHandler(serviceProvider =>
+                        {
+                            var logger = serviceProvider.GetRequiredService<ILogger<RetryHandler>>();
+                            return new RetryHandler(logger, maxRetries: 3, delay: TimeSpan.FromMilliseconds(100));
+                        });
+
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    services.AddSingleton<IClient, Client.Client>();
-                    services.AddSingleton<IAttachmentService, AttachmentService>();
-                    services.AddSingleton<IWriteService, WriteService>();
-                    services.AddSingleton<IExportService, ExportService>();
-                    services.AddSingleton<ISectionService, SectionService>();
-                    services.AddSingleton<ISharedStepService, SharedStepService>();
-                    services.AddSingleton<IStepService, StepService>();
-                    services.AddSingleton<ITestCaseService, TestCaseService>();
+                    services.AddTransient<IClient, Client.Client>(serviceProvider =>
+                    {
+                        var logger = serviceProvider.GetRequiredService<ILogger<Client.Client>>();
+                        var config = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
+                        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+                        var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
+
+                        return new Client.Client(logger, httpClient, config);
+                    });
+
+                    services.AddServices();
                 });
         }
 

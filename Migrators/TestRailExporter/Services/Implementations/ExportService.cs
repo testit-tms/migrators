@@ -3,7 +3,7 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
 
-namespace TestRailExporter.Services;
+namespace TestRailExporter.Services.Implementations;
 
 public class ExportService(
     ILogger<ExportService> logger,

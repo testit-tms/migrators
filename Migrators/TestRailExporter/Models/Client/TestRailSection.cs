@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace TestRailExporter.Models;
+namespace TestRailExporter.Models.Client;
 
 public class TestRailSection
 {

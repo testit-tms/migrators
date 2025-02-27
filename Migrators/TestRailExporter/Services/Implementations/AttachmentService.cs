@@ -2,9 +2,9 @@ using TestRailExporter.Client;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
-using TestRailExporter.Models;
+using TestRailExporter.Models.Commons;
 
-namespace TestRailExporter.Services;
+namespace TestRailExporter.Services.Implementations;
 
 public class AttachmentService(ILogger<AttachmentService> logger, IClient client, IWriteService writeService)
     : IAttachmentService

@@ -1,12 +1,13 @@
 using System.Text.Json;
 using TestRailExporter.Client;
-using TestRailExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using TestRailExporter.Models.Client;
+using TestRailExporter.Models.Commons;
 
-namespace TestRailExporter.Services;
+namespace TestRailExporter.Services.Implementations;
 
 public class StepService(ILogger<StepService> logger, IClient client, IAttachmentService attachmentService)
     : IStepService
@@ -40,7 +41,7 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         {
             var step = await ConvertStep(testCase.TextMission, testCase.TextGoals, testCaseId);
 
-            return new List<Step>{ step };
+            return new List<Step> { step };
         }
         else if (testCase.TextScenarios != null)
         {
@@ -135,18 +136,18 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         };
     }
 
-    private async Task<TestRailDescriptionInfo> ExtractAttachments(string? description, Guid id)
+    private async Task<DescriptionInfo> ExtractAttachments(string? description, Guid id)
     {
         if (string.IsNullOrEmpty(description))
         {
-            return new TestRailDescriptionInfo
+            return new DescriptionInfo
             {
                 Description = string.Empty,
                 AttachmentNames = new List<string>()
             };
         }
 
-        var info = new TestRailDescriptionInfo
+        var info = new DescriptionInfo
         {
             Description = description,
             AttachmentNames = new List<string>()

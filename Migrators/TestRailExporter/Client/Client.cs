@@ -1,8 +1,9 @@
 using System.Text.Json;
-using TestRailExporter.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text;
+using TestRailExporter.Models.Client;
+using Microsoft.Extensions.Options;
 
 namespace TestRailExporter.Client;
 
@@ -10,46 +11,44 @@ public class Client : IClient
 {
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
+    private readonly AppConfig _config;
     private readonly string _projectName;
     private readonly int _limit = 100;
 
-    public Client(ILogger<Client> logger, IConfiguration configuration)
+
+    public Client(ILogger<Client> logger, HttpClient httpClient, IOptions<AppConfig> config)
     {
+        _config = config.Value;
         _logger = logger;
+        _projectName = _config.TestRail.ProjectName;
+        _httpClient = httpClient;
 
-        var section = configuration.GetSection("testrail");
-        var url = section["url"];
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new ArgumentException("Url is not specified");
-        }
+        InitHttpClient();
+    }
 
-        var projectName = section["projectName"];
-        if (string.IsNullOrEmpty(projectName))
-        {
-            throw new ArgumentException("Project name is not specified");
-        }
+    private void InitHttpClient()
+    {
+        _httpClient.BaseAddress = new Uri(_config.TestRail.Url);
 
-        _projectName = projectName;
-        _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
-
-        var login = section["login"];
-        var password = section["password"];
-
-        _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
-
-        if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
-        {
-            var basicAuthenticationValue = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{login}:{password}"));
-
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Basic " + basicAuthenticationValue);
-        }
-        else
+        var header = GetAuthHeaderBy(_config.TestRail.Login, _config.TestRail.Password);
+        if (header == null)
         {
             throw new ArgumentException("Login/password is not specified");
         }
+        _httpClient.DefaultRequestHeaders
+            .Add("Authorization", header);
+    }
+
+    private static string? GetAuthHeaderBy(string login, string password)
+    {
+        if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+        {
+            return null;
+        }
+
+        var loginPassPair = $"{login}:{password}";
+        var basicAuthenticationValue = Convert.ToBase64String(Encoding.ASCII.GetBytes(loginPassPair));
+        return "Basic " + basicAuthenticationValue;
     }
 
     public async Task<TestRailProject> GetProject()

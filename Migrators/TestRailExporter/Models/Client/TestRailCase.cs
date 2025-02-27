@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace TestRailExporter.Models;
+namespace TestRailExporter.Models.Client;
 
 public class TestRailCase
 {
@@ -26,25 +26,25 @@ public class TestRailCase
     public int IsDeleted { get; set; }
 
     [JsonPropertyName("custom_preconds")]
-    public string TextPreconds { get; set; } = string.Empty;
+    public string? TextPreconds { get; set; }
 
     [JsonPropertyName("custom_steps")]
-    public string TextSteps { get; set; } = string.Empty;
+    public string? TextSteps { get; set; }
 
     [JsonPropertyName("custom_expected")]
-    public string TextExpected { get; set; } = string.Empty;
+    public string? TextExpected { get; set; }
 
     [JsonPropertyName("custom_mission")]
-    public string TextMission { get; set; } = string.Empty;
+    public string? TextMission { get; set; }
 
     [JsonPropertyName("custom_goals")]
-    public string TextGoals { get; set; } = string.Empty;
+    public string? TextGoals { get; set; }
 
     [JsonPropertyName("custom_testrail_bdd_scenario")]
-    public string TextScenarios { get; set; } = string.Empty;
+    public string? TextScenarios { get; set; }
 
     [JsonPropertyName("custom_steps_separated")]
-    public List<TestRailStep> Steps { get; set; } = new();
+    public List<TestRailStep>? Steps { get; set; }
 }
 
 public class TestRailCases : TastRailBaseEntity

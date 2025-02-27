@@ -1,9 +1,10 @@
 using TestRailExporter.Client;
-using TestRailExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
+using TestRailExporter.Models.Client;
+using TestRailExporter.Models.Commons;
 
-namespace TestRailExporter.Services;
+namespace TestRailExporter.Services.Implementations;
 
 public class SectionService(ILogger<SectionService> logger, IClient client) : ISectionService
 {
@@ -58,7 +59,7 @@ public class SectionService(ILogger<SectionService> logger, IClient client) : IS
                 Sections = childSections,
             };
 
-            if (testRailSection.Description != String.Empty)
+            if (testRailSection.Description != string.Empty)
             {
                 section.PreconditionSteps.Add(new() { Action = testRailSection.Description });
             }

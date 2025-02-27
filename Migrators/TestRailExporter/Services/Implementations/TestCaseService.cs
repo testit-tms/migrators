@@ -1,10 +1,10 @@
 using TestRailExporter.Client;
-using TestRailExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
-using System.Collections.Generic;
+using TestRailExporter.Models.Client;
+using TestRailExporter.Models.Commons;
 
-namespace TestRailExporter.Services;
+namespace TestRailExporter.Services.Implementations;
 
 public class TestCaseService(
     ILogger<TestCaseService> logger,
@@ -81,7 +81,7 @@ public class TestCaseService(
         if (string.IsNullOrEmpty(input))
             return input; // Return the input as-is if it's null or empty.
 
-        return input.Length <= charCount ? input : input.Substring(0, charCount-9) + "...";
+        return input.Length <= charCount ? input : input.Substring(0, charCount - 9) + "...";
     }
 
     private static PriorityType ConvertPriority(int priority)
