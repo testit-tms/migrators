@@ -1,4 +1,5 @@
 using AllureExporter.Client;
+using AllureExporter.Helpers;
 using AllureExporter.Services;
 using JsonWriter;
 using Microsoft.Extensions.Configuration;
@@ -61,6 +62,7 @@ namespace AllureExporter
                     services.AddSingleton<ITestCaseService, TestCaseService>();
                     services.AddSingleton<IAttributeService, AttributeService>();
                     services.AddSingleton<IStepService, StepService>();
+                    services.AddScoped<ICoreHelper, CoreHelper>();
                 });
         }
 
