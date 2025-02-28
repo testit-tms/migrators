@@ -1,4 +1,9 @@
 {
   "resultPath": "/Users/user01/Documents/importer",
-  "xmlPath": "/Users/user01/Documents/import.xml"
+  "testrail": {
+    "url": "https://instance.testrail.io/",
+    "login": "User",
+    "password": "pass",
+    "projectName": "ProjectName"
+  }
 }

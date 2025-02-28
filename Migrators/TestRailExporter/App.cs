@@ -1,42 +1,25 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TestRailExporter.Services;
 
 namespace TestRailExporter;
 
-public class App
+public class App(ILogger<App> logger, IExportService exportService)
 {
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<App> _logger;
-    private readonly ImportService _importService;
-    private readonly ExportService _exportService;
 
-    public App(IConfiguration configuration, ILogger<App> logger, ImportService importService, ExportService exportService)
+    public void Run(string[] args)
     {
-        _configuration = configuration;
-        _logger = logger;
-        _importService = importService;
-        _exportService = exportService;
-    }
-
-    public async Task RunAsync()
-    {
-        _logger.LogInformation("Starting application");
-        var filePath = _configuration["xmlPath"];
+        logger.LogInformation("Starting application");
 
         try
         {
-            (var testRailsXmlSuite, var customAttributes) = await _importService.ImportXmlAsync(filePath)
-                .ConfigureAwait(false);
-            await _exportService.ExportProjectAsync(testRailsXmlSuite, customAttributes).ConfigureAwait(false);
-
-            _logger.LogInformation("Xml file '{filePath}' import success", filePath);
+            exportService.ExportProject().Wait();
         }
-        catch (Exception exception)
+        catch (Exception e)
         {
-            _logger.LogError("Xml file '{filePath}' import failed: {exception}", filePath, exception);
+            logger.LogError(e, "Error occurred during export");
+            throw;
         }
 
-        _logger.LogInformation("Ending application");
+        logger.LogInformation("Ending application");
     }
 }

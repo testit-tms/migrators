@@ -1,40 +1,32 @@
-# TestRail Exporter
+# TestRail Xml Exporter
 
 You can use this exporter to export your test cases from TestRail.
 
 ## Download
 
-You can download the latest version of the TestRailExporter from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
+You can download the latest version of the TestRailXmlExporter from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
 
 ## How to use
 
-1. Configure paths in the `testrail.config.json` file and save it in the TestRailExporter location.
+1. Configure paths in the `testrail.config.json` file and save it in the TestRailXmlExporter location.
 
 ```json
 {
   "resultPath": "/Users/user01/Documents/importer",
-  "testrail": {
-    "url": "https://instance.testrail.io/",
-    "login": "User",
-    "password": "pass",
-    "projectName": "ProjectName"
-  }
+  "xmlPath": "/Users/user01/Documents/import.xml"
 }
 ```
 
 Where:
 
 - resultPath - path to the folder where the results will be saved
-- testrail.url - url to the TestRail server
-- testrail.login - login to the TestRail server
-- testrail.password - password to the TestRail server
-- testrail.projectName - key of the project in the TestRail server
+- xmlPath - path to the *.xml file exported from TestRail
 
 1. Run the exporter with the following command:
 
 ```bash
-sudo chmod +x .\TestRailExporter
-.\TestRailExporter
+sudo chmod +x .\TestRailXmlExporter
+.\TestRailXmlExporter
 ```
 
 3. Check the results in the folder specified in the `resultPath` parameter.
