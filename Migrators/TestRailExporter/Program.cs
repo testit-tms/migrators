@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TestRailExporter.Client;
 using TestRailExporter.Models.Client;
-using TestRailExporter.Services.Extensions;
+using TestRailExporter.Extensions;
 
 namespace TestRailExporter
 {
@@ -53,26 +53,9 @@ namespace TestRailExporter
                 .ConfigureServices((_, services) =>
                 {
                     services.RegisterAppConfig();
-
-                    services.AddHttpClient("DefaultHttpClient")
-                        .AddHttpMessageHandler(serviceProvider =>
-                        {
-                            var logger = serviceProvider.GetRequiredService<ILogger<RetryHandler>>();
-                            return new RetryHandler(logger, maxRetries: 3, delay: TimeSpan.FromMilliseconds(100));
-                        });
-
+                    services.RegisterClient();
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    services.AddTransient<IClient, Client.Client>(serviceProvider =>
-                    {
-                        var logger = serviceProvider.GetRequiredService<ILogger<Client.Client>>();
-                        var config = serviceProvider.GetRequiredService<IOptions<AppConfig>>();
-                        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-                        var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
-
-                        return new Client.Client(logger, httpClient, config);
-                    });
-
                     services.AddServices();
                 });
         }

@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using TestRailExporter.Models.Client;
@@ -14,7 +13,6 @@ public class Client : IClient
     private readonly AppConfig _config;
     private readonly string _projectName;
     private readonly int _limit = 100;
-
 
     public Client(ILogger<Client> logger, HttpClient httpClient, IOptions<AppConfig> config)
     {
