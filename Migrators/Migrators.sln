@@ -24,8 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllureExporter", "AllureExp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonWriter", "JsonWriter\JsonWriter.csproj", "{C03F7958-C302-4F57-B158-E1F0E8A1A302}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllureExporterTests", "AllureExporterTests\AllureExporterTests.csproj", "{71D9999F-06FA-49B2-91C0-3CE322C9F33B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AzureExporterTests", "AzureExporterTests\AzureExporterTests.csproj", "{9EE779EA-9288-47D6-A99A-665AC7B72B47}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrScaleExporter", "ZephyrScaleExporter\ZephyrScaleExporter.csproj", "{6E815614-B50E-4300-BD3E-CEC43DAA1509}"
@@ -109,10 +107,6 @@ Global
 		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C03F7958-C302-4F57-B158-E1F0E8A1A302}.Release|Any CPU.Build.0 = Release|Any CPU
-		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71D9999F-06FA-49B2-91C0-3CE322C9F33B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9EE779EA-9288-47D6-A99A-665AC7B72B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9EE779EA-9288-47D6-A99A-665AC7B72B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EE779EA-9288-47D6-A99A-665AC7B72B47}.Release|Any CPU.ActiveCfg = Release|Any CPU

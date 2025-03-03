@@ -1,7 +1,6 @@
 using AllureExporter.Client;
-using AllureExporter.Helpers;
-using AllureExporter.Services;
-using JsonWriter;
+using AllureExporter.Extensions;
+using AllureExporter.Services.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,69 +9,60 @@ using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
 
-namespace AllureExporter
+namespace AllureExporter;
+
+internal class Program
 {
-    internal class Program
+    private static void Main(string[] args)
     {
-        static void Main(string[] args)
+        using var host = CreateHostBuilder(args).Build();
+        using var scope = host.Services.CreateScope();
+
+        var services = scope.ServiceProvider;
+
+        try
         {
-            using var host = CreateHostBuilder(args).Build();
-            using var scope = host.Services.CreateScope();
-
-            var services = scope.ServiceProvider;
-
-            try
-            {
-                services.GetRequiredService<App>().Run(args);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
+            services.GetRequiredService<App>().Run(args);
         }
-
-        static IHostBuilder CreateHostBuilder(string[] strings)
+        catch (Exception e)
         {
-            var options = new ConfigurationReaderOptions(typeof(ConsoleLoggerConfigurationExtensions).Assembly,
-                typeof(SerilogExpression).Assembly);
+            Console.WriteLine(e.Message);
+        }
+    }
 
-            return Host.CreateDefaultBuilder()
-                .UseSerilog((context, services, configuration) => configuration
-                    .ReadFrom.Configuration(context.Configuration, options)
-                    .ReadFrom.Services(services)
-                    .Enrich.FromLogContext()
-                    .MinimumLevel.Debug()
-                    .WriteTo.File("logs/log.txt",
-                        restrictedToMinimumLevel: LogEventLevel.Debug,
-                        outputTemplate:
-                        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    )
-                    .WriteTo.Console(LogEventLevel.Information)
+    private static IHostBuilder CreateHostBuilder(string[] strings)
+    {
+        var options = new ConfigurationReaderOptions(typeof(ConsoleLoggerConfigurationExtensions).Assembly,
+            typeof(SerilogExpression).Assembly);
+
+        return Host.CreateDefaultBuilder()
+            .UseSerilog((context, services, configuration) => configuration
+                .ReadFrom.Configuration(context.Configuration, options)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext()
+                .MinimumLevel.Debug()
+                .WriteTo.File("logs/log.txt",
+                    LogEventLevel.Debug,
+                    "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
                 )
-                .ConfigureServices((_, services) =>
-                {
-                    services.AddSingleton<App>();
-                    services.AddSingleton(SetupConfiguration());
-                    services.AddSingleton<IClient, Client.Client>();
-                    services.AddSingleton<IWriteService, WriteService>();
-                    services.AddSingleton<IExportService, ExportService>();
-                    services.AddSingleton<ISectionService, SectionService>();
-                    services.AddSingleton<IAttachmentService, AttachmentService>();
-                    services.AddSingleton<ISharedStepService, SharedStepService>();
-                    services.AddSingleton<ITestCaseService, TestCaseService>();
-                    services.AddSingleton<IAttributeService, AttributeService>();
-                    services.AddSingleton<IStepService, StepService>();
-                    services.AddScoped<ICoreHelper, CoreHelper>();
-                });
-        }
+                .WriteTo.Console(LogEventLevel.Information)
+            )
+            .ConfigureServices((_, services) =>
+            {
+                services.AddSingleton(SetupConfiguration());
+                services.RegisterAppConfig();
+                services.AddSingleton<App>();
+                services.AddScoped<IClient, Client.Client>();
+                services.RegisterServices();
+            });
+    }
 
-        private static IConfiguration SetupConfiguration()
-        {
-            return new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("allure.config.json")
-                .AddEnvironmentVariables()
-                .Build();
-        }
+    private static IConfiguration SetupConfiguration()
+    {
+        return new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("allure.config.json")
+            .AddEnvironmentVariables()
+            .Build();
     }
 }

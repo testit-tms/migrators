@@ -1,6 +1,7 @@
 using AllureExporter.Client;
 using AllureExporter.Models;
 using AllureExporter.Services;
+using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -85,7 +86,7 @@ public class AttributeServiceTests
 
         // Assert
         await _client.DidNotReceive()
-            .GetCustomFieldValues(Arg.Any<int>());
+            .GetCustomFieldValues(Arg.Any<int>(), Arg.Any<int>());
 
         await _client.DidNotReceive()
             .GetTestLayers();
@@ -98,7 +99,7 @@ public class AttributeServiceTests
         _client.GetCustomFieldNames(1)
             .Returns(_customFields);
 
-        _client.GetCustomFieldValues(1)
+        _client.GetCustomFieldValues(1, 1)
             .ThrowsAsync(new Exception("Failed to get custom field values"));
 
         var service = new AttributeService(_logger, _client);
@@ -119,7 +120,7 @@ public class AttributeServiceTests
         _client.GetCustomFieldNames(1)
             .Returns(_customFields);
 
-        _client.GetCustomFieldValues(1)
+        _client.GetCustomFieldValues(1, 1)
             .Returns(_customFieldValues);
 
         _client.GetTestLayers()
@@ -139,7 +140,7 @@ public class AttributeServiceTests
         _client.GetCustomFieldNames(1)
             .Returns(_customFields);
 
-        _client.GetCustomFieldValues(1)
+        _client.GetCustomFieldValues(1, 1)
             .Returns(_customFieldValues);
 
         _client.GetTestLayers()

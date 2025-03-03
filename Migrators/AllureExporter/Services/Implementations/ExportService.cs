@@ -4,9 +4,9 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
 
-namespace AllureExporter.Services;
+namespace AllureExporter.Services.Implementations;
 
-public sealed class ExportService(
+internal sealed class ExportService(
     ILogger<ExportService> logger,
     IClient client,
     IWriteService writeService,
@@ -17,6 +17,8 @@ public sealed class ExportService(
     IAttributeService attributeService)
     : IExportService
 {
+    private const bool IsLongTagsExcludeEnabled = true;
+
     public async Task ExportProject()
     {
         logger.LogInformation("Starting export");
@@ -33,20 +35,20 @@ public sealed class ExportService(
 
         foreach (var sharedStep in sharedSteps)
         {
-            coreHelper.ExcludeLongTags(sharedStep.Value);
+            if (IsLongTagsExcludeEnabled) coreHelper.ExcludeLongTags(sharedStep.Value);
             await writeService.WriteSharedStep(sharedStep.Value);
         }
 
         foreach (var testCase in testCases)
         {
-            coreHelper.ExcludeLongTags(testCase);
+            if (IsLongTagsExcludeEnabled) coreHelper.ExcludeLongTags(testCase);
             await writeService.WriteTestCase(testCase);
         }
 
         var mainJson = new Root
         {
             ProjectName = project.Name,
-            Sections = new List<Section> { section.MainSection },
+            Sections = [section.MainSection],
             TestCases = testCases.Select(t => t.Id).ToList(),
             SharedSteps = sharedSteps.Values.Select(s => s.Id).ToList(),
             Attributes = attributes

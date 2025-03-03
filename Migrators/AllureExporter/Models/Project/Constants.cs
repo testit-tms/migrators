@@ -1,4 +1,4 @@
-namespace AllureExporter.Models;
+namespace AllureExporter.Models.Project;
 
 public class Constants
 {

@@ -1,6 +1,7 @@
 using AllureExporter.Client;
 using AllureExporter.Models;
 using AllureExporter.Services;
+using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -86,7 +87,7 @@ public class StepServiceTests
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertSteps(TestCaseId));
+            await service.ConvertStepsForTestCase(TestCaseId, []));
     }
 
     [Test]
@@ -98,21 +99,21 @@ public class StepServiceTests
         var service = new StepService(_logger, _client);
 
         // Act
-        var steps= await service.ConvertSteps(TestCaseId);
+        var steps= await service.ConvertStepsForTestCase(TestCaseId, []);
 
         // Assert
-        Assert.AreEqual(3, steps.Count);
-        Assert.AreEqual("<p>When</p>\n<p>Test step 1</p>\n<p>Test step 1.1</p>\n<p>And</p>\n<p>Test step 1.2</p>\n", steps[0].Action);
-        Assert.AreEqual("Expected result", steps[0].Expected);
-        Assert.AreEqual(3, steps[0].ActionAttachments.Count);
-        Assert.AreEqual("image.png", steps[0].ActionAttachments[0]);
-        Assert.AreEqual("image2.png", steps[0].ActionAttachments[1]);
-        Assert.AreEqual("image3.png", steps[0].ActionAttachments[2]);
-        Assert.AreEqual("<p></p>\n", steps[1].Action);
+        Assert.That(steps.Count, Is.EqualTo(3));
+        Assert.That(steps[0].Action, Is.EqualTo("<p>When</p>\n<p>Test step 1</p>\n<p>Test step 1.1</p>\n<p>And</p>\n<p>Test step 1.2</p>\n"));
+        Assert.That(steps[0].Expected, Is.EqualTo("Expected result"));
+        Assert.That(steps[0].ActionAttachments.Count, Is.EqualTo(3));
+        Assert.That(steps[0].ActionAttachments[0], Is.EqualTo("image.png"));
+        Assert.That(steps[0].ActionAttachments[1], Is.EqualTo("image2.png"));
+        Assert.That(steps[0].ActionAttachments[2], Is.EqualTo("image3.png"));
+        Assert.That(steps[1].Action, Is.EqualTo("<p></p>\n"));
         Assert.IsNull(steps[1].Expected);
-        Assert.AreEqual(0, steps[1].ActionAttachments.Count);
-        Assert.AreEqual("<p>Test step 3</p>\n", steps[2].Action);
+        Assert.That(steps[1].ActionAttachments.Count, Is.EqualTo(0));
+        Assert.That(steps[2].Action, Is.EqualTo("<p>Test step 3</p>\n"));
         Assert.IsNull(steps[2].Expected);
-        Assert.AreEqual(0, steps[2].ActionAttachments.Count);
+        Assert.That(steps[2].ActionAttachments.Count, Is.EqualTo(0));
     }
 }

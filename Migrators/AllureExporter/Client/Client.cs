@@ -1,60 +1,31 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
-using AllureExporter.Models;
-using Microsoft.Extensions.Configuration;
+using AllureExporter.Models.Attachment;
+using AllureExporter.Models.Comment;
+using AllureExporter.Models.Config;
+using AllureExporter.Models.Project;
+using AllureExporter.Models.Relation;
+using AllureExporter.Models.Step;
+using AllureExporter.Models.TestCase;
 using Microsoft.Extensions.Logging;
-using Models;
+using Microsoft.Extensions.Options;
 
 namespace AllureExporter.Client;
 
-public class Client : IClient
+internal class Client : IClient
 {
-    private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
-    private readonly string _projectName;
+    private readonly ILogger<Client> _logger;
     private readonly bool _migrateAutotests;
+    private readonly string _projectName;
 
-    public Client(ILogger<Client> logger, IConfiguration configuration)
+    public Client(ILogger<Client> logger, IOptions<AppConfig> config)
     {
         _logger = logger;
-
-        var section = configuration.GetSection("allure");
-        var url = section["url"];
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new ArgumentException("Url is not specified");
-        }
-
-        var apiToken = section["apiToken"];
-        var bearerToken = section["bearerToken"];
-
-        var projectName = section["projectName"];
-        if (string.IsNullOrEmpty(projectName))
-        {
-            throw new ArgumentException("Project name is not specified");
-        }
-
-        var migrateAutotests = section["migrateAutotests"];
-        _migrateAutotests = bool.TryParse(migrateAutotests, out var value) ? value : false;
-
-        _projectName = projectName;
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
-
-        if (!string.IsNullOrEmpty(apiToken))
-        {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Api-Token", apiToken);
-        }
-        else if (!string.IsNullOrEmpty(bearerToken))
-        {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", bearerToken);
-        }
-        else
-        {
-            throw new ArgumentException("Api-Token or Bearer-Token is not specified");
-        }
+        _projectName = config.Value.Allure.ProjectName;
+        _migrateAutotests = config.Value.Allure.MigrateAutotests;
+        InitClient(config.Value);
     }
 
     public async Task<BaseEntity> GetProjectId()
@@ -109,9 +80,9 @@ public class Client : IClient
             totalPages = testCases.TotalPages;
 
             testCaseIds.AddRange(testCases.Content
-                    .Where(t => _migrateAutotests || t.Automated == false)
-                    .Select(t => t.Id)
-                    .ToList());
+                .Where(t => _migrateAutotests || t.Automated == false)
+                .Select(t => t.Id)
+                .ToList());
 
             page++;
 
@@ -126,15 +97,15 @@ public class Client : IClient
     {
         var testCaseIds = new List<long>();
         var page = 0;
-        long totalPages = -1L;
+        var totalPages = -1L;
 
         _logger.LogInformation("Getting test case ids from suite {SuiteId}", suiteId);
 
         do
         {
             var response =
-            await _httpClient.GetAsync(
-                $"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&path={suiteId}&page={page}");
+                await _httpClient.GetAsync(
+                    $"api/rs/testcasetree/leaf?projectId={projectId}&treeId=2&path={suiteId}&page={page}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -150,9 +121,9 @@ public class Client : IClient
             totalPages = testCases.TotalPages;
 
             testCaseIds.AddRange(testCases.Content
-                    .Where(t => _migrateAutotests || t.Automated == false)
-                    .Select(t => t.Id)
-                    .ToList());
+                .Where(t => _migrateAutotests || t.Automated == false)
+                .Select(t => t.Id)
+                .ToList());
 
             page++;
 
@@ -167,14 +138,14 @@ public class Client : IClient
     {
         var allSharedSteps = new List<AllureSharedStep>();
         var page = 0;
-        long totalPages = -1L;
+        var totalPages = -1L;
 
         _logger.LogInformation("Getting shared step ids by project id {ProjectId}", projectId);
 
         do
         {
             var response =
-            await _httpClient.GetAsync($"api/rs/sharedstep?projectId={projectId}&treeId=2&page={page}");
+                await _httpClient.GetAsync($"api/rs/sharedstep?projectId={projectId}&treeId=2&page={page}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -199,28 +170,6 @@ public class Client : IClient
         } while (page < totalPages);
 
         return allSharedSteps;
-    }
-
-
-    private async Task<T> GetGenericTcData<T>(string requestUri, long id, string logDomain, string logBaseDomain)
-    {
-        _logger.LogInformation("Getting {logDomain} for {logBaseDomain} with id {Id}",
-            logDomain, logBaseDomain, id);
-
-        var response = await _httpClient.GetAsync(requestUri);
-        if (!response.IsSuccessStatusCode)
-        {
-            _logger.LogError(
-                "Failed to get {logDomain} for {logBaseDomain} with id {Id}. " +
-                "Status code: {StatusCode}. Response: {Response}",
-                logDomain, logBaseDomain, id, response.StatusCode, await response.Content.ReadAsStringAsync());
-
-            throw new Exception(
-                $"Failed to get {logDomain} for {logBaseDomain} with id {id}. Status code: {response.StatusCode}");
-        }
-
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<T>(content)!;
     }
 
 
@@ -257,13 +206,14 @@ public class Client : IClient
     {
         var allAttachments = new List<AllureAttachment>();
         var page = 0;
-        long totalPages = -1L;
+        var totalPages = -1L;
 
         _logger.LogInformation("Getting attachments by test case id {TestCaseId}", testCaseId);
 
         do
         {
-            var response = await _httpClient.GetAsync($"api/rs/testcase/attachment?testCaseId={testCaseId}&page={page}");
+            var response =
+                await _httpClient.GetAsync($"api/rs/testcase/attachment?testCaseId={testCaseId}&page={page}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -282,7 +232,9 @@ public class Client : IClient
 
             page++;
 
-            _logger.LogInformation("Got attachments by test case id {TestCaseId} from {Page} page out of {TotalPages} pages", testCaseId, page, totalPages);
+            _logger.LogInformation(
+                "Got attachments by test case id {TestCaseId} from {Page} page out of {TotalPages} pages", testCaseId,
+                page, totalPages);
         } while (page < totalPages);
 
         return allAttachments;
@@ -292,13 +244,14 @@ public class Client : IClient
     {
         var allAttachments = new List<AllureAttachment>();
         var page = 0;
-        long totalPages = -1L;
+        var totalPages = -1L;
 
         _logger.LogInformation("Getting attachments by shared step id {SharedStepId}", sharedStepId);
 
         do
         {
-            var response = await _httpClient.GetAsync($"api/rs/sharedstep/attachment?sharedStepId={sharedStepId}&page={page}");
+            var response =
+                await _httpClient.GetAsync($"api/rs/sharedstep/attachment?sharedStepId={sharedStepId}&page={page}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -317,7 +270,9 @@ public class Client : IClient
 
             page++;
 
-            _logger.LogInformation("Got attachments by shared step id {SharedStepId} from {Page} page out of {TotalPages} pages", sharedStepId, page, totalPages);
+            _logger.LogInformation(
+                "Got attachments by shared step id {SharedStepId} from {Page} page out of {TotalPages} pages",
+                sharedStepId, page, totalPages);
         } while (page < totalPages);
 
         return allAttachments;
@@ -364,7 +319,8 @@ public class Client : IClient
         }
         catch (Exception ex)
         {
-            _logger.LogDebug("Failed to download attachment for test case with id {AttachmentId}: {@Ex}", attachmentId, ex);
+            _logger.LogDebug("Failed to download attachment for test case with id {AttachmentId}: {@Ex}", attachmentId,
+                ex);
 
             return [];
         }
@@ -381,7 +337,8 @@ public class Client : IClient
         }
         catch (Exception ex)
         {
-            _logger.LogDebug("Failed to download attachment for shared step with id {AttachmentId}: {@Ex}", attachmentId, ex);
+            _logger.LogDebug("Failed to download attachment for shared step with id {AttachmentId}: {@Ex}",
+                attachmentId, ex);
 
             return [];
         }
@@ -391,7 +348,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test layers");
 
-        var response = await _httpClient.GetAsync($"api/rs/testlayer");
+        var response = await _httpClient.GetAsync("api/rs/testlayer");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -415,9 +372,9 @@ public class Client : IClient
             "custom field names", "project");
     }
 
-    public async Task<List<BaseEntity>> GetCustomFieldValues(long fieldId)
+    public async Task<List<BaseEntity>> GetCustomFieldValues(long fieldId, long projectId)
     {
-        var requestUri = $"api/rs/cfv?customFieldId={fieldId}";
+        var requestUri = $"api/rs/cfv?customFieldId={fieldId}&projectId={projectId}";
         var values = await GetGenericTcData<BaseEntities>(requestUri, fieldId,
             "custom field values", "field");
         return values.Content.ToList();
@@ -428,5 +385,45 @@ public class Client : IClient
         var requestUri = $"api/rs/testcase/{testCaseId}/cfv";
         return await GetGenericTcData<List<AllureCustomField>>(requestUri, testCaseId,
             "custom fields", "test case");
+    }
+
+    private void InitClient(AppConfig config)
+    {
+        var url = config.Allure.Url;
+        var apiToken = config.Allure.ApiToken;
+        var bearerToken = config.Allure.BearerToken;
+
+        _httpClient.BaseAddress = new Uri(url);
+
+        if (!string.IsNullOrEmpty(apiToken))
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Api-Token", apiToken);
+        else if (!string.IsNullOrEmpty(bearerToken))
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", bearerToken);
+        else
+            throw new ArgumentException("Api-Token or Bearer-Token is not specified");
+    }
+
+
+    private async Task<T> GetGenericTcData<T>(string requestUri, long id, string logDomain, string logBaseDomain)
+    {
+        _logger.LogInformation("Getting {logDomain} for {logBaseDomain} with id {Id}",
+            logDomain, logBaseDomain, id);
+
+        var response = await _httpClient.GetAsync(requestUri);
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get {logDomain} for {logBaseDomain} with id {Id}. " +
+                "Status code: {StatusCode}. Response: {Response}",
+                logDomain, logBaseDomain, id, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception(
+                $"Failed to get {logDomain} for {logBaseDomain} with id {id}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        return JsonSerializer.Deserialize<T>(content)!;
     }
 }

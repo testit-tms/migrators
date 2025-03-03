@@ -1,6 +1,7 @@
 using AllureExporter.Client;
 using AllureExporter.Models;
 using AllureExporter.Services;
+using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
 using Models;
 using NSubstitute;
@@ -63,7 +64,7 @@ public class SectionServiceTests
                     }
                 }
             },
-            SectionDictionary = new Dictionary<int, Guid>
+            SectionDictionary = new Dictionary<long, Guid>
             {
                 { 0, Guid.NewGuid() },
                 { 1, Guid.NewGuid() },

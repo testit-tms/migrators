@@ -1,6 +1,7 @@
 using AllureExporter.Client;
 using AllureExporter.Models;
 using AllureExporter.Services;
+using AllureExporter.Services.Implementations;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -41,17 +42,17 @@ public class AttachmentServiceTests
     public async Task DownloadAttachments_FailedGetAttachments()
     {
         // Arrange
-        _client.GetAttachments(TestCaseId)
+        _client.GetAttachmentsByTestCaseId(TestCaseId)
             .ThrowsAsync(new Exception("Failed to get attachments"));
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(TestCaseId, Guid.NewGuid()));
+            await service.DownloadAttachmentsforTestCase(TestCaseId, Guid.NewGuid()));
 
         // Assert
-        await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
+        await _client.DidNotReceive().DownloadAttachmentForTestCase(Arg.Any<int>());
         await _writeService.DidNotReceive()
             .WriteAttachment(Arg.Any<Guid>(), Arg.Any<byte[]>(), Arg.Any<string>());
     }
@@ -60,15 +61,15 @@ public class AttachmentServiceTests
     public async Task DownloadAttachments_FailedDownloadAttachment()
     {
         // Arrange
-        _client.GetAttachments(TestCaseId).Returns(_attachments);
-        _client.DownloadAttachment(_attachments[0].Id)
+        _client.GetAttachmentsByTestCaseId(TestCaseId).Returns(_attachments);
+        _client.DownloadAttachmentForTestCase(_attachments[0].Id)
             .ThrowsAsync(new Exception("Failed to download attachment"));
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(TestCaseId, Guid.NewGuid()));
+            await service.DownloadAttachmentsforTestCase(TestCaseId, Guid.NewGuid()));
 
         // Assert
         await _writeService.DidNotReceive()
@@ -81,8 +82,8 @@ public class AttachmentServiceTests
         // Arrange
         var guid = new Guid();
         var bytes = new byte[] { 1, 2, 3 };
-        _client.GetAttachments(TestCaseId).Returns(_attachments);
-        _client.DownloadAttachment(_attachments[0].Id).Returns(bytes);
+        _client.GetAttachmentsByTestCaseId(TestCaseId).Returns(_attachments);
+        _client.DownloadAttachmentForTestCase(_attachments[0].Id).Returns(bytes);
         _writeService.WriteAttachment(guid, bytes, _attachments[0].Name)
             .Throws(new Exception("Failed to write attachment"));
 
@@ -90,7 +91,7 @@ public class AttachmentServiceTests
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
-            await service.DownloadAttachments(TestCaseId, guid));
+            await service.DownloadAttachmentsforTestCase(TestCaseId, guid));
     }
 
     [Test]
@@ -99,16 +100,16 @@ public class AttachmentServiceTests
         // Arrange
         var guid = new Guid();
         var bytes = new byte[] { 1, 2, 3 };
-        _client.GetAttachments(TestCaseId).Returns(_attachments);
-        _client.DownloadAttachment(_attachments[0].Id).Returns(bytes);
-        _client.DownloadAttachment(_attachments[1].Id).Returns(bytes);
+        _client.GetAttachmentsByTestCaseId(TestCaseId).Returns(_attachments);
+        _client.DownloadAttachmentForTestCase(_attachments[0].Id).Returns(bytes);
+        _client.DownloadAttachmentForTestCase(_attachments[1].Id).Returns(bytes);
         _writeService.WriteAttachment(guid, bytes, _attachments[0].Name).Returns(_attachments[0].Name);
         _writeService.WriteAttachment(guid, bytes, _attachments[1].Name).Returns(_attachments[1].Name);
 
         var service = new AttachmentService(_logger, _client, _writeService);
 
         // Act
-        var result = await service.DownloadAttachments(TestCaseId, guid);
+        var result = await service.DownloadAttachmentsforTestCase(TestCaseId, guid);
 
         // Assert
         await _writeService.Received(1).WriteAttachment(guid, bytes, _attachments[0].Name);
