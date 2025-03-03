@@ -1,32 +1,23 @@
 using AllureExporter.Client;
-using AllureExporter.Models;
+using AllureExporter.Models.Project;
 using Microsoft.Extensions.Logging;
 using Models;
-using Constants = AllureExporter.Models.Constants;
+using Constants = AllureExporter.Models.Project.Constants;
 
-namespace AllureExporter.Services;
+namespace AllureExporter.Services.Implementations;
 
-public class SectionService : ISectionService
+internal class SectionService(ILogger<SectionService> logger, IClient client) : ISectionService
 {
-    private readonly ILogger<SectionService> _logger;
-    private readonly IClient _client;
-
     private const string MainSectionName = "Allure";
-
-    public SectionService(ILogger<SectionService> logger, IClient client)
-    {
-        _logger = logger;
-        _client = client;
-    }
 
     public async Task<SectionInfo> ConvertSection(long projectId)
     {
-        _logger.LogInformation("Converting sections");
+        logger.LogInformation("Converting sections");
 
         var sectionIdMap = new Dictionary<long, Guid>();
-        var sections = await _client.GetSuites(projectId);
+        var sections = await client.GetSuites(projectId);
 
-        _logger.LogDebug("Found {Count} sections: {@Sections}", sections.Count, sections);
+        logger.LogDebug("Found {Count} sections: {@Sections}", sections.Count, sections);
 
         var childSections = new List<Section>();
 
@@ -54,9 +45,9 @@ public class SectionService : ISectionService
         };
         sectionIdMap.Add(Constants.MainSectionId, section.Id);
 
-        _logger.LogDebug("Converted sections: {@Section}", section);
+        logger.LogDebug("Converted sections: {@Section}", section);
 
-        _logger.LogInformation("Ending converting sections");
+        logger.LogInformation("Ending converting sections");
 
         return new SectionInfo
         {

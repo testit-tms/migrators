@@ -2,32 +2,23 @@ using AllureExporter.Client;
 using Microsoft.Extensions.Logging;
 using Models;
 using Attribute = Models.Attribute;
-using Constants = AllureExporter.Models.Constants;
+using Constants = AllureExporter.Models.Project.Constants;
 
-namespace AllureExporter.Services;
+namespace AllureExporter.Services.Implementations;
 
-public class AttributeService : IAttributeService
+internal class AttributeService(ILogger<AttributeService> logger, IClient client) : IAttributeService
 {
-    private readonly ILogger<AttributeService> _logger;
-    private readonly IClient _client;
-
-    public AttributeService(ILogger<AttributeService> logger, IClient client)
-    {
-        _logger = logger;
-        _client = client;
-    }
-
     public async Task<List<Attribute>> GetCustomAttributes(long projectId)
     {
-        _logger.LogInformation("Getting custom attributes");
+        logger.LogInformation("Getting custom attributes");
 
         var attributes = new List<Attribute>();
 
-        var customFields = await _client.GetCustomFieldNames(projectId);
+        var customFields = await client.GetCustomFieldNames(projectId);
 
         foreach (var customField in customFields)
         {
-            var values = await _client.GetCustomFieldValues(customField.Id);
+            var values = await client.GetCustomFieldValues(customField.Id, projectId);
 
             var attribute = new Attribute
             {
@@ -58,7 +49,7 @@ public class AttributeService : IAttributeService
             }
         });
 
-        var testLayers = await _client.GetTestLayers();
+        var testLayers = await client.GetTestLayers();
 
         attributes.Add(new Attribute
         {

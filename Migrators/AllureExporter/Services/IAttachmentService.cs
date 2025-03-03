@@ -1,5 +1,3 @@
-using AllureExporter.Models;
-
 namespace AllureExporter.Services;
 
 public interface IAttachmentService
