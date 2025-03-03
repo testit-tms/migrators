@@ -1,0 +1,38 @@
+name: Build .NET Project
+
+on:
+  workflow_call:
+    inputs:
+      project_path:
+        required: true
+        type: string
+      runtime:
+        required: true
+        type: string
+        default: 'win-x64'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ inputs.project_path }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ inputs.runtime }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ inputs.project_path }} 
