@@ -8,27 +8,33 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      projects: ${{ steps.set-matrix.outputs.projects }}
+      os: ${{ steps.set-matrix.outputs.os }}
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"project\":[\"Importer\",\"AllureExporter\",\"AzureExporter\",\"ZephyrScaleExporter\",\"ZephyrScaleServerExporter\",\"ZephyrSquadExporter\",\"ZephyrSquadServerExporter\",\"XRayExporter\",\"TestCollabExporter\",\"TestLinkExporter\",\"TestRailExporter\",\"TestRailXmlExporter\",\"PractiTestExporter\",\"SpiraTestExporter\",\"HPALMExporter\",\"QaseExporter\"],\"os\":[\"win-x64\",\"linux-x64\",\"osx-x64\"]}" >> $GITHUB_OUTPUT
+          echo "projects=[\"Importer\",\"AllureExporter\",\"AzureExporter\",\"ZephyrScaleExporter\",\"ZephyrScaleServerExporter\",\"ZephyrSquadExporter\",\"ZephyrSquadServerExporter\",\"XRayExporter\",\"TestCollabExporter\",\"TestLinkExporter\",\"TestRailExporter\",\"TestRailXmlExporter\",\"PractiTestExporter\",\"SpiraTestExporter\",\"HPALMExporter\",\"QaseExporter\"]" >> $GITHUB_OUTPUT
+          echo "os=[\"win-x64\",\"linux-x64\",\"osx-x64\"]" >> $GITHUB_OUTPUT
 
   build:
     needs: prepare
     strategy:
       fail-fast: true
-      matrix: ${{fromJson(needs.prepare.outputs.matrix)}}
+      matrix:
+        project: ${{fromJson(needs.prepare.outputs.projects)}}
+        os: ${{fromJson(needs.prepare.outputs.os)}}
     uses: ./.github/workflows/build-project.yml
     with:
       project_path: ./Migrators/${{ matrix.project }}
       runtime: ${{ matrix.os }}
 
   upload:
-    needs: build
+    needs: [prepare, build]
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.prepare.outputs.matrix)}}
+      matrix:
+        project: ${{fromJson(needs.prepare.outputs.projects)}}
+        os: ${{fromJson(needs.prepare.outputs.os)}}
     steps:
       - name: Set artifact names
         id: artifacts
