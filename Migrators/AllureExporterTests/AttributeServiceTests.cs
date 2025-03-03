@@ -1,18 +1,16 @@
 using AllureExporter.Client;
-using AllureExporter.Models;
-using AllureExporter.Services;
+using AllureExporter.Models.Project;
 using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
+using Moq;
 
 namespace AllureExporterTests;
 
 public class AttributeServiceTests
 {
-    private ILogger<AttributeService> _logger;
-    private IClient _client;
-
+    private Mock<ILogger<AttributeService>> _logger;
+    private Mock<IClient> _client;
+    private AttributeService _sut;
     private List<BaseEntity> _customFields;
     private List<BaseEntity> _customFieldValues;
     private List<BaseEntity> _testLayers;
@@ -20,8 +18,9 @@ public class AttributeServiceTests
     [SetUp]
     public void Setup()
     {
-        _logger = Substitute.For<ILogger<AttributeService>>();
-        _client = Substitute.For<IClient>();
+        _logger = new Mock<ILogger<AttributeService>>();
+        _client = new Mock<IClient>();
+        _sut = new AttributeService(_logger.Object, _client.Object);
 
         _customFields = new List<BaseEntity>
         {
@@ -72,84 +71,70 @@ public class AttributeServiceTests
     }
 
     [Test]
-    public async Task GetCustomAttributes_FailedGetCustomFieldNames()
+    public void GetCustomAttributes_FailedGetCustomFieldNames()
     {
         // Arrange
-        _client.GetCustomFieldNames(1)
+        _client.Setup(x => x.GetCustomFieldNames(1))
             .ThrowsAsync(new Exception("Failed to get custom field names"));
 
-        var service = new AttributeService(_logger, _client);
+        // Act & Assert
+        var ex = Assert.ThrowsAsync<Exception>(() => _sut.GetCustomAttributes(1));
+        Assert.That(ex.Message, Is.EqualTo("Failed to get custom field names"));
 
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.GetCustomAttributes(1));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetCustomFieldValues(Arg.Any<int>(), Arg.Any<int>());
-
-        await _client.DidNotReceive()
-            .GetTestLayers();
+        _client.Verify(x => x.GetCustomFieldValues(It.IsAny<long>(), It.IsAny<long>()), Times.Never);
+        _client.Verify(x => x.GetTestLayers(), Times.Never);
     }
 
     [Test]
-    public async Task GetCustomAttributes_FailedGetCustomFieldValues()
+    public void GetCustomAttributes_FailedGetCustomFieldValues()
     {
         // Arrange
-        _client.GetCustomFieldNames(1)
-            .Returns(_customFields);
+        _client.Setup(x => x.GetCustomFieldNames(1))
+            .ReturnsAsync(_customFields);
 
-        _client.GetCustomFieldValues(1, 1)
+        _client.Setup(x => x.GetCustomFieldValues(1, 1))
             .ThrowsAsync(new Exception("Failed to get custom field values"));
 
-        var service = new AttributeService(_logger, _client);
+        // Act & Assert
+        var ex = Assert.ThrowsAsync<Exception>(() => _sut.GetCustomAttributes(1));
+        Assert.That(ex.Message, Is.EqualTo("Failed to get custom field values"));
 
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.GetCustomAttributes(1));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestLayers();
+        _client.Verify(x => x.GetTestLayers(), Times.Never);
     }
 
     [Test]
-    public async Task GetCustomAttributes_FailedGetTestLayers()
+    public void GetCustomAttributes_FailedGetTestLayers()
     {
         // Arrange
-        _client.GetCustomFieldNames(1)
-            .Returns(_customFields);
+        _client.Setup(x => x.GetCustomFieldNames(1))
+            .ReturnsAsync(_customFields);
 
-        _client.GetCustomFieldValues(1, 1)
-            .Returns(_customFieldValues);
+        _client.Setup(x => x.GetCustomFieldValues(1, 1))
+            .ReturnsAsync(_customFieldValues);
 
-        _client.GetTestLayers()
+        _client.Setup(x => x.GetTestLayers())
             .ThrowsAsync(new Exception("Failed to get test layers"));
 
-        var service = new AttributeService(_logger, _client);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.GetCustomAttributes(1));
+        // Act & Assert
+        var ex = Assert.ThrowsAsync<Exception>(() => _sut.GetCustomAttributes(1));
+        Assert.That(ex.Message, Is.EqualTo("Failed to get test layers"));
     }
 
     [Test]
     public async Task GetCustomAttributes_Success()
     {
         // Arrange
-        _client.GetCustomFieldNames(1)
-            .Returns(_customFields);
+        _client.Setup(x => x.GetCustomFieldNames(1))
+            .ReturnsAsync(_customFields);
 
-        _client.GetCustomFieldValues(1, 1)
-            .Returns(_customFieldValues);
+        _client.Setup(x => x.GetCustomFieldValues(1, 1))
+            .ReturnsAsync(_customFieldValues);
 
-        _client.GetTestLayers()
-            .Returns(_testLayers);
-
-        var service = new AttributeService(_logger, _client);
+        _client.Setup(x => x.GetTestLayers())
+            .ReturnsAsync(_testLayers);
 
         // Act
-        var attributes = await service.GetCustomAttributes(1);
+        var attributes = await _sut.GetCustomAttributes(1);
 
         // Assert
         Assert.That(attributes, Has.Count.EqualTo(3));
@@ -169,5 +154,9 @@ public class AttributeServiceTests
         Assert.That(attributes[2].Options[0], Is.EqualTo("Test Layer 1"));
         Assert.That(attributes[2].Options[1], Is.EqualTo("Test Layer 2"));
         Assert.That(attributes[2].Options[2], Is.EqualTo("Test Layer 3"));
+
+        _client.Verify(x => x.GetCustomFieldNames(1), Times.Once);
+        _client.Verify(x => x.GetCustomFieldValues(1, 1), Times.Once);
+        _client.Verify(x => x.GetTestLayers(), Times.Once);
     }
 }

@@ -47,12 +47,20 @@ internal class Program
                 )
                 .WriteTo.Console(LogEventLevel.Information)
             )
-            .ConfigureServices((_, services) =>
+            .ConfigureServices((context, services) =>
             {
                 services.AddSingleton(SetupConfiguration());
                 services.RegisterAppConfig();
                 services.AddSingleton<App>();
-                services.AddScoped<IClient, Client.Client>();
+                
+                // Configure HttpClient with a lifetime of 5 minutes
+                services.AddHttpClient<IClient, Client.Client>(client =>
+                {
+                    // Base configuration will be done in the Client class
+                    client.DefaultRequestHeaders.Add("User-Agent", "AllureExporter");
+                })
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5)); // Default is 2 minutes
+                
                 services.RegisterServices();
             });
     }

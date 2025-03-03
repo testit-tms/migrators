@@ -12,6 +12,9 @@ using Microsoft.Extensions.Options;
 
 namespace AllureExporter.Client;
 
+/// <summary>
+/// Client for interacting with Allure API.
+/// </summary>
 internal class Client : IClient
 {
     private readonly HttpClient _httpClient;
@@ -19,13 +22,33 @@ internal class Client : IClient
     private readonly bool _migrateAutotests;
     private readonly string _projectName;
 
-    public Client(ILogger<Client> logger, IOptions<AppConfig> config)
+    public Client(ILogger<Client> logger, IOptions<AppConfig> config, HttpClient httpClient)
     {
         _logger = logger;
-        _httpClient = new HttpClient();
         _projectName = config.Value.Allure.ProjectName;
         _migrateAutotests = config.Value.Allure.MigrateAutotests;
+        _httpClient = httpClient;
         InitClient(config.Value);
+    }
+
+    private void InitClient(AppConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config.Allure.Url);
+
+        var url = config.Allure.Url;
+        var apiToken = config.Allure.ApiToken;
+        var bearerToken = config.Allure.BearerToken;
+
+        _httpClient.BaseAddress = new Uri(url);
+
+        if (!string.IsNullOrEmpty(apiToken))
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Api-Token", apiToken);
+        else if (!string.IsNullOrEmpty(bearerToken))
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", bearerToken);
+        else
+            throw new ArgumentException("Api-Token or Bearer-Token is not specified");
     }
 
     public async Task<BaseEntity> GetProjectId()
@@ -386,25 +409,6 @@ internal class Client : IClient
         return await GetGenericTcData<List<AllureCustomField>>(requestUri, testCaseId,
             "custom fields", "test case");
     }
-
-    private void InitClient(AppConfig config)
-    {
-        var url = config.Allure.Url;
-        var apiToken = config.Allure.ApiToken;
-        var bearerToken = config.Allure.BearerToken;
-
-        _httpClient.BaseAddress = new Uri(url);
-
-        if (!string.IsNullOrEmpty(apiToken))
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Api-Token", apiToken);
-        else if (!string.IsNullOrEmpty(bearerToken))
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", bearerToken);
-        else
-            throw new ArgumentException("Api-Token or Bearer-Token is not specified");
-    }
-
 
     private async Task<T> GetGenericTcData<T>(string requestUri, long id, string logDomain, string logBaseDomain)
     {

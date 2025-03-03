@@ -17,7 +17,9 @@ internal sealed class ExportService(
     IAttributeService attributeService)
     : IExportService
 {
-    private const bool IsLongTagsExcludeEnabled = true;
+    private const bool IsLongTagsExcludeEnabled = false;
+    private const bool IsLongTagsCutEnabled = true;
+
 
     public async Task ExportProject()
     {
@@ -36,12 +38,16 @@ internal sealed class ExportService(
         foreach (var sharedStep in sharedSteps)
         {
             if (IsLongTagsExcludeEnabled) coreHelper.ExcludeLongTags(sharedStep.Value);
+            if (IsLongTagsCutEnabled) coreHelper.CutLongTags(sharedStep.Value);
+
             await writeService.WriteSharedStep(sharedStep.Value);
         }
 
         foreach (var testCase in testCases)
         {
             if (IsLongTagsExcludeEnabled) coreHelper.ExcludeLongTags(testCase);
+            if (IsLongTagsCutEnabled) coreHelper.CutLongTags(testCase);
+
             await writeService.WriteTestCase(testCase);
         }
 
