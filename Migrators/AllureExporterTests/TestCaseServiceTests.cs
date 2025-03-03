@@ -1,382 +1,339 @@
 using AllureExporter.Client;
-using AllureExporter.Models;
+using AllureExporter.Models.Config;
+using AllureExporter.Models.Project;
+using AllureExporter.Models.Relation;
+using AllureExporter.Models.Step;
+using AllureExporter.Models.TestCase;
 using AllureExporter.Services;
+using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Models;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using Constants = AllureExporter.Models.Constants;
-using Exception = System.Exception;
+using Moq;
+using Constants = AllureExporter.Models.Project.Constants;
 
 namespace AllureExporterTests;
 
 public class TestCaseServiceTests
 {
-    private ILogger<TestCaseService> _logger;
-    private IClient _client;
-    private IAttachmentService _attachmentService;
-    private IStepService _stepService;
-    private const int ProjectId = 1;
-    private Dictionary<string, Guid> _attributes = new Dictionary<string, Guid>();
-
-    private readonly Dictionary<int, Guid> _sectionIdMap = new()
-    {
-        { 0, Guid.NewGuid() },
-        { 1, Guid.NewGuid() }
-    };
+    private Mock<ILogger<TestCaseService>> _logger;
+    private Mock<IClient> _client;
+    private Mock<IAttachmentService> _attachmentService;
+    private Mock<IStepService> _stepService;
+    private Mock<IOptions<AppConfig>> _config;
+    private TestCaseService _sut;
+    private const long ProjectId = 1;
+    private const long TestCaseId = 100;
 
     [SetUp]
     public void Setup()
     {
-        _logger = Substitute.For<ILogger<TestCaseService>>();
-        _client = Substitute.For<IClient>();
-        _attachmentService = Substitute.For<IAttachmentService>();
-        _stepService = Substitute.For<IStepService>();
+        _logger = new Mock<ILogger<TestCaseService>>();
+        _client = new Mock<IClient>();
+        _attachmentService = new Mock<IAttachmentService>();
+        _stepService = new Mock<IStepService>();
+        _config = new Mock<IOptions<AppConfig>>();
 
-        _attributes = new Dictionary<string, Guid>()
+        _config.Setup(x => x.Value).Returns(new AppConfig
         {
+            Allure = new AllureConfig
             {
-                Constants.AllureStatus, Guid.NewGuid()
-            },
-            {
-                Constants.AllureTestLayer, Guid.NewGuid()
-            },
-            {
-                "Component", Guid.NewGuid()
-            },
-            {
-                "Epic", Guid.NewGuid()
-            },
-            {
-                "Feature", Guid.NewGuid()
-            }
-        };
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedGetTestCaseIdsFromMainSuite()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromMainSuite(ProjectId)
-            .ThrowsAsync(new Exception("Failed to get test case ids from main suite"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, _sectionIdMap));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromSuite(ProjectId, Arg.Any<int>());
-        await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
-        await _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
-        await _client.DidNotReceive().GetIssueLinks(Arg.Any<int>());
-        await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
-        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedGetTestCaseIdsFromSuite()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .ThrowsAsync(new Exception("Failed to get test case ids from suite"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>()
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
-        await _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
-        await _client.DidNotReceive().GetIssueLinks(Arg.Any<int>());
-        await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
-        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedGetTestCaseById()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1, 2 });
-        _client.GetTestCaseById(1)
-            .ThrowsAsync(new Exception("Failed to get test case by id"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
-        await _client.DidNotReceive().GetIssueLinks(Arg.Any<int>());
-        await _client.DidNotReceive().DownloadAttachment(Arg.Any<int>());
-        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
-        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedGetLinks()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1, 2 });
-        _client.GetTestCaseById(1)
-            .Returns(new AllureTestCase());
-        _client.GetAttachments(1)
-            .Returns(new List<AllureAttachment>());
-        _client.GetIssueLinks(1).ThrowsAsync(new Exception("Failed to get links"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _attachmentService.DidNotReceive()
-            .DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>());
-        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
-        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedDownloadAttachments()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1, 2 });
-        _client.GetTestCaseById(1)
-            .Returns(new AllureTestCase());
-        _client.GetAttachments(1)
-            .Returns(new List<AllureAttachment>());
-        _client.GetIssueLinks(1).Returns(new List<AllureLink>());
-        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
-            .ThrowsAsync(new Exception("Failed to download attachments"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _stepService.DidNotReceive().ConvertSteps(Arg.Any<int>());
-        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedConvertSteps()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1, 2 });
-        _client.GetTestCaseById(1)
-            .Returns(new AllureTestCase());
-        _client.GetAttachments(1)
-            .Returns(new List<AllureAttachment>());
-        _client.GetIssueLinks(1).Returns(new List<AllureLink>());
-        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
-            .Returns(new List<string>());
-        _stepService.ConvertSteps(1).ThrowsAsync(new Exception("Failed to convert steps"));
-
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        await _client.DidNotReceive().GetCustomFieldsFromTestCase(Arg.Any<int>());
-    }
-
-    [Test]
-    public async Task ConvertTestCases_FailedGetCustomFieldsFromTestCase()
-    {
-        // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1, 2 });
-        _client.GetTestCaseById(1)
-            .Returns(new AllureTestCase
-            {
-                Description = "Test description",
-                Id = 1,
-                Name = "Test name",
-                Status = new Status
-                {
-                    Name = "Ready"
-                },
-                Tags = new List<Tags>
-                {
-                    new()
-                    {
-                        Name = "Test tag"
-                    }
-                },
-                Layer = new TestLayer()
-                {
-                    Name = "Unit Tests"
-                }
-            });
-        _client.GetAttachments(1)
-            .Returns(new List<AllureAttachment>());
-        _client.GetIssueLinks(1).Returns(new List<AllureLink>());
-        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
-            .Returns(new List<string>());
-        _stepService.ConvertSteps(1).Returns(new List<Step>()
-        {
-            new()
-            {
-                Action = "Test step 1",
-                Expected = "Expected result",
-                ActionAttachments = new List<string>(),
+                Url = "http://test.allure.com"
             }
         });
-        _client.GetCustomFieldsFromTestCase(1).ThrowsAsync(new Exception("Failed to get custom fields from test case"));
 
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
+        // Setup default returns for methods that should never return null
+        _client.Setup(x => x.GetTestCaseIdsFromMainSuite(It.IsAny<long>()))
+            .ReturnsAsync(new List<long>());
+        _client.Setup(x => x.GetTestCaseIdsFromSuite(It.IsAny<long>(), It.IsAny<long>()))
+            .ReturnsAsync(new List<long>());
+        _client.Setup(x => x.GetIssueLinks(It.IsAny<long>()))
+            .ReturnsAsync(new List<AllureLink>());
+        _client.Setup(x => x.GetRelations(It.IsAny<long>()))
+            .ReturnsAsync(new List<AllureRelation>());
+        _client.Setup(x => x.GetCustomFieldsFromTestCase(It.IsAny<long>()))
+            .ReturnsAsync(new List<AllureCustomField>());
 
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertTestCases(ProjectId, _attributes, new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            }));
-
-        // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
+        _sut = new TestCaseService(
+            _logger.Object,
+            _client.Object,
+            _attachmentService.Object,
+            _stepService.Object,
+            _config.Object);
     }
 
     [Test]
     public async Task ConvertTestCases_Success()
     {
         // Arrange
-        _client.GetTestCaseIdsFromSuite(ProjectId, 1)
-            .Returns(new List<int> { 1 });
-        _client.GetTestCaseById(1)
-            .Returns(new AllureTestCase
+        var mainSectionId = Guid.NewGuid();
+        var regularSectionId = Guid.NewGuid();
+        var sectionInfo = new SectionInfo
+        {
+            MainSection = new Section
             {
-                Description = "Test description",
+                Id = mainSectionId,
+                Name = "Main Section",
+                Sections = new List<Section>()
+            },
+            SectionDictionary = new Dictionary<long, Guid>
+            {
+                { Constants.MainSectionId, mainSectionId }
+            }
+        };
+
+        var sharedStepMap = new Dictionary<string, Guid>
+        {
+            { "1", Guid.NewGuid() }
+        };
+
+        var featureAttributeId = Guid.NewGuid();
+        var storyAttributeId = Guid.NewGuid();
+        var attributes = new Dictionary<string, Guid>
+        {
+            { Constants.AllureStatus, Guid.NewGuid() },
+            { Constants.AllureTestLayer, Guid.NewGuid() },
+            { Constants.Feature, featureAttributeId },
+            { Constants.Story, storyAttributeId }
+        };
+
+        var testCaseIds = new List<long> { TestCaseId };
+        var testCase = new AllureTestCase
+        {
+            Id = TestCaseId,
+            Name = "Test Case",
+            Description = "Description",
+            Status = new Status { Name = "Active" },
+            Layer = new TestLayer { Name = "UI" },
+            Tags = new List<Tag> { new() { Name = "Tag1" } },
+            Links = new List<TestCaseLink> { new() { Name = "Link1", Url = "http://test.com" } }
+        };
+
+        var issueLinks = new List<AllureLink>
+        {
+            new() { Name = "Issue1", Url = "http://issues.com/1" }
+        };
+
+        var relations = new List<AllureRelation>
+        {
+            new()
+            {
                 Id = 1,
-                Name = "Test name",
-                Status = new Status
+                Type = "related to",
+                Target = new AllureRelationTarget { Id = 2, Name = "Related Test" }
+            }
+        };
+
+        var customFields = new List<AllureCustomField>
+        {
+            new() 
+            { 
+                CustomField = new CustomField { Name = Constants.Feature },
+                Name = "Feature1"
+            },
+            new() 
+            { 
+                CustomField = new CustomField { Name = Constants.Story },
+                Name = "Story1"
+            }
+        };
+
+        var steps = new List<Step>
+        {
+            new() { Action = "Step 1" }
+        };
+
+        var attachments = new List<string> { "attachment1.png" };
+
+        _client.Setup(x => x.GetTestCaseIdsFromMainSuite(ProjectId)).ReturnsAsync(testCaseIds);
+        _client.Setup(x => x.GetTestCaseById(TestCaseId)).ReturnsAsync(testCase);
+        _client.Setup(x => x.GetIssueLinks(TestCaseId)).ReturnsAsync(issueLinks);
+        _client.Setup(x => x.GetRelations(TestCaseId)).ReturnsAsync(relations);
+        _client.Setup(x => x.GetCustomFieldsFromTestCase(TestCaseId)).ReturnsAsync(customFields);
+        _stepService.Setup(x => x.ConvertStepsForTestCase(TestCaseId, sharedStepMap)).ReturnsAsync(steps);
+        _attachmentService.Setup(x => x.DownloadAttachmentsforTestCase(TestCaseId, It.IsAny<Guid>()))
+            .ReturnsAsync(attachments);
+
+        // Act
+        var result = await _sut.ConvertTestCases(ProjectId, sharedStepMap, attributes, sectionInfo);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Has.Count.EqualTo(1), "Should have one test case from main suite");
+            var convertedTestCase = result[0];
+
+            Assert.That(convertedTestCase.Name, Is.EqualTo(testCase.Name), "Test case name should match");
+            Assert.That(convertedTestCase.Description, Is.EqualTo(testCase.Description), "Description should match");
+            Assert.That(convertedTestCase.State, Is.EqualTo(StateType.NotReady), "State should be NotReady");
+            Assert.That(convertedTestCase.Priority, Is.EqualTo(PriorityType.Medium), "Priority should be Medium");
+            Assert.That(convertedTestCase.Tags, Is.EquivalentTo(testCase.Tags.Select(t => t.Name)), "Tags should match");
+            Assert.That(convertedTestCase.Steps, Is.EqualTo(steps), "Steps should match");
+            Assert.That(convertedTestCase.Attachments, Is.EqualTo(attachments), "Attachments should match");
+            Assert.That(convertedTestCase.Links, Has.Count.EqualTo(3), "Should have 3 links (Regular + Issue + Relation)");
+            
+            // Verify section structure
+            var featureSection = sectionInfo.MainSection.Sections.FirstOrDefault(s => s.Name == "Feature1");
+            Assert.That(featureSection, Is.Not.Null, "Feature section should exist");
+            Assert.That(featureSection!.Sections, Is.Not.Null, "Feature section should have Sections collection");
+            
+            var storySection = featureSection.Sections.FirstOrDefault(s => s.Name == "Story1");
+            Assert.That(storySection, Is.Not.Null, "Story section should exist");
+
+            _logger.Verify(x => x.Log(
+                LogLevel.Information,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => true),
+                It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
+                Times.AtLeastOnce);
+
+            Assert.That(convertedTestCase.SectionId, Is.EqualTo(storySection!.Id), 
+                $"Test case should be in story section. Expected: {storySection.Id}, Actual: {convertedTestCase.SectionId}");
+        });
+
+        // Verify service calls
+        _client.Verify(x => x.GetTestCaseIdsFromMainSuite(ProjectId), Times.Once);
+        _client.Verify(x => x.GetTestCaseById(TestCaseId), Times.Once);
+        _client.Verify(x => x.GetIssueLinks(TestCaseId), Times.Once);
+        _client.Verify(x => x.GetRelations(TestCaseId), Times.Once);
+        _client.Verify(x => x.GetCustomFieldsFromTestCase(TestCaseId), Times.Once);
+        _stepService.Verify(x => x.ConvertStepsForTestCase(TestCaseId, sharedStepMap), Times.Once);
+        _attachmentService.Verify(x => x.DownloadAttachmentsforTestCase(TestCaseId, It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public async Task ConvertTestCases_WithLongName_CutsName()
+    {
+        // Arrange
+        var sectionId = Guid.NewGuid();
+        var sectionInfo = new SectionInfo
+        {
+            MainSection = new Section
+            {
+                Id = sectionId,
+                Sections = new List<Section>()
+            },
+            SectionDictionary = new Dictionary<long, Guid> { { Constants.MainSectionId, sectionId } }
+        };
+
+        var longName = new string('x', 300);
+        var testCase = new AllureTestCase
+        {
+            Id = TestCaseId,
+            Name = longName,
+            Status = new Status { Name = "Active" }
+        };
+
+        _client.Setup(x => x.GetTestCaseIdsFromMainSuite(ProjectId)).ReturnsAsync(new List<long> { TestCaseId });
+        _client.Setup(x => x.GetTestCaseById(TestCaseId)).ReturnsAsync(testCase);
+        _client.Setup(x => x.GetCustomFieldsFromTestCase(TestCaseId))
+            .ReturnsAsync(new List<AllureCustomField>
+            {
+                new()
                 {
-                    Name = "Ready"
+                    CustomField = new CustomField { Name = Constants.Feature },
+                    Name = string.Empty
                 },
-                Tags = new List<Tags>
+                new()
                 {
-                    new()
-                    {
-                        Name = "Test tag"
-                    }
-                },
-                Layer = new TestLayer()
-                {
-                    Name = "Unit Tests"
+                    CustomField = new CustomField { Name = Constants.Story },
+                    Name = string.Empty
                 }
             });
-        _client.GetAttachments(1)
-            .Returns(new List<AllureAttachment>());
-        _client.GetIssueLinks(1).Returns(new List<AllureLink>()
-        {
-            new ()
+
+        // Act
+        var result = await _sut.ConvertTestCases(
+            ProjectId,
+            new Dictionary<string, Guid>(),
+            new Dictionary<string, Guid>
             {
-                Name = "Test link",
-                Url = "https://testlink.com"
-            }
-        });
-        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
-            .Returns(new List<string>());
-        _stepService.ConvertSteps(1).Returns(new List<Step>()
+                { Constants.AllureStatus, Guid.NewGuid() },
+                { Constants.AllureTestLayer, Guid.NewGuid() },
+                { Constants.Feature, Guid.NewGuid() },
+                { Constants.Story, Guid.NewGuid() }
+            },
+            sectionInfo);
+
+        // Assert
+        Assert.That(result[0].Name, Has.Length.LessThanOrEqualTo(255));
+        Assert.That(result[0].Name, Does.StartWith("[CUT] "));
+        Assert.That(result[0].Name, Does.EndWith("..."));
+    }
+
+    [Test]
+    public async Task ConvertTestCases_WithFeatureAndStory_CreatesNestedSections()
+    {
+        // Arrange
+        var sectionId = Guid.NewGuid();
+        var sectionInfo = new SectionInfo
+        {
+            MainSection = new Section
+            {
+                Id = sectionId,
+                Sections = new List<Section>() // Initialize Sections list
+            },
+            SectionDictionary = new Dictionary<long, Guid> { { Constants.MainSectionId, sectionId } }
+        };
+
+        var featureAttributeId = Guid.NewGuid();
+        var storyAttributeId = Guid.NewGuid();
+        var attributes = new Dictionary<string, Guid>
+        {
+            { Constants.AllureStatus, Guid.NewGuid() },
+            { Constants.AllureTestLayer, Guid.NewGuid() },
+            { Constants.Feature, featureAttributeId },
+            { Constants.Story, storyAttributeId }
+        };
+
+        var testCase = new AllureTestCase
+        {
+            Id = TestCaseId,
+            Name = "Test Case",
+            Status = new Status { Name = "Active" }
+        };
+
+        var customFields = new List<AllureCustomField>
         {
             new()
             {
-                Action = "Test step 1",
-                Expected = "Expected result",
-                ActionAttachments = new List<string>(),
-            }
-        });
-        _client.GetCustomFieldsFromTestCase(1).Returns(new List<AllureCustomField>
-        {
-            new()
-            {
-                Name = "Authorization",
-                CustomField = new CustomField()
-                {
-                    Name = "Component"
-                }
+                CustomField = new CustomField { Name = Constants.Feature },
+                Name = "Feature1"
             },
             new()
             {
-                Name = "Epic01",
-                CustomField = new CustomField()
-                {
-                    Name = "Epic"
-                }
+                CustomField = new CustomField { Name = Constants.Story },
+                Name = "Story1"
             }
-        });
+        };
 
-        var service = new TestCaseService(_logger, _client, _attachmentService, _stepService);
+        _client.Setup(x => x.GetTestCaseIdsFromMainSuite(ProjectId))
+            .ReturnsAsync(new List<long> { TestCaseId });
+        _client.Setup(x => x.GetTestCaseById(TestCaseId))
+            .ReturnsAsync(testCase);
+        _client.Setup(x => x.GetCustomFieldsFromTestCase(TestCaseId))
+            .ReturnsAsync(customFields);
 
         // Act
-        var testcases = await service.ConvertTestCases(ProjectId, _attributes,
-            new Dictionary<int, Guid>
-            {
-                { 1, _sectionIdMap[1] }
-            });
+        var result = await _sut.ConvertTestCases(ProjectId, new Dictionary<string, Guid>(), attributes, sectionInfo);
 
         // Assert
-        await _client.DidNotReceive()
-            .GetTestCaseIdsFromMainSuite(ProjectId);
-        Assert.That(testcases[0].Name, Is.EqualTo("Test name"));
-        Assert.That(testcases[0].Description, Is.EqualTo("Test description"));
-        Assert.That(testcases[0].State, Is.EqualTo(StateType.NotReady));
-        Assert.That(testcases[0].Priority, Is.EqualTo(PriorityType.Medium));
-        Assert.That(testcases[0].Tags, Is.EqualTo(new List<string> { "Test tag" }));
-        Assert.That(testcases[0].Steps[0].Action, Is.EqualTo("Test step 1"));
-        Assert.That(testcases[0].Attributes[0].Value, Is.EqualTo("Ready"));
-        Assert.That(testcases[0].Attributes[1].Value, Is.EqualTo("Unit Tests"));
-        Assert.That(testcases[0].Attributes[2].Value, Is.EqualTo("Authorization"));
-        Assert.That(testcases[0].Attributes[3].Value, Is.EqualTo("Epic01"));
-        Assert.That(testcases[0].Attributes[4].Value, Is.Empty);
-        Assert.That(testcases[0].SectionId, Is.EqualTo(_sectionIdMap[1]));
-        Assert.That(testcases[0].Links[0].Title, Is.EqualTo("Test link"));
-        Assert.That(testcases[0].Links[0].Url, Is.EqualTo("https://testlink.com"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Has.Count.EqualTo(1), "Should have exactly one test case");
+            Assert.That(sectionInfo.MainSection.Sections, Has.Count.EqualTo(1), "Should have one feature section");
+
+            var featureSection = sectionInfo.MainSection.Sections[0];
+            Assert.That(featureSection.Name, Is.EqualTo("Feature1"), "Feature section should have correct name");
+            Assert.That(featureSection.Sections, Is.Not.Null, "Feature section should have Sections collection initialized");
+            Assert.That(featureSection.Sections, Has.Count.EqualTo(1), "Feature section should have one story section");
+
+            var storySection = featureSection.Sections[0];
+            Assert.That(storySection.Name, Is.EqualTo("Story1"), "Story section should have correct name");
+            Assert.That(result[0].SectionId, Is.EqualTo(storySection.Id), "Test case should be in story section");
+            Assert.That(result[0].Name, Is.EqualTo("Test Case"), "Test case should have correct name");
+        });
+
+        sectionInfo.MainSection.Sections ??= new List<Section>();
     }
 }

@@ -1,24 +1,34 @@
 using AllureExporter.Client;
-using AllureExporter.Models;
-using AllureExporter.Services;
+using AllureExporter.Models.Attachment;
+using AllureExporter.Models.Step;
+using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
+using Moq;
 
 namespace AllureExporterTests;
 
 public class StepServiceTests
 {
-    private ILogger<StepService> _logger;
-    private IClient _client;
-    private const int TestCaseId = 1;
+    private Mock<ILogger<StepService>> _logger;
+    private Mock<IClient> _client;
+    private StepService _sut;
+    private const long TestCaseId = 1;
     private List<AllureStep> _allureSteps;
+    private List<AllureAttachment> _commonAttachments;
 
     [SetUp]
     public void Setup()
     {
-        _logger = Substitute.For<ILogger<StepService>>();
-        _client = Substitute.For<IClient>();
+        _logger = new Mock<ILogger<StepService>>();
+        _client = new Mock<IClient>();
+        _sut = new StepService(_logger.Object, _client.Object);
+
+        _commonAttachments = new List<AllureAttachment>
+        {
+            new() { Id = 1, Name = "image.png" },
+            new() { Id = 2, Name = "image2.png" },
+            new() { Id = 3, Name = "image3.png" }
+        };
 
         _allureSteps = new List<AllureStep>
         {
@@ -29,30 +39,21 @@ public class StepServiceTests
                 ExpectedResult = "Expected result",
                 Attachments = new List<AllureAttachment>
                 {
-                    new()
-                    {
-                        Name = "image.png"
-                    },
-                    new()
-                    {
-                        Name = "image2.png"
-                    }
+                    new() { Id = 1, Name = "image.png" },
+                    new() { Id = 2, Name = "image2.png" }
                 },
-                Steps = new List<AllureStep>()
+                Steps = new List<AllureStep>
                 {
-                    new ()
+                    new()
                     {
                         Name = "Test step 1.1",
                         ExpectedResult = "Expected result 1.1",
                         Attachments = new List<AllureAttachment>
                         {
-                            new()
-                            {
-                                Name = "image3.png"
-                            }
+                            new() { Id = 3, Name = "image3.png" }
                         },
                     },
-                    new ()
+                    new()
                     {
                         Keyword = "And",
                         Name = "Test step 1.2",
@@ -67,7 +68,7 @@ public class StepServiceTests
                 Steps = new List<AllureStep>(),
                 Attachments = new List<AllureAttachment>()
             },
-            new ()
+            new()
             {
                 Name = "Test step 3",
                 Steps = new List<AllureStep>(),
@@ -80,39 +81,123 @@ public class StepServiceTests
     public async Task ConvertSteps_FailedGetSteps()
     {
         // Arrange
-        _client.GetSteps(Arg.Any<int>()).ThrowsAsync(new Exception("Failed to get steps"));
+        _client.Setup(x => x.GetSteps(It.IsAny<long>()))
+            .ReturnsAsync((List<AllureStep>)null);
 
-        var service = new StepService(_logger, _client);
-
-        // Act
-        Assert.ThrowsAsync<Exception>(async () =>
-            await service.ConvertSteps(TestCaseId));
+        // Act & Assert
+        var ex = Assert.ThrowsAsync<ArgumentNullException>(() => _sut.ConvertStepsForTestCase(1, new Dictionary<string, Guid>()));
+        Assert.That(ex.ParamName, Is.EqualTo("source"));
     }
 
     [Test]
     public async Task ConvertSteps_GetStepsSuccess()
     {
         // Arrange
-        _client.GetSteps(Arg.Any<int>()).Returns(_allureSteps);
-
-        var service = new StepService(_logger, _client);
+        _client.Setup(x => x.GetSteps(It.IsAny<long>()))
+            .ReturnsAsync(_allureSteps);
+        _client.Setup(x => x.GetAttachmentsByTestCaseId(It.IsAny<long>()))
+            .ReturnsAsync(_commonAttachments);
 
         // Act
-        var steps= await service.ConvertSteps(TestCaseId);
+        var steps = await _sut.ConvertStepsForTestCase(TestCaseId, new Dictionary<string, Guid>());
 
         // Assert
-        Assert.AreEqual(3, steps.Count);
-        Assert.AreEqual("<p>When</p>\n<p>Test step 1</p>\n<p>Test step 1.1</p>\n<p>And</p>\n<p>Test step 1.2</p>\n", steps[0].Action);
-        Assert.AreEqual("Expected result", steps[0].Expected);
-        Assert.AreEqual(3, steps[0].ActionAttachments.Count);
-        Assert.AreEqual("image.png", steps[0].ActionAttachments[0]);
-        Assert.AreEqual("image2.png", steps[0].ActionAttachments[1]);
-        Assert.AreEqual("image3.png", steps[0].ActionAttachments[2]);
-        Assert.AreEqual("<p></p>\n", steps[1].Action);
-        Assert.IsNull(steps[1].Expected);
-        Assert.AreEqual(0, steps[1].ActionAttachments.Count);
-        Assert.AreEqual("<p>Test step 3</p>\n", steps[2].Action);
-        Assert.IsNull(steps[2].Expected);
-        Assert.AreEqual(0, steps[2].ActionAttachments.Count);
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps, Has.Count.EqualTo(3));
+
+            // Verify first step
+            var expectedAction = "<p>When</p>\r\n<p>Test step 1</p>\r\n<p>Test step 1.1</p>\r\n<p>And</p>\r\n<p>Test step 1.2</p>\r\n";
+            Assert.That(steps[0].Action, Is.EqualTo(expectedAction));
+            Assert.That(steps[0].Expected, Is.EqualTo("Expected result"));
+            Assert.That(steps[0].ActionAttachments, Has.Count.EqualTo(3));
+            Assert.That(steps[0].ActionAttachments.ToList(), Is.EqualTo(new List<string> { "image.png", "image2.png", "image3.png" }));
+
+            // Verify second step
+            Assert.That(steps[1].Action, Is.EqualTo("<p></p>\r\n"));
+            Assert.That(steps[1].Expected, Is.Empty);
+            Assert.That(steps[1].ActionAttachments, Is.Empty);
+
+            // Verify third step
+            Assert.That(steps[2].Action, Is.EqualTo("<p>Test step 3</p>\r\n"));
+            Assert.That(steps[2].Expected, Is.Empty);
+            Assert.That(steps[2].ActionAttachments, Is.Empty);
+        });
+
+        _client.Verify(x => x.GetSteps(TestCaseId), Times.Once);
+        _client.Verify(x => x.GetAttachmentsByTestCaseId(TestCaseId), Times.Once);
+    }
+
+    [Test]
+    public async Task ConvertSteps_GetStepsInfoSuccess()
+    {
+        // Arrange
+        _client.Setup(x => x.GetSteps(It.IsAny<long>()))
+            .ReturnsAsync(new List<AllureStep>());
+        _client.Setup(x => x.GetAttachmentsByTestCaseId(It.IsAny<long>()))
+            .ReturnsAsync(new List<AllureAttachment>());
+        _client.Setup(x => x.GetStepsInfoByTestCaseId(It.IsAny<long>()))
+            .ReturnsAsync(new AllureStepsInfo
+            {
+                Root = new AllureScenarioRoot
+                {
+                    NestedStepIds = new List<long> { 1, 2, 3 }
+                },
+                ScenarioStepsDictionary = new Dictionary<string, AllureScenarioStep>
+                {
+                    {
+                        "1", new AllureScenarioStep
+                        {
+                            Id = 1,
+                            Body = "Step 1",
+                            ExpectedResult = "Expected 1"
+                        }
+                    },
+                    {
+                        "2", new AllureScenarioStep
+                        {
+                            Id = 2,
+                            Body = "Step 2",
+                            ExpectedResult = "Expected 2"
+                        }
+                    },
+                    {
+                        "3", new AllureScenarioStep
+                        {
+                            Id = 3,
+                            Body = "Step 3",
+                            ExpectedResult = "Expected 3"
+                        }
+                    }
+                }
+            });
+
+        // Act
+        var steps = await _sut.ConvertStepsForTestCase(TestCaseId, new Dictionary<string, Guid>());
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(steps, Has.Count.EqualTo(3));
+
+            // Verify first step
+            Assert.That(steps[0].Action, Is.EqualTo("Step 1"));
+            Assert.That(steps[0].Expected, Is.EqualTo("Expected 1"));
+            Assert.That(steps[0].ActionAttachments, Is.Empty);
+
+            // Verify second step
+            Assert.That(steps[1].Action, Is.EqualTo("Step 2"));
+            Assert.That(steps[1].Expected, Is.EqualTo("Expected 2"));
+            Assert.That(steps[1].ActionAttachments, Is.Empty);
+
+            // Verify third step
+            Assert.That(steps[2].Action, Is.EqualTo("Step 3"));
+            Assert.That(steps[2].Expected, Is.EqualTo("Expected 3"));
+            Assert.That(steps[2].ActionAttachments, Is.Empty);
+        });
+
+        _client.Verify(x => x.GetSteps(TestCaseId), Times.Once);
+        _client.Verify(x => x.GetAttachmentsByTestCaseId(TestCaseId), Times.Once);
+        _client.Verify(x => x.GetStepsInfoByTestCaseId(TestCaseId), Times.Once);
     }
 }

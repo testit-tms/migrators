@@ -1,4 +1,9 @@
-using AllureExporter.Models;
+using AllureExporter.Models.Attachment;
+using AllureExporter.Models.Comment;
+using AllureExporter.Models.Project;
+using AllureExporter.Models.Relation;
+using AllureExporter.Models.Step;
+using AllureExporter.Models.TestCase;
 
 namespace AllureExporter.Client;
 
@@ -22,6 +27,6 @@ public interface IClient
     Task<byte[]> DownloadAttachmentForSharedStep(long attachmentId);
     Task<List<BaseEntity>> GetTestLayers();
     Task<List<BaseEntity>> GetCustomFieldNames(long projectId);
-    Task<List<BaseEntity>> GetCustomFieldValues(long fieldId);
+    Task<List<BaseEntity>> GetCustomFieldValues(long fieldId, long projectId);
     Task<List<AllureCustomField>> GetCustomFieldsFromTestCase(long testCaseId);
 }
