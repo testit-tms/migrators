@@ -5,13 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models;
 
-namespace Importer.Services;
+namespace Importer.Services.Implementations;
 
-public class ParserService : IParserService
+internal class ParserService : IParserService
 {
-    private readonly ILogger<ParserService> _logger;
-    private readonly string _resultPath;
-
     private const long MaxAttachmentSize = 1024 * 1024 * 1024;
 
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
@@ -22,23 +19,18 @@ public class ParserService : IParserService
         }
     };
 
+    private readonly ILogger<ParserService> _logger;
+    private readonly string _resultPath;
+
     public ParserService(ILogger<ParserService> logger, IConfiguration configuration)
     {
         _logger = logger;
 
         var resultPath = configuration["resultPath"];
-        if (string.IsNullOrEmpty(resultPath))
-        {
-            throw new ArgumentException("resultPath is not set");
-        }
-        if (resultPath.Contains('/') && Path.DirectorySeparatorChar == '\\')
-        {
-            resultPath = resultPath.Replace("/", "\\");
-        }
+        if (string.IsNullOrEmpty(resultPath)) throw new ArgumentException("resultPath is not set");
+        if (resultPath.Contains('/') && Path.DirectorySeparatorChar == '\\') resultPath = resultPath.Replace("/", "\\");
         if (resultPath.Contains('\\') && Path.DirectorySeparatorChar == '/')
-        {
             throw new ArgumentException("resultPath separators on your OS should be /");
-        }
 
         _resultPath = resultPath;
     }

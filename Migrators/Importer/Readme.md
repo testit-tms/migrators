@@ -4,7 +4,8 @@ You can use this Importer to import your test cases to Test IT.
 
 ## Download
 
-You can download the latest version of the Importer from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
+You can download the latest version of the Importer from
+the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
 
 ## How to use
 
@@ -18,7 +19,8 @@ You can download the latest version of the Importer from the [releases](https://
         "privateToken" : "cmZzWDkYTfBvNvVMcXhzN3Vy",
         "certValidation" : true,
         "importToExistingProject" : false,
-        "projectName" : "CustomProjectName"
+        "projectName" : "CustomProjectName",
+        "timeout": 600
     }
 }
 ```
@@ -30,7 +32,9 @@ Where:
 - tms.privateToken - token for access to the Test IT server
 - tms.certValidation - enable/disable certificate validation (Default value - true)
 - tms.importToExistingProject - enable/disable import to existing project in the Test IT server (Default value - false)
-- tms.projectName - custom name of the project in the Test IT server (Default value - name of the project in the export system)
+- tms.projectName - custom name of the project in the Test IT server (Default value - name of the project in the export
+  system)
+- tms.timeout - timeout for clients in seconds, default - 10 minutes (600)
 
 2. Run the Importer with the following command:
 

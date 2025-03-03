@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Models;
 
 namespace Importer.Models;
@@ -9,7 +8,7 @@ public class TmsTestCase : TestCase
 
     public static TmsTestCase Convert(TestCase testCase)
     {
-        return new TmsTestCase()
+        return new TmsTestCase
         {
             Id = testCase.Id,
             Description = testCase.Description,
@@ -25,9 +24,7 @@ public class TmsTestCase : TestCase
             Iterations = testCase.Iterations,
             Links = testCase.Links,
             Name = testCase.Name,
-            SectionId = testCase.SectionId,
+            SectionId = testCase.SectionId
         };
     }
 }
-
-
