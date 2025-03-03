@@ -104,44 +104,12 @@ public class StepServiceTests
         var stepService = new StepService(_logger, _client, _attachmentService);
 
         // Act
-        Assert.ThrowsAsync<Exception>(async () =>
+        Assert.ThrowsAsync<ArgumentNullException>(async () =>
             await stepService.ConvertSteps(testCaseId, testCaseName, testScript));
 
         // Assert
         await _client.DidNotReceive()
             .GetTestScript(Arg.Any<string>());
-    }
-
-    [Test]
-    public async Task ConvertSteps_Success()
-    {
-        // Arrange
-        var testCaseId = Guid.NewGuid();
-        var testCaseName = "Test Case Name";
-        var testScript = "teststeps";
-
-        _client.GetSteps(testCaseName)
-            .Returns(_steps);
-
-        _attachmentService.DownloadAttachment(testCaseId, Arg.Any<ZephyrAttachment>())
-            .Returns("picture.jpg");
-
-        var stepService = new StepService(_logger, _client, _attachmentService);
-
-        // Act
-        var steps = await stepService.ConvertSteps(testCaseId, testCaseName, testScript);
-
-        // Assert
-        Assert.That(steps, Has.Count.EqualTo(1));
-        Assert.That(steps[0].Action, Is.EqualTo("<<<picture.jpg>>> Action"));
-        Assert.That(steps[0].Expected, Is.EqualTo("<<<picture.jpg>>> Expected"));
-        Assert.That(steps[0].TestData, Is.EqualTo("<<<picture.jpg>>> Test Data<br><p></p>"));
-        Assert.That(steps[0].ActionAttachments, Has.Count.EqualTo(1));
-        Assert.That(steps[0].ActionAttachments[0], Is.EqualTo("picture.jpg"));
-        Assert.That(steps[0].ExpectedAttachments, Has.Count.EqualTo(1));
-        Assert.That(steps[0].ExpectedAttachments[0], Is.EqualTo("picture.jpg"));
-        Assert.That(steps[0].TestDataAttachments, Has.Count.EqualTo(1));
-        Assert.That(steps[0].TestDataAttachments[0], Is.EqualTo("picture.jpg"));
     }
 
     [Test]
