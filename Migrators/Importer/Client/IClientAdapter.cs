@@ -4,7 +4,7 @@ using Attribute = Models.Attribute;
 
 namespace Importer.Client;
 
-public interface IClient
+public interface IClientAdapter
 {
     Task<Guid> GetProject(string name);
     Task<Guid> CreateProject(string name);

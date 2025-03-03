@@ -3,36 +3,28 @@ using Importer.Models;
 using Microsoft.Extensions.Logging;
 using Attribute = Models.Attribute;
 
-namespace Importer.Services;
+namespace Importer.Services.Implementations;
 
-public class AttributeService : IAttributeService
+internal class AttributeService(ILogger<AttributeService> logger, IClientAdapter clientAdapter)
+    : IAttributeService
 {
-    private readonly ILogger<AttributeService> _logger;
-    private readonly IClient _client;
-
-    public AttributeService(ILogger<AttributeService> logger, IClient client)
+    public async Task<Dictionary<Guid, TmsAttribute>> ImportAttributes(Guid projectId,
+        IEnumerable<Attribute> attributes)
     {
-        _logger = logger;
-        _client = client;
-    }
+        logger.LogInformation("Importing attributes");
 
-    public async Task<Dictionary<Guid, TmsAttribute>> ImportAttributes(Guid projectId, IEnumerable<Attribute> attributes)
-    {
-        _logger.LogInformation("Importing attributes");
-
-        var projectAttributes = await _client.GetProjectAttributes();
-        var unusedRequiredProjectAttributes = await _client.GetRequiredProjectAttributesByProjectId(projectId);
+        var projectAttributes = await clientAdapter.GetProjectAttributes();
+        var unusedRequiredProjectAttributes = await clientAdapter.GetRequiredProjectAttributesByProjectId(projectId);
 
         var attributesMap = new Dictionary<Guid, TmsAttribute>();
 
         foreach (var attribute in attributes)
         {
-            var requiredProjectAttribute = unusedRequiredProjectAttributes.FirstOrDefault(x => x.Name == attribute.Name);
+            var requiredProjectAttribute =
+                unusedRequiredProjectAttributes.FirstOrDefault(x => x.Name == attribute.Name);
 
             if (requiredProjectAttribute != null && requiredProjectAttribute.Type == attribute.Type.ToString())
-            {
                 unusedRequiredProjectAttributes.Remove(requiredProjectAttribute);
-            }
 
             var attributeIsNotImported = true;
 
@@ -42,10 +34,10 @@ public class AttributeService : IAttributeService
 
                 if (projectAttribute == null)
                 {
-                    _logger.LogInformation("Creating attribute {Name}", attribute.Name);
+                    logger.LogInformation("Creating attribute {Name}", attribute.Name);
 
-                    var attributeId = await _client.ImportAttribute(attribute);
-                    attributeId = await _client.GetAttribute(attributeId.Id);
+                    var attributeId = await clientAdapter.ImportAttribute(attribute);
+                    attributeId = await clientAdapter.GetAttribute(attributeId.Id);
                     attributesMap.Add(attribute.Id, attributeId);
                     attributeIsNotImported = false;
                 }
@@ -53,29 +45,27 @@ public class AttributeService : IAttributeService
                 {
                     if (projectAttribute.Type == attribute.Type.ToString())
                     {
-                        _logger.LogInformation("Attribute {Name} already exists with id {Id}",
+                        logger.LogInformation("Attribute {Name} already exists with id {Id}",
                             attribute.Name,
                             projectAttribute.Id);
 
-                        if (string.Equals(projectAttribute.Type, "options", StringComparison.InvariantCultureIgnoreCase) ||
-                            string.Equals(projectAttribute.Type, "multipleOptions", StringComparison.InvariantCultureIgnoreCase))
+                        if (string.Equals(projectAttribute.Type, "options",
+                                StringComparison.InvariantCultureIgnoreCase) ||
+                            string.Equals(projectAttribute.Type, "multipleOptions",
+                                StringComparison.InvariantCultureIgnoreCase))
                         {
                             var options = projectAttribute.Options.Select(o => o.Value).ToList();
 
                             foreach (var option in attribute.Options)
-                            {
                                 if (!string.IsNullOrEmpty(option) && !options.Contains(option))
-                                {
                                     projectAttribute.Options.Add(new TmsAttributeOptions
                                     {
                                         Value = option,
                                         IsDefault = false
                                     });
-                                }
-                            }
 
-                            await _client.UpdateAttribute(projectAttribute);
-                            projectAttribute = await _client.GetProjectAttributeById(projectAttribute.Id);
+                            await clientAdapter.UpdateAttribute(projectAttribute);
+                            projectAttribute = await clientAdapter.GetProjectAttributeById(projectAttribute.Id);
                         }
 
                         attributesMap.Add(attribute.Id, projectAttribute);
@@ -88,26 +78,25 @@ public class AttributeService : IAttributeService
                         attribute.Name = newName;
                     }
                 }
-            }
-            while (attributeIsNotImported);
+            } while (attributeIsNotImported);
         }
 
         foreach (var unusedRequiredProjectAttribute in unusedRequiredProjectAttributes)
         {
-            _logger.LogInformation("Required project attribute {Name} is not used when importing test cases. Set as optional", unusedRequiredProjectAttribute.Name);
+            logger.LogInformation(
+                "Required project attribute {Name} is not used when importing test cases. Set as optional",
+                unusedRequiredProjectAttribute.Name);
 
             unusedRequiredProjectAttribute.IsRequired = false;
 
-            await _client.UpdateProjectAttribute(projectId, unusedRequiredProjectAttribute);
+            await clientAdapter.UpdateProjectAttribute(projectId, unusedRequiredProjectAttribute);
         }
 
-        _logger.LogInformation("Importing attributes finished");
-        _logger.LogDebug("Attributes map: {@AttributesMap}", attributesMap);
+        logger.LogInformation("Importing attributes finished");
+        logger.LogDebug("Attributes map: {@AttributesMap}", attributesMap);
 
         if (attributesMap.Count > 0)
-        {
-            await _client.AddAttributesToProject(projectId, attributesMap.Values.Select(x => x.Id));
-        }
+            await clientAdapter.AddAttributesToProject(projectId, attributesMap.Values.Select(x => x.Id));
 
         return attributesMap;
     }
