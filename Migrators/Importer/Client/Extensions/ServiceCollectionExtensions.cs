@@ -10,14 +10,14 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IApiConfigurationFactory, ApiConfigurationFactory>();
 
-        services.AddTransient(ApiClientFactory<AttachmentsApi>);
-        services.AddTransient(ApiClientFactory<ProjectsApi>);
-        services.AddTransient(ApiClientFactory<ProjectAttributesApi>);
-        services.AddTransient(ApiClientFactory<ProjectSectionsApi>);
-        services.AddTransient(ApiClientFactory<SectionsApi>);
-        services.AddTransient(ApiClientFactory<CustomAttributesApi>);
-        services.AddTransient(ApiClientFactory<WorkItemsApi>);
-        services.AddTransient(ApiClientFactory<ParametersApi>);
+        services.AddTransient<IAttachmentsApi>(ApiClientFactory<AttachmentsApi>);
+        services.AddTransient<IProjectsApi>(ApiClientFactory<ProjectsApi>);
+        services.AddTransient<IProjectAttributesApi>(ApiClientFactory<ProjectAttributesApi>);
+        services.AddTransient<IProjectSectionsApi>(ApiClientFactory<ProjectSectionsApi>);
+        services.AddTransient<ISectionsApi>(ApiClientFactory<SectionsApi>);
+        services.AddTransient<ICustomAttributesApi>(ApiClientFactory<CustomAttributesApi>);
+        services.AddTransient<IWorkItemsApi>(ApiClientFactory<WorkItemsApi>);
+        services.AddTransient<IParametersApi>(ApiClientFactory<ParametersApi>);
     }
 
     private static T ApiClientFactory<T>(IServiceProvider sp) where T : class
