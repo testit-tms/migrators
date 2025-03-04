@@ -132,7 +132,7 @@ internal abstract class BaseWorkItemService
         return steps;
     }
 
-    protected static bool IsImage(string name)
+    private static bool IsImage(string name)
     {
         return Path.GetExtension(name) switch
         {

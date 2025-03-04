@@ -13,14 +13,14 @@ namespace Importer.Client.Implementations;
 public class ClientAdapter(
     ILogger<ClientAdapter> logger,
     IOptions<AppConfig> appConfig,
-    AttachmentsApi attachmentsApi,
-    ProjectsApi projectsApi,
-    ProjectAttributesApi projectAttributesApi,
-    ProjectSectionsApi projectSectionsApi,
-    SectionsApi sectionsApi,
-    CustomAttributesApi customAttributesApi,
-    WorkItemsApi workItemsApi,
-    ParametersApi parametersApi
+    IAttachmentsApi attachmentsApi,
+    IProjectsApi projectsApi,
+    IProjectAttributesApi projectAttributesApi,
+    IProjectSectionsApi projectSectionsApi,
+    ISectionsApi sectionsApi,
+    ICustomAttributesApi customAttributesApi,
+    IWorkItemsApi workItemsApi,
+    IParametersApi parametersApi
 ) : IClientAdapter
 {
     private const int TenMinutes = 60000;
@@ -578,6 +578,12 @@ public class ClientAdapter(
 
     public async Task<Guid> UploadAttachment(string fileName, Stream content)
     {
+        if (string.IsNullOrEmpty(fileName))
+            throw new ArgumentNullException(nameof(fileName));
+            
+        if (content == null)
+            throw new ArgumentNullException(nameof(content));
+            
         logger.LogDebug("Uploading attachment {Name}", fileName);
 
         try
@@ -586,7 +592,7 @@ public class ClientAdapter(
                 new FileParameter(
                     Path.GetFileName(fileName),
                     content: content,
-                    contentType: MimeTypes.GetMimeType(fileName)));
+                    contentType: "application/octet-stream"));
 
             logger.LogDebug("Uploaded attachment {@Response}", response);
 
