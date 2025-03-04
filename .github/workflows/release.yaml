@@ -2,56 +2,632 @@ name: Release
 
 on:
   release:
-    types: [released]
+    types:
+      - released
+
+env:
+  IMPORTER_DIR: ./Migrators/Importer
+  ALLURE_DIR: ./Migrators/AllureExporter
+  AZURE_DIR: ./Migrators/AzureExporter
+  ZEPHYR_SCALE_DIR: ./Migrators/ZephyrScaleExporter
+  ZEPHYR_SQUAD_DIR: ./Migrators/ZephyrSquadExporter
+  ZEPHYR_SQUAD_SERVER_DIR: ./Migrators/ZephyrSquadServerExporter
+  XRAY_DIR: ./Migrators/XRayExporter
+  TESTCOLLAB_DIR: ./Migrators/TestCollabExporter
+  TESTLINK_DIR: ./Migrators/TestLinkExporter
+  TESTRAIL_DIR: ./Migrators/TestRailExporter
+  PRACTITEST_DIR: ./Migrators/PractiTestExporter
+  SPIRA_DIR: ./Migrators/SpiraTestExporter
+  HPALM_DIR: ./Migrators/HPALMExporter
 
 jobs:
-  prepare:
-    runs-on: ubuntu-latest
-    outputs:
-      projects: ${{ steps.set-matrix.outputs.projects }}
-      os: ${{ steps.set-matrix.outputs.os }}
-    steps:
-      - id: set-matrix
-        run: |
-          echo "projects=[\"Importer\",\"AllureExporter\",\"AzureExporter\",\"ZephyrScaleExporter\",\"ZephyrScaleServerExporter\",\"ZephyrSquadExporter\",\"ZephyrSquadServerExporter\",\"XRayExporter\",\"TestCollabExporter\",\"TestLinkExporter\",\"TestRailExporter\",\"TestRailXmlExporter\",\"PractiTestExporter\",\"SpiraTestExporter\",\"HPALMExporter\",\"QaseExporter\"]" >> $GITHUB_OUTPUT
-          echo "os=[\"win-x64\",\"linux-x64\",\"osx-x64\"]" >> $GITHUB_OUTPUT
-
-  build:
-    needs: prepare
-    strategy:
-      fail-fast: true
-      matrix:
-        project: ${{fromJson(needs.prepare.outputs.projects)}}
-        os: ${{fromJson(needs.prepare.outputs.os)}}
-    uses: ./.github/workflows/build-project.yml
-    with:
-      project_path: ./Migrators/${{ matrix.project }}
-      runtime: ${{ matrix.os }}
-
-  upload:
-    needs: [prepare, build]
+  importer_build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: ${{fromJson(needs.prepare.outputs.projects)}}
-        os: ${{fromJson(needs.prepare.outputs.os)}}
+        include:
+          - os: win-x64
+            artifact_name: Importer.exe
+            asset_name: Importer-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: Importer
+            asset_name: Importer-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: Importer
+            asset_name: Importer-osx-x64-${{ github.event.release.tag_name }}
     steps:
-      - name: Set artifact names
-        id: artifacts
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.IMPORTER_DIR }}
+
+      - name: Publish project
         run: |
-          if [ "${{ matrix.os }}" = "win-x64" ]; then
-            echo "artifact_name=${{ matrix.project }}.exe" >> $GITHUB_OUTPUT
-            echo "asset_name=${{ matrix.project }}-${{ matrix.os }}-${{ github.event.release.tag_name }}.exe" >> $GITHUB_OUTPUT
-          else
-            echo "artifact_name=${{ matrix.project }}" >> $GITHUB_OUTPUT
-            echo "asset_name=${{ matrix.project }}-${{ matrix.os }}-${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
-          fi
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.IMPORTER_DIR }} 
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: publish/${{ steps.artifacts.outputs.artifact_name }}
-          asset_name: ${{ steps.artifacts.outputs.asset_name }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
           overwrite: true
+  
+          
+  allure_build:
+    needs: importer_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: AllureExporter.exe
+            asset_name: AllureExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: AllureExporter
+            asset_name: AllureExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: AllureExporter
+            asset_name: AllureExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ALLURE_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ALLURE_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true
+          
+  azure_build:
+    needs: allure_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: AzureExporter.exe
+            asset_name: AzureExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.AZURE_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.AZURE_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true        
+
+  zephyr_scale_build:
+    needs: azure_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrScaleExporter.exe
+            asset_name: ZephyrScaleExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: ZephyrScaleExporter
+            asset_name: ZephyrScaleExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: ZephyrScaleExporter
+            asset_name: ZephyrScaleExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SCALE_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SCALE_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true        
+
+  zephyr_squad_build:
+    needs: zephyr_scale_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrSquadExporter.exe
+            asset_name: ZephyrSquadExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: ZephyrSquadExporter
+            asset_name: ZephyrSquadExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: ZephyrSquadExporter
+            asset_name: ZephyrSquadExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SQUAD_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SQUAD_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true           
+
+  zephyr_squad_server_build:
+    needs: zephyr_squad_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrSquadServerExporter.exe
+            asset_name: ZephyrSquadServerExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: ZephyrSquadServerExporter
+            asset_name: ZephyrSquadServerExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: ZephyrSquadServerExporter
+            asset_name: ZephyrSquadServerExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SQUAD_SERVER_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SQUAD_SERVER_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true           
+
+  xray_build:
+    needs: zephyr_squad_server_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: XRayExporter.exe
+            asset_name: XRayExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: XRayExporter
+            asset_name: XRayExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: XRayExporter
+            asset_name: XRayExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.XRAY_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.XRAY_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true     
+
+  testlink_build:
+    needs: xray_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestLinkExporter.exe
+            asset_name: TestLinkExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: TestLinkExporter
+            asset_name: TestLinkExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: TestLinkExporter
+            asset_name: TestLinkExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTLINK_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTLINK_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true                  
+
+  testrail_build:
+    needs: importer_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestRailExporter.exe
+            asset_name: TestRailExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: TestRailExporter
+            asset_name: TestRailExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: TestRailExporter
+            asset_name: TestRailExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTRAIL_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTRAIL_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true   
+
+  testcollab_build:
+    needs: testlink_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestCollabExporter.exe
+            asset_name: TestCollabExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: TestCollabExporter
+            asset_name: TestCollabExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: TestCollabExporter
+            asset_name: TestCollabExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTCOLLAB_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTCOLLAB_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true                            
+
+  practitest_build:
+    needs: testcollab_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: PractiTestExporter.exe
+            asset_name: PractiTestExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: PractiTestExporter
+            asset_name: PractiTestExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: PractiTestExporter
+            asset_name: PractiTestExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PRACTITEST_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.PRACTITEST_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true
+
+  spiratest_build:
+    needs: practitest_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: SpiraTestExporter.exe
+            asset_name: SpiraTestExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: SpiraTestExporter
+            asset_name: SpiraTestExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: SpiraTestExporter
+            asset_name: SpiraTestExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SPIRA_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.SPIRA_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true
+    
+  hpalm_build:
+    needs: spiratest_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: HPALMExporter.exe
+            asset_name: HPALMExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: HPALMExporter
+            asset_name: HPALMExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: HPALMExporter
+            asset_name: HPALMExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.HPALM_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.HPALM_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true      
