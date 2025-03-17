@@ -10,15 +10,18 @@ env:
   ALLURE_DIR: ./Migrators/AllureExporter
   AZURE_DIR: ./Migrators/AzureExporter
   ZEPHYR_SCALE_DIR: ./Migrators/ZephyrScaleExporter
+  ZEPHYR_SCALE_SERVER_DIR: ./Migrators/ZephyrScaleServerExporter
   ZEPHYR_SQUAD_DIR: ./Migrators/ZephyrSquadExporter
   ZEPHYR_SQUAD_SERVER_DIR: ./Migrators/ZephyrSquadServerExporter
   XRAY_DIR: ./Migrators/XRayExporter
   TESTCOLLAB_DIR: ./Migrators/TestCollabExporter
   TESTLINK_DIR: ./Migrators/TestLinkExporter
   TESTRAIL_DIR: ./Migrators/TestRailExporter
+  TESTRAIL_XML_DIR: ./Migrators/TestRailXmlExporter
   PRACTITEST_DIR: ./Migrators/PractiTestExporter
   SPIRA_DIR: ./Migrators/SpiraTestExporter
   HPALM_DIR: ./Migrators/HPALMExporter
+  QASE_DIR: ./Migrators/QaseExporter
 
 jobs:
   importer_build:
@@ -209,8 +212,55 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true        
 
-  zephyr_squad_build:
+  zephyr_scale_server_build:
     needs: zephyr_scale_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrScaleServerExporter.exe
+            asset_name: ZephyrScaleServerExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: ZephyrScaleServerExporter
+            asset_name: ZephyrScaleServerExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: ZephyrScaleServerExporter
+            asset_name: ZephyrScaleServerExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SCALE_SERVER_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SCALE_SERVER_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true        
+
+  zephyr_squad_build:
+    needs: zephyr_scale_server_build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -443,6 +493,53 @@ jobs:
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
           overwrite: true   
+          
+  testrail_xml_build:
+    needs: testrail_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestRailXmlExporter.exe
+            asset_name: TestRailXmlExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: TestRailXmlExporter
+            asset_name: TestRailXmlExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: TestRailXmlExporter
+            asset_name: TestRailXmlExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTRAIL_XML_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTRAIL_XML_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true   
 
   testcollab_build:
     needs: testlink_build
@@ -630,4 +727,51 @@ jobs:
           file: publish/${{ matrix.artifact_name }}
           asset_name: ${{ matrix.asset_name }}
           tag: ${{ github.ref }}
-          overwrite: true      
+          overwrite: true        
+  
+  qase_build:
+    needs: hpalm_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: QaseExporter.exe
+            asset_name: QaseExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: QaseExporter
+            asset_name: QaseExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: QaseExporter
+            asset_name: QaseExporter-osx-x64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.QASE_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.QASE_DIR }} 
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true  
