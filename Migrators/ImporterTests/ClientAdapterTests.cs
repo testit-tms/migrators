@@ -108,7 +108,7 @@ public class ClientAdapterTests
 
         _projectsApi.ApiV2ProjectsSearchPostAsync(
             (int?)null, (int?)null, null, null, null,
-            new ApiV2ProjectsSearchPostRequest(projectName),
+            Arg.Any<ProjectsFilterModel>(),
             Arg.Any<CancellationToken>()
         ).Returns(Task.FromResult(projects));
 
@@ -155,7 +155,7 @@ public class ClientAdapterTests
 
         _projectsApi.ApiV2ProjectsSearchPostAsync(
             (int?)null, (int?)null, null, null, null,
-            new ApiV2ProjectsSearchPostRequest(projectName),
+            Arg.Any<ProjectsFilterModel>(),
             Arg.Any<CancellationToken>()
         ).Returns(Task.FromResult(projects));
 
@@ -192,7 +192,7 @@ public class ClientAdapterTests
             globalId: 1,
             type: new ProjectTypeModel());
 
-        _projectsApi.CreateProjectAsync(Arg.Any<CreateProjectRequest>(), Arg.Any<CancellationToken>())
+        _projectsApi.CreateProjectAsync(Arg.Any<CreateProjectApiModel>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(projectModel));
 
         // Act
@@ -200,7 +200,7 @@ public class ClientAdapterTests
 
         // Assert
         Assert.That(result, Is.EqualTo(projectId));
-        await _projectsApi.Received(1).CreateProjectAsync(Arg.Is<CreateProjectRequest>(r => r.Name == projectName), Arg.Any<CancellationToken>());
+        await _projectsApi.Received(1).CreateProjectAsync(Arg.Is<CreateProjectApiModel>(r => r.Name == projectName), Arg.Any<CancellationToken>());
     }
 
     [Test]
@@ -230,7 +230,7 @@ public class ClientAdapterTests
 
         _customAttributesApi
             .ApiV2CustomAttributesGlobalPostAsync(
-                Arg.Is<ApiV2CustomAttributesGlobalPostRequest>(
+                Arg.Is<GlobalCustomAttributePostModel>(
                     r => r.Name == attributeName &&
                          r.Type == CustomAttributeTypesEnum.String &&
                          r.IsRequired == true &&
@@ -281,7 +281,7 @@ public class ClientAdapterTests
             modifiedById: null
         );
 
-        _sectionsApi.CreateSectionAsync(Arg.Any<CreateSectionRequest>())
+        _sectionsApi.CreateSectionAsync(Arg.Any<SectionPostModel>())
             .Returns(Task.FromResult(sectionModel));
 
         // Act
@@ -290,7 +290,7 @@ public class ClientAdapterTests
         // Assert
         Assert.That(result, Is.EqualTo(sectionId));
         await _sectionsApi.Received(1).CreateSectionAsync(
-            Arg.Is<CreateSectionRequest>(r =>
+            Arg.Is<SectionPostModel>(r =>
                 r.Name == sectionName &&
                 r.ProjectId == projectId &&
                 r.ParentId == parentSectionId
@@ -320,7 +320,7 @@ public class ClientAdapterTests
 
         _customAttributesApi
             .ApiV2CustomAttributesSearchPostAsync(
-                apiV2CustomAttributesSearchPostRequest: Arg.Is<ApiV2CustomAttributesSearchPostRequest>(
+                customAttributeSearchQueryModel: Arg.Is<CustomAttributeSearchQueryModel>(
                     r => r.IsGlobal == true && r.IsDeleted == false))
             .Returns(Task.FromResult(attributes));
 
