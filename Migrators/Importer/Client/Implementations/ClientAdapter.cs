@@ -42,7 +42,7 @@ public class ClientAdapter(
             var projects = await
                 projectsApi.ApiV2ProjectsSearchPostAsync(
                     null, null, null!, null!, null!,
-                    new ApiV2ProjectsSearchPostRequest(name));
+                    new ProjectsFilterModel(name));
 
             logger.LogDebug("Got projects {@Project} by name {Name}", projects, name);
 
@@ -77,7 +77,7 @@ public class ClientAdapter(
 
         try
         {
-            var resp = await projectsApi.CreateProjectAsync(new CreateProjectRequest(name: name));
+            var resp = await projectsApi.CreateProjectAsync(new CreateProjectApiModel(name: name));
 
             logger.LogDebug("Created project {@Project}", resp);
             logger.LogInformation("Created project {Name} with id {Id}", name, resp.Id);
@@ -97,7 +97,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CreateSectionRequest(
+            var model = new SectionPostModel(
                 section.Name, parentId: parentSectionId, projectId: projectId, attachments: [])
             {
                 PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
@@ -134,7 +134,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new ApiV2CustomAttributesGlobalPostRequest(attribute.Name)
+            var model = new GlobalCustomAttributePostModel(attribute.Name)
             {
                 Type = Enum.Parse<CustomAttributeTypesEnum>(attribute.Type.ToString()),
                 IsRequired = attribute.IsRequired,
@@ -212,7 +212,7 @@ public class ClientAdapter(
     {
         try
         {
-            var model = new CreateWorkItemRequest(
+            var model = new WorkItemPostModel(
                 steps: new List<StepPostModel>(),
                 preconditionSteps: new List<StepPostModel>(),
                 postconditionSteps: new List<StepPostModel>(),
@@ -271,7 +271,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CreateWorkItemRequest(
+            var model = new WorkItemPostModel(
                 steps: new List<StepPostModel>(),
                 preconditionSteps: new List<StepPostModel>(),
                 postconditionSteps: new List<StepPostModel>(),
@@ -368,7 +368,7 @@ public class ClientAdapter(
         try
         {
             var attributes = await customAttributesApi.ApiV2CustomAttributesSearchPostAsync(
-                apiV2CustomAttributesSearchPostRequest: new ApiV2CustomAttributesSearchPostRequest(isGlobal: true,
+                customAttributeSearchQueryModel: new CustomAttributeSearchQueryModel(isGlobal: true,
                     isDeleted: false));
 
             logger.LogDebug("Got project attributes {@Attributes}", attributes);
@@ -403,7 +403,7 @@ public class ClientAdapter(
         try
         {
             var attributes = await projectAttributesApi.SearchAttributesInProjectAsync(
-                projectId.ToString(), searchAttributesInProjectRequest: new SearchAttributesInProjectRequest(
+                projectId.ToString(), projectAttributesFilterModel: new ProjectAttributesFilterModel(
                     "",
                     true,
                     types: new List<CustomAttributeTypesEnum>
@@ -504,7 +504,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new ApiV2CustomAttributesGlobalIdPutRequest(attribute.Name)
+            var model = new GlobalCustomAttributeUpdateModel(attribute.Name)
             {
                 IsEnabled = attribute.IsEnabled,
                 IsRequired = attribute.IsRequired,
@@ -549,7 +549,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new UpdateProjectsAttributeRequest(attribute.Id, name: attribute.Name)
+            var model = new CustomAttributePutModel(attribute.Id, name: attribute.Name)
             {
                 IsEnabled = attribute.IsEnabled,
                 IsRequired = attribute.IsRequired,
@@ -580,10 +580,10 @@ public class ClientAdapter(
     {
         if (string.IsNullOrEmpty(fileName))
             throw new ArgumentNullException(nameof(fileName));
-            
+
         if (content == null)
             throw new ArgumentNullException(nameof(content));
-            
+
         logger.LogDebug("Uploading attachment {Name}", fileName);
 
         try
@@ -611,7 +611,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CreateParameterRequest(name: parameter.Name,
+            var model = new ParameterPostModel(name: parameter.Name,
                 value: parameter.Value);
 
             logger.LogDebug("Creating parameter {@Model}", model);
@@ -642,8 +642,8 @@ public class ClientAdapter(
         try
         {
             var resp = await parametersApi.ApiV2ParametersSearchPostAsync(
-                apiV2ParametersSearchPostRequest:
-                new ApiV2ParametersSearchPostRequest(name: name, isDeleted: false));
+                parameterFilterModel:
+                new ParameterFilterModel(name: name, isDeleted: false));
 
 
             logger.LogDebug("Got parameter {@Response}", resp);
@@ -671,7 +671,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CreateSectionRequest(
+            var model = new SectionPostModel(
                 section.Name, parentId: parentSectionId, projectId: projectId)
             {
                 PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
