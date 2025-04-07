@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Models;
 using TestRailExporter.Models.Client;
 using TestRailExporter.Models.Commons;
+using static System.Collections.Specialized.BitVector32;
 
 namespace TestRailExporter.Services.Implementations;
 
@@ -17,21 +18,46 @@ public class TestCaseService(
         SectionInfo sectionInfo)
     {
         var sectionIdMap = sectionInfo.SectionsMap;
+        var suiteIdMap = sectionInfo.SuitesMap;
         logger.LogInformation("Converting test cases");
 
-        var testCases = new List<TestCase>();
+        var allTestCases = new List<TestCase>();
+
         foreach (var section in sectionIdMap)
         {
-            var testRailCases = await client.GetTestCaseIdsByProjectIdAndSectionId(projectId, section.Key);
+            var testRailCases = new List<TestRailCase>();
 
-            foreach (var testRailCase in testRailCases)
+            if (suiteIdMap.TryGetValue(section.Key, out int suiteId))
             {
-                var testCase = await ConvertTestCase(testRailCase, sharedStepMap, section.Value);
-                testCases.Add(testCase);
+                testRailCases = await client.GetTestCaseIdsByProjectIdAndSuiteIdAndSectionId(projectId, suiteId, section.Key);
             }
+            else
+            {
+                testRailCases = await client.GetTestCaseIdsByProjectIdAndSectionId(projectId, section.Key);
+            }
+
+            var testCases = await ConvertTestCases(testRailCases, sharedStepMap, section.Value);
+
+            allTestCases.AddRange(testCases);
         }
 
         logger.LogInformation("Ending converting test cases");
+
+        return allTestCases;
+    }
+
+    private async Task<List<TestCase>> ConvertTestCases(
+        List<TestRailCase> testRailCases,
+        Dictionary<int, SharedStep> sharedStepMap,
+        Guid sectionId)
+    {
+        var testCases = new List<TestCase>();
+
+        foreach (var testRailCase in testRailCases)
+        {
+            var testCase = await ConvertTestCase(testRailCase, sharedStepMap, sectionId);
+            testCases.Add(testCase);
+        }
 
         return testCases;
     }
