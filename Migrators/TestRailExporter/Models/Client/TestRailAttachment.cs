@@ -10,6 +10,9 @@ public class TestRailAttachment
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
 
+    [JsonPropertyName("cassandra_file_id")]
+    public string Guid { get; set; } = string.Empty;
+
     [JsonPropertyName("filename")]
     public string Filename { get; set; } = string.Empty;
 }

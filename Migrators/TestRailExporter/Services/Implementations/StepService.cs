@@ -3,7 +3,6 @@ using TestRailExporter.Client;
 using Microsoft.Extensions.Logging;
 using Models;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using TestRailExporter.Models.Client;
 using TestRailExporter.Models.Commons;
 
@@ -13,7 +12,7 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
     : IStepService
 {
     private readonly IClient _client = client;
-    private Dictionary<int, string> _attachmentsMap = new();
+    private Dictionary<string, string> _attachmentsMap = new();
     private static readonly Regex _ImgRegex = new Regex(@"!\[\]\(([^)]*)\)");
     private static readonly Regex _HyperlinkRegex = new Regex(@"\[[^\[\]]*\]\([^()\s]*\)");
     private static readonly Regex _UrlRegex = new Regex(@"\(([^()\s]+)\)");
@@ -21,7 +20,7 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
     private static readonly Regex _TableRegex = new Regex(@"(\|{2,}[^\n]*\n)+");
     private static readonly Regex _CellRegex = new Regex(@"\|([^\|\n]+)");
 
-    public async Task<List<Step>> ConvertStepsForTestCase(TestRailCase testCase, Guid testCaseId, Dictionary<int, SharedStep> sharedStepMap, Dictionary<int, string> attachmentsMap)
+    public async Task<List<Step>> ConvertStepsForTestCase(TestRailCase testCase, Guid testCaseId, Dictionary<int, SharedStep> sharedStepMap, Dictionary<string, string> attachmentsMap)
     {
         logger.LogDebug("Converting steps for test case {Name}", testCase.Title);
 
@@ -163,12 +162,14 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         foreach (Match match in matches)
         {
             var url = match.Groups[1].Value;
-            var attachmentId = int.Parse(url.Split('/').Last());
+            var attachmentId = url.Split('/').Last();
             var fileName = string.Empty;
 
             if (!_attachmentsMap.TryGetValue(attachmentId, out fileName))
             {
-                fileName = await attachmentService.DownloadAttachmentById(attachmentId, id);
+                fileName = await attachmentService.DownloadAttachmentByUrl(url, id);
+
+                _attachmentsMap.Add(attachmentId, fileName);
             }
 
             info.Description = info.Description.Replace(match.Value, $"<<<{fileName}>>>");
