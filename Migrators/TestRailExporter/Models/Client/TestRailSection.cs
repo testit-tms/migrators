@@ -15,6 +15,9 @@ public class TestRailSection
 
     [JsonPropertyName("parent_id")]
     public int? ParentId { get; set; }
+
+    [JsonPropertyName("suite_id")]
+    public int? SuiteId { get; set; }
 }
 
 public class TestRailSections : TastRailBaseEntity

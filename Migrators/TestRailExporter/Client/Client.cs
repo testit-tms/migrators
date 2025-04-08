@@ -87,6 +87,27 @@ public class Client : IClient
         throw new Exception($"Not found the project \"{_projectName}\"");
     }
 
+    public async Task<List<TestRailSuite>> GetSuitesByProjectId(int projectId)
+    {
+        _logger.LogInformation("Getting suites by project id {Id}", projectId);
+
+        var response = await _httpClient.GetAsync($"index.php?/api/v2/get_suites/{projectId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get suites by project id {Id}. Status code: {StatusCode}. Response: {Response}",
+                projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get suites by project id {projectId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var suites = JsonSerializer.Deserialize<List<TestRailSuite>>(content)!;
+
+        _logger.LogDebug("Got {Count} suites by project id {Id}: {@Suites}", suites.Count, projectId, suites);
+
+        return suites;
+    }
+
     public async Task<List<TestRailSection>> GetSectionsByProjectId(int projectId)
     {
         _logger.LogInformation("Getting sections by project id {Id}", projectId);
@@ -100,10 +121,10 @@ public class Client : IClient
             var response = await _httpClient.GetAsync($"index.php?/api/v2/get_sections/{projectId}&limit={_limit}&offset={offset}");
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError("Failed to get project id. Status code: {StatusCode}. Response: {Response}",
-                    response.StatusCode, await response.Content.ReadAsStringAsync());
+                _logger.LogError("Failed to get sections by project id {Id}. Status code: {StatusCode}. Response: {Response}",
+                    projectId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-                throw new Exception($"Failed to get project id. Status code: {response.StatusCode}");
+                throw new Exception($"Failed to get sections by project id {projectId}. Status code: {response.StatusCode}");
             }
 
             var content = await response.Content.ReadAsStringAsync();
@@ -117,6 +138,42 @@ public class Client : IClient
         } while (size > 0);
 
         _logger.LogDebug("Got {Count} sections by project id {Id}: {@Sections}", offset, projectId, allSections);
+
+        return allSections;
+    }
+
+    public async Task<List<TestRailSection>> GetSectionsByProjectIdAndSuiteId(int projectId, int suiteId)
+    {
+        _logger.LogInformation("Getting sections by project id {projectId} and suite id {suiteId}", projectId, suiteId);
+
+        var allSections = new List<TestRailSection>();
+        var offset = 0;
+        var size = 0;
+
+        do
+        {
+            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_sections/{projectId}&suite_id={suiteId}&limit={_limit}&offset={offset}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError("Failed to get sections by project id {projectId} and suite id {suiteId}. Status code: {StatusCode}. Response: {Response}",
+                    projectId, suiteId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception($"Failed to get sections by project id {projectId} and suite id {suiteId}. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var sections = JsonSerializer.Deserialize<TestRailSections>(content)!;
+
+            allSections.AddRange(sections.Sections);
+            size = sections.Size;
+            offset += size;
+
+            _logger.LogInformation("Got {Count} sections by project id {projectId} and suite id {suiteId}", offset, projectId, suiteId);
+        } while (size > 0);
+
+        _logger.LogDebug(
+            "Got {Count} sections by project id {projectId} and suite id {suiteId}: {@Sections}",
+            offset, projectId, suiteId, allSections);
 
         return allSections;
     }
@@ -191,6 +248,45 @@ public class Client : IClient
         return allTestCases;
     }
 
+    public async Task<List<TestRailCase>> GetTestCaseIdsByProjectIdAndSuiteIdAndSectionId(int projectId, int suiteId, int sectionId)
+    {
+        _logger.LogInformation(
+            "Getting test case ids by project id {ProjectId} and suite id {SuiteId} and section id {SectionId}",
+            projectId, suiteId, sectionId);
+
+        var allTestCases = new List<TestRailCase>();
+        var offset = 0;
+        var size = 0;
+
+        do
+        {
+            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_cases/{projectId}&suite_id={suiteId}&section_id={sectionId}&limit={_limit}&offset={offset}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get test case ids by project id {ProjectId} and suite id {SuiteId} and section id {SectionId}. Status code: {StatusCode}. Response: {Response}",
+                    projectId, suiteId, sectionId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception(
+                    $"Failed to get test case ids by project id {projectId} and suite id {suiteId} and section id {sectionId}. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var testCases = JsonSerializer.Deserialize<TestRailCases>(content)!;
+
+            allTestCases.AddRange(testCases.Cases);
+
+            size = testCases.Size;
+            offset += size;
+
+            _logger.LogInformation(
+                "Got {Count} test case ids by project id {ProjectId} and suite id {SuiteId} and section id {SectionId}",
+                offset, projectId, suiteId, sectionId);
+        } while (size > 0);
+
+        return allTestCases;
+    }
+
     public async Task<List<TestRailAttachment>> GetAttachmentsByTestCaseId(int testCaseId)
     {
         _logger.LogInformation("Getting attachments by test case id {CaseId}", testCaseId);
@@ -208,7 +304,8 @@ public class Client : IClient
         var content = await response.Content.ReadAsStringAsync();
         var attachments = JsonSerializer.Deserialize<TestRailAttachments>(content)!;
 
-        _logger.LogDebug("Got {Count} attachments by test case id {CaseId}: {@Attachments}",
+        _logger.LogDebug(
+            "Got {Count} attachments by test case id {CaseId}: {@Attachments}",
             attachments.Attachments.Count, testCaseId, attachments.Attachments);
 
         return attachments.Attachments;

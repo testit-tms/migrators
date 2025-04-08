@@ -8,4 +8,5 @@ public class SectionInfo
 {
     public Section MainSection { get; set; }
     public Dictionary<int, Guid> SectionsMap { get; set; }
+    public Dictionary<int, int> SuitesMap { get; set; }
 }
