@@ -20,7 +20,7 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
         logger.LogDebug("Found attachments: {@Attachments}", attachments);
 
         var names = new List<string>();
-        var attachmentsMap = new Dictionary<int, string>();
+        var attachmentsMap = new Dictionary<string, string>();
 
         foreach (var attachment in attachments)
         {
@@ -30,7 +30,8 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
             var name = await writeService.WriteAttachment(id, bytes, CorrectAttachmentName(attachment.Name));
 
             names.Add(name);
-            attachmentsMap.Add(attachment.Id, name);
+            attachmentsMap.Add(attachment.Id.ToString(), name);
+            attachmentsMap.Add(attachment.Guid, name);
         }
 
         logger.LogDebug("Ending downloading attachments: {@Names}", names);
@@ -42,11 +43,11 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
         };
     }
 
-    public async Task<string> DownloadAttachmentById(int attachmentId, Guid id)
+    public async Task<string> DownloadAttachmentByUrl(string url, Guid id)
     {
-        logger.LogInformation("Downloading attachment by id {Id}", attachmentId);
+        logger.LogInformation("Downloading attachment by url {Url}", url);
 
-        var bytes = await client.GetAttachmentById(attachmentId);
+        var bytes = await client.GetAttachmentByUrl(url);
         var attahmentName = Guid.NewGuid().ToString() + "-attachment";
         var name = await writeService.WriteAttachment(id, bytes, attahmentName);
 

@@ -326,4 +326,20 @@ public class Client : IClient
             return [];
         }
     }
+
+    public async Task<byte[]> GetAttachmentByUrl(string url)
+    {
+        _logger.LogInformation("Downloading attachment by url {Url}", url);
+
+        try
+        {
+            return await _httpClient.GetByteArrayAsync(url);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug("Failed to download attachment by url {Url}: {@Ex}", url, ex);
+
+            return [];
+        }
+    }
 }
