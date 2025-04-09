@@ -26,7 +26,8 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
         {
             if (attachmentsMap.ContainsKey(attachment.Id.ToString()) || attachmentsMap.ContainsKey(attachment.Guid))
             {
-                logger.LogDebug("Attachment id {Id} has already been added to attachment map: {@AttachmentsMap}", attachment.Id, attachmentsMap);
+                logger.LogDebug("Attachment with id {Id} and guid {Guid} has already been added to attachment map: {@AttachmentsMap}",
+                    attachment.Id, attachment.Guid, attachmentsMap);
 
                 continue;
             }
