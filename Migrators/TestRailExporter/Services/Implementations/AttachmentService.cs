@@ -51,11 +51,11 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
         };
     }
 
-    public async Task<string> DownloadAttachmentByUrl(string url, Guid id)
+    public async Task<string> DownloadAttachmentById(int attachmentId, Guid id)
     {
-        logger.LogInformation("Downloading attachment by url {Url}", url);
+        logger.LogInformation("Downloading attachment by id {Id}", attachmentId);
 
-        var bytes = await client.GetAttachmentByUrl(url);
+        var bytes = await client.GetAttachmentById(attachmentId);
         var attahmentName = Guid.NewGuid().ToString() + "-attachment";
         var name = await writeService.WriteAttachment(id, bytes, attahmentName);
 

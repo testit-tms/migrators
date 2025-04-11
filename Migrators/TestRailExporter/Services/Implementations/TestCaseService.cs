@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Models;
 using TestRailExporter.Models.Client;
 using TestRailExporter.Models.Commons;
-using static System.Collections.Specialized.BitVector32;
 
 namespace TestRailExporter.Services.Implementations;
 
@@ -72,7 +71,7 @@ public class TestCaseService(
         var testCaseGuid = Guid.NewGuid();
         var attachmentsInfo = await attachmentService.DownloadAttachmentsByCaseId(testRailCase.Id, testCaseGuid);
         var preconditionSteps = testRailCase.TextPreconds != null ? [new Step { Action = testRailCase.TextPreconds }] : new List<Step>();
-        var steps = await stepService.ConvertStepsForTestCase(testRailCase, testCaseGuid, sharedStepMap, attachmentsInfo.AttachmentsMap);
+        var steps = await stepService.ConvertStepsForTestCase(testRailCase, testCaseGuid, sharedStepMap, attachmentsInfo);
 
         // max suite/story/feature length in allure 255 symbols already
         // TODO: add somewhere marker about cutting here

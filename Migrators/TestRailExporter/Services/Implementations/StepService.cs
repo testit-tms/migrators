@@ -12,7 +12,7 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
     : IStepService
 {
     private readonly IClient _client = client;
-    private Dictionary<string, string> _attachmentsMap = new();
+    private AttachmentsInfo _attachmentsInfo = new();
     private static readonly Regex _ImgRegex = new Regex(@"!\[\]\(([^)]*)\)");
     private static readonly Regex _HyperlinkRegex = new Regex(@"\[[^\[\]]*\]\([^()\s]*\)");
     private static readonly Regex _UrlRegex = new Regex(@"\(([^()\s]+)\)");
@@ -20,11 +20,11 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
     private static readonly Regex _TableRegex = new Regex(@"(\|{2,}[^\n]*\n)+");
     private static readonly Regex _CellRegex = new Regex(@"\|([^\|\n]+)");
 
-    public async Task<List<Step>> ConvertStepsForTestCase(TestRailCase testCase, Guid testCaseId, Dictionary<int, SharedStep> sharedStepMap, Dictionary<string, string> attachmentsMap)
+    public async Task<List<Step>> ConvertStepsForTestCase(TestRailCase testCase, Guid testCaseId, Dictionary<int, SharedStep> sharedStepMap, AttachmentsInfo attachmentsInfo)
     {
         logger.LogDebug("Converting steps for test case {Name}", testCase.Title);
 
-        _attachmentsMap = attachmentsMap;
+        _attachmentsInfo = attachmentsInfo;
 
         if (testCase.Steps != null)
         {
@@ -165,11 +165,16 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
             var attachmentId = url.Split('/').Last();
             var fileName = string.Empty;
 
-            if (!_attachmentsMap.TryGetValue(attachmentId, out fileName))
+            if (!_attachmentsInfo.AttachmentsMap.TryGetValue(attachmentId, out fileName))
             {
-                fileName = await attachmentService.DownloadAttachmentByUrl(url, id);
+                fileName = await GetAttachmentName(url, attachmentId, id);
+            }
 
-                _attachmentsMap.Add(attachmentId, fileName);
+            if (fileName == string.Empty)
+            {
+                logger.LogInformation("There is no way to download attachment by id {AttachmentId}", attachmentId);
+
+                continue;
             }
 
             info.Description = info.Description.Replace(match.Value, $"<<<{fileName}>>>");
@@ -177,6 +182,21 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         }
 
         return info;
+    }
+
+    private async Task<string> GetAttachmentName(string url, string attachmentId, Guid id)
+    {
+        var fileName = string.Empty;
+
+        if (int.TryParse(attachmentId, out int value))
+        {
+            fileName = await attachmentService.DownloadAttachmentById(value, id);
+
+            _attachmentsInfo.AttachmentNames.Add(fileName);
+            _attachmentsInfo.AttachmentsMap.Add(attachmentId, fileName);
+        }
+
+        return fileName;
     }
 
     public static string ConvertingHyperlinks(string description)
