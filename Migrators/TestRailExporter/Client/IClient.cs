@@ -13,5 +13,4 @@ public interface IClient
     Task<List<TestRailCase>> GetTestCaseIdsByProjectIdAndSuiteIdAndSectionId(int projectId, int suiteId, int sectionId);
     Task<List<TestRailAttachment>> GetAttachmentsByTestCaseId(int testCaseId);
     Task<byte[]> GetAttachmentById(int attachmentId);
-    Task<byte[]> GetAttachmentByUrl(string url);
 }
