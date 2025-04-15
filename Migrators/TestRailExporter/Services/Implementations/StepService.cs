@@ -167,7 +167,7 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
 
             if (!_attachmentsInfo.AttachmentsMap.TryGetValue(attachmentId, out fileName))
             {
-                fileName = await GetAttachmentName(url, attachmentId, id);
+                fileName = await GetAttachmentName(attachmentId, id);
             }
 
             if (fileName == string.Empty)
@@ -184,17 +184,17 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         return info;
     }
 
-    private async Task<string> GetAttachmentName(string url, string attachmentId, Guid id)
+    private async Task<string> GetAttachmentName(string attachmentId, Guid id)
     {
-        var fileName = string.Empty;
-
-        if (int.TryParse(attachmentId, out int value))
+        if (!int.TryParse(attachmentId, out int value))
         {
-            fileName = await attachmentService.DownloadAttachmentById(value, id);
-
-            _attachmentsInfo.AttachmentNames.Add(fileName);
-            _attachmentsInfo.AttachmentsMap.Add(attachmentId, fileName);
+            return string.Empty;
         }
+
+        var fileName = await attachmentService.DownloadAttachmentById(value, id);
+
+        _attachmentsInfo.AttachmentNames.Add(fileName);
+        _attachmentsInfo.AttachmentsMap.Add(attachmentId, fileName);
 
         return fileName;
     }
