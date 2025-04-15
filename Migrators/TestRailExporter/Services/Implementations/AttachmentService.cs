@@ -24,7 +24,7 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
 
         foreach (var attachment in attachments)
         {
-            if (attachmentsMap.ContainsKey(attachment.Id.ToString()) || attachmentsMap.ContainsKey(attachment.Guid))
+            if (attachmentsMap.ContainsKey(attachment.Id) || attachmentsMap.ContainsKey(attachment.Guid))
             {
                 logger.LogDebug("Attachment with id {Id} and guid {Guid} has already been added to attachment map: {@AttachmentsMap}",
                     attachment.Id, attachment.Guid, attachmentsMap);
@@ -34,11 +34,18 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
 
             logger.LogDebug("Downloading attachment: {Name}", attachment.Name);
 
-            var bytes = await client.GetAttachmentById(attachment.Id);
+            if (!int.TryParse(attachment.Id, out int value))
+            {
+                logger.LogInformation("There is no way to download attachment by id {AttachmentId}", attachment.Id);
+
+                continue;
+            }
+
+            var bytes = await client.GetAttachmentById(value);
             var name = await writeService.WriteAttachment(id, bytes, CorrectAttachmentName(attachment.Name));
 
             names.Add(name);
-            attachmentsMap.Add(attachment.Id.ToString(), name);
+            attachmentsMap.Add(attachment.Id, name);
             attachmentsMap.Add(attachment.Guid, name);
         }
 
