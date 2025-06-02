@@ -1,8 +1,8 @@
-using TestLinkExporter.Models;
 using Microsoft.Extensions.Logging;
 using Models;
+using TestLinkExporter.Models.Step;
 
-namespace TestLinkExporter.Services;
+namespace TestLinkExporter.Services.Implementations;
 
 public class StepService : IStepService
 {

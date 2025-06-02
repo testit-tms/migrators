@@ -1,7 +1,7 @@
-using TestLinkExporter.Models;
-using TestLinkExporter.Services;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using TestLinkExporter.Models.Step;
+using TestLinkExporter.Services.Implementations;
 
 namespace TestLinkExporterTests;
 

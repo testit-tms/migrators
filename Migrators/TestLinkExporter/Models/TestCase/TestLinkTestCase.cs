@@ -1,4 +1,6 @@
-namespace TestLinkExporter.Models;
+using TestLinkExporter.Models.Step;
+
+namespace TestLinkExporter.Models.TestCase;
 
 public class TestLinkTestCase
 {

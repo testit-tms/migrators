@@ -1,4 +1,4 @@
-namespace TestLinkExporter.Models;
+namespace TestLinkExporter.Models.Step;
 
 public class TestLinkStep
 {

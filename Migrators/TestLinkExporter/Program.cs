@@ -1,4 +1,3 @@
-using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,7 +6,8 @@ using Serilog.Events;
 using Serilog.Expressions;
 using Serilog.Settings.Configuration;
 using TestLinkExporter.Client;
-using TestLinkExporter.Services;
+using TestLinkExporter.Extensions;
+using TestLinkExporter.Services.Extensions;
 
 namespace TestLinkExporter
 {
@@ -48,17 +48,13 @@ namespace TestLinkExporter
                     )
                     .WriteTo.Console(LogEventLevel.Information)
                 )
-                .ConfigureServices((_, services) =>
+                .ConfigureServices((context, services) =>
                 {
-                    services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
+                    services.RegisterAppConfig();
+                    services.AddSingleton<App>();
                     services.AddSingleton<IClient, Client.Client>();
-                    services.AddSingleton<IWriteService, WriteService>();
-                    services.AddSingleton<IExportService, ExportService>();
-                    services.AddSingleton<ISectionService, SectionService>();
-                    services.AddSingleton<ITestCaseService, TestCaseService>();
-                    services.AddSingleton<IStepService, StepService>();
-                    services.AddSingleton<IAttachmentService, AttachmentService>();
+                    services.RegisterServices();
                 });
         }
 

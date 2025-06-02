@@ -1,5 +1,4 @@
 using TestLinkExporter.Client;
-using TestLinkExporter.Models;
 using TestLinkExporter.Services;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
@@ -7,6 +6,9 @@ using Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Attribute = Models.Attribute;
+using TestLinkExporter.Models.Project;
+using TestLinkExporter.Services.Implementations;
+using TestLinkExporter.Models.Section;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 

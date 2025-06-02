@@ -1,5 +1,5 @@
 using Models;
-using TestLinkExporter.Models;
+using TestLinkExporter.Models.Suite;
 
 namespace TestLinkExporter.Services;
 

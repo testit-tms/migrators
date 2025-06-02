@@ -1,10 +1,10 @@
 using TestLinkExporter.Client;
-using TestLinkExporter.Models;
-using TestLinkExporter.Services;
 using Microsoft.Extensions.Logging;
 using Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using TestLinkExporter.Services.Implementations;
+using TestLinkExporter.Models.Section;
 
 namespace TestLinkExporterTests;
 

@@ -1,9 +1,9 @@
 using TestLinkExporter.Client;
 using Microsoft.Extensions.Logging;
 using Models;
-using TestLinkExporter.Models;
+using TestLinkExporter.Models.Suite;
 
-namespace TestLinkExporter.Services;
+namespace TestLinkExporter.Services.Implementations;
 
 public class SectionService : ISectionService
 {
