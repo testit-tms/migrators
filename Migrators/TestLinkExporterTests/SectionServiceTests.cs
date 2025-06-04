@@ -4,7 +4,7 @@ using Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using TestLinkExporter.Services.Implementations;
-using TestLinkExporter.Models.Section;
+using TestLinkExporter.Models.Suite;
 
 namespace TestLinkExporterTests;
 

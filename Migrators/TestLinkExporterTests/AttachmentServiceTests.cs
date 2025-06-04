@@ -3,7 +3,6 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using System;
 using TestLinkExporter.Models.Attachment;
 using TestLinkExporter.Services.Implementations;
 

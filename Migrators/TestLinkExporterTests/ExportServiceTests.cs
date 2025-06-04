@@ -1,14 +1,15 @@
 using TestLinkExporter.Client;
+using TestLinkExporter.Models.Project;
+using TestLinkExporter.Models.Suite;
 using TestLinkExporter.Services;
+using TestLinkExporter.Services.Implementations;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Attribute = Models.Attribute;
-using TestLinkExporter.Models.Project;
-using TestLinkExporter.Services.Implementations;
-using TestLinkExporter.Models.Section;
+using Constants = TestLinkExporter.Models.Project.Constants;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
@@ -21,7 +22,9 @@ public class ExportServiceTests
     private IWriteService _writeService;
     private ISectionService _sectionService;
     private ITestCaseService _testCaseService;
+    private IAttributeService _attributeService;
     private TestLinkProject _project;
+    private Attribute _idAttribute;
     private SectionData _sectionData;
     private readonly Guid _sectionId = Guid.NewGuid();
     private TestCase _testCase;
@@ -36,11 +39,21 @@ public class ExportServiceTests
         _writeService = Substitute.For<IWriteService>();
         _sectionService = Substitute.For<ISectionService>();
         _testCaseService = Substitute.For<ITestCaseService>();
+        _attributeService = Substitute.For<IAttributeService>();
 
         _project = new TestLinkProject
         {
             Id = 1,
             Name = "Project name"
+        };
+
+        _idAttribute = new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = Constants.TestLinkId,
+            IsActive = true,
+            IsRequired = false,
+            Type = AttributeType.String,
         };
 
         _sectionDictionary = new Dictionary<int, Guid>
@@ -94,7 +107,7 @@ public class ExportServiceTests
 
         _mainJson = new Root
         {
-            Attributes = new List<Attribute>(),
+            Attributes = new List<Attribute>{ _idAttribute },
             ProjectName = _project.Name,
             Sections = _sectionData.Sections,
             TestCases = new List<Guid> { _testCase.Id },
@@ -108,7 +121,7 @@ public class ExportServiceTests
         // Arrange
         _client.GetProject().Throws(new Exception("Failed to get project"));
 
-        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService);
+        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService, _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
@@ -116,7 +129,7 @@ public class ExportServiceTests
 
         // Assert
         _sectionService.DidNotReceive().ConvertSections(Arg.Any<int>());
-        _testCaseService.DidNotReceive().ConvertTestCases(Arg.Any<Dictionary<int, Guid>>());
+        await _testCaseService.DidNotReceive().ConvertTestCases(Arg.Any<Dictionary<int, Guid>>(), Arg.Any<Dictionary<string, Guid>>());
         await _writeService.DidNotReceive().WriteTestCase(Arg.Any<TestCase>());
         await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
     }
@@ -126,16 +139,17 @@ public class ExportServiceTests
     {
         // Arrange
         _client.GetProject().Returns(_project);
+        _attributeService.GetCustomAttributes().Returns([_idAttribute]);
         _sectionService.ConvertSections(_project.Id).Throws(new Exception("Failed to get suites"));
 
-        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService);
+        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService, _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
             await service.ExportProject());
 
         // Assert
-        _testCaseService.DidNotReceive().ConvertTestCases(Arg.Any<Dictionary<int, Guid>>());
+        await _testCaseService.DidNotReceive().ConvertTestCases(Arg.Any<Dictionary<int, Guid>>(), Arg.Any<Dictionary<string, Guid>>());
         await _writeService.DidNotReceive().WriteTestCase(Arg.Any<TestCase>());
         await _writeService.DidNotReceive().WriteMainJson(Arg.Any<Root>());
     }
@@ -145,10 +159,13 @@ public class ExportServiceTests
     {
         // Arrange
         _client.GetProject().Returns(_project);
+        _attributeService.GetCustomAttributes().Returns(new List<Attribute> { _idAttribute });
         _sectionService.ConvertSections(_project.Id).Returns(_sectionData);
-        _testCaseService.ConvertTestCases(_sectionData.SectionMap).Throws(new Exception("Failed to get test cases"));
+        _testCaseService.ConvertTestCases(
+            _sectionData.SectionMap,
+            Arg.Any<Dictionary<string, Guid>>()).Throws(new Exception("Failed to get test cases"));
 
-        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService);
+        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService, _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
@@ -164,15 +181,14 @@ public class ExportServiceTests
     {
         // Arrange
         _client.GetProject().Returns(_project);
+        _attributeService.GetCustomAttributes().Returns([_idAttribute]);
         _sectionService.ConvertSections(_project.Id).Returns(_sectionData);
-        _testCaseService.ConvertTestCases(_sectionData.SectionMap).Returns(new List<TestCase>()
-        {
-            _testCase
-        });
+        _testCaseService.ConvertTestCases(
+            _sectionData.SectionMap, Arg.Any<Dictionary<string, Guid>>()).Returns(new List<TestCase>(){ _testCase });
 
         _writeService.WriteTestCase(_testCase).ThrowsAsync(new Exception("Failed to write test case"));
 
-        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService);
+        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService, _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
@@ -187,11 +203,10 @@ public class ExportServiceTests
     {
         // Arrange
         _client.GetProject().Returns(_project);
+        _attributeService.GetCustomAttributes().Returns([_idAttribute]);
         _sectionService.ConvertSections(_project.Id).Returns(_sectionData);
-        _testCaseService.ConvertTestCases(_sectionData.SectionMap).Returns(new List<TestCase>()
-        {
-            _testCase
-        });
+        _testCaseService.ConvertTestCases(
+            _sectionData.SectionMap, Arg.Any<Dictionary<string, Guid>>()).Returns(new List<TestCase>(){ _testCase });
 
         _writeService.WriteMainJson(Arg.Is<Root>(r => _mainJson.Sections.SequenceEqual(r.Sections)
                                                       && _mainJson.Attributes.SequenceEqual(r.Attributes)
@@ -200,7 +215,7 @@ public class ExportServiceTests
                                                       && _mainJson.ProjectName.Equals(r.ProjectName)))
             .ThrowsAsync(new Exception("Failed to write main json"));
 
-        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService);
+        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService, _attributeService);
 
         // Act
         Assert.ThrowsAsync<Exception>(async () =>
@@ -215,14 +230,12 @@ public class ExportServiceTests
     {
         // Arrange
         _client.GetProject().Returns(_project);
+        _attributeService.GetCustomAttributes().Returns([_idAttribute]);
         _sectionService.ConvertSections(_project.Id).Returns(_sectionData);
-        _testCaseService.ConvertTestCases(_sectionData.SectionMap).Returns(new List<TestCase>()
-        {
-            _testCase
-        });
+        _testCaseService.ConvertTestCases(
+            _sectionData.SectionMap, Arg.Any<Dictionary<string, Guid>>()).Returns([_testCase]);
 
-
-        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService);
+        var service = new ExportService(_logger, _client, _writeService, _sectionService, _testCaseService, _attributeService);
 
         // Act
         await service.ExportProject();
