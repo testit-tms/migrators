@@ -20,7 +20,7 @@
         <PackageReference Include="Serilog.Extensions.Logging" Version="7.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-        <PackageReference Include="TestLinkApi.NetCore" Version="1.2.3" />
+        <PackageReference Include="Freemanke.Xmlrpc" Version="1.0.1" />
     </ItemGroup>
 
     <ItemGroup>

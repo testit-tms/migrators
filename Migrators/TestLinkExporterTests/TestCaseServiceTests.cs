@@ -1,11 +1,15 @@
 using TestLinkExporter.Client;
-using TestLinkExporter.Models;
 using TestLinkExporter.Services;
 using Microsoft.Extensions.Logging;
 using Models;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Exception = System.Exception;
+using TestLinkExporter.Models.Step;
+using TestLinkExporter.Models.TestCase;
+using TestLinkExporter.Models.Attachment;
+using TestLinkExporter.Services.Implementations;
+using Constants = TestLinkExporter.Models.Project.Constants;
 
 namespace TestLinkExporterTests;
 
@@ -16,6 +20,9 @@ public class TestCaseServiceTests
     private IAttachmentService _attachmentService;
     private IStepService _stepService;
     private const int SuiteId = 1;
+    private CaseAttribute _idAttribute;
+    private Dictionary<string, Guid> _customAttributes;
+    private List<string> _keywords;
     private List<TestLinkTestCase> _testCases;
     private List<TestLinkAttachment> _attachments;
 
@@ -34,6 +41,7 @@ public class TestCaseServiceTests
         _testCases = new List<TestLinkTestCase> {
             new TestLinkTestCase
             {
+                ExternalId = "1",
                 Summary = "Test description",
                 Id = 1,
                 Name = "Test name",
@@ -49,6 +57,16 @@ public class TestCaseServiceTests
                     }
                 }
             }
+        };
+        _keywords = new List<string> { "Keyword1", "Keyword2" };
+        _idAttribute = new CaseAttribute
+        {
+            Id = Guid.NewGuid(),
+            Value = Constants.TestLinkPrefixId + _testCases[0].ExternalId,
+        };
+        _customAttributes = new Dictionary<string, Guid>
+        {
+            { Constants.TestLinkId, _idAttribute.Id }
         };
         _attachments = new List<TestLinkAttachment>
         {
@@ -75,7 +93,7 @@ public class TestCaseServiceTests
         var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
         // Act
-        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(_sectionMap));
+        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(_sectionMap, _customAttributes));
 
         // Assert
         _client.DidNotReceive().GetTestCaseById(Arg.Any<int>());
@@ -96,7 +114,7 @@ public class TestCaseServiceTests
         var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
 
         // Act
-        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(_sectionMap));
+        Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(_sectionMap, _customAttributes));
 
         // Assert
         _client.DidNotReceive().GetAttachmentsByTestCaseId(Arg.Any<int>());
@@ -124,7 +142,8 @@ public class TestCaseServiceTests
         Assert.ThrowsAsync<Exception>(async () => await service.ConvertTestCases(new Dictionary<int, Guid>
             {
                 { 1, _sectionMap[1] }
-            }
+            },
+            _customAttributes
         ));
     }
 
@@ -134,12 +153,13 @@ public class TestCaseServiceTests
         // Arrange
         _client.GetTestCaseIdsBySuiteId(SuiteId)
             .Returns(new List<int> { _testCases[0].Id });
-        _client.GetTestCaseById(1)
+        _client.GetTestCaseById(_testCases[0].Id)
             .Returns(_testCases[0]);
-        _client.GetAttachmentsByTestCaseId(1)
+        _client.GetKeywordsByTestCaseById(_testCases[0].Id).Returns(_keywords);
+        _client.GetAttachmentsByTestCaseId(_testCases[0].Id)
             .Returns(_attachments);
         _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
-            .Returns(new List<string> { _attachments[0].Name, _attachments[1].Name });
+            .Returns(_attachments.Select(a => a.Name).ToList());
         _stepService.ConvertSteps(_testCases[0].Steps).Returns(new List<Step>()
         {
             new()
@@ -156,17 +176,18 @@ public class TestCaseServiceTests
         var testcases = await service.ConvertTestCases(new Dictionary<int, Guid>
             {
                 { 1, _sectionMap[1] }
-            });
+            }, _customAttributes);
 
         // Assert
         Assert.That(testcases[0].Name, Is.EqualTo("Test name"));
         Assert.That(testcases[0].Description, Is.EqualTo("Test description"));
         Assert.That(testcases[0].State, Is.EqualTo(StateType.NotReady));
         Assert.That(testcases[0].Priority, Is.EqualTo(PriorityType.Low));
-        Assert.IsEmpty(testcases[0].Tags);
+        Assert.That(testcases[0].Tags, Is.EqualTo(_keywords));
         Assert.That(testcases[0].Steps[0].Action, Is.EqualTo("Test step 1"));
         Assert.That(testcases[0].PreconditionSteps[0].Action, Is.EqualTo("Precon"));
-        Assert.IsEmpty(testcases[0].Attributes);
+        Assert.That(testcases[0].Attributes[0].Id, Is.EqualTo(_idAttribute.Id));
+        Assert.That(testcases[0].Attributes[0].Value, Is.EqualTo(_idAttribute.Value));
         Assert.That(testcases[0].SectionId, Is.EqualTo(_sectionMap[1]));
         Assert.IsEmpty(testcases[0].Links);
     }

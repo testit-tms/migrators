@@ -2,7 +2,7 @@ using JsonWriter;
 using Microsoft.Extensions.Logging;
 using TestLinkExporter.Client;
 
-namespace TestLinkExporter.Services;
+namespace TestLinkExporter.Services.Implementations;
 
 public class AttachmentService : IAttachmentService
 {

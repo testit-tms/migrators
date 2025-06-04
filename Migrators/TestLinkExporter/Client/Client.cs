@@ -1,44 +1,32 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using TestLinkApi;
-using TestLinkExporter.Models;
+using TestLinkExporter.Client.TestLinkApi;
+using TestLinkExporter.Models.Attachment;
+using TestLinkExporter.Models.Project;
+using TestLinkExporter.Models.Suite;
+using TestLinkExporter.Models.TestCase;
+using TestLinkExporter.Models.Step;
+using TestLinkExporter.Models.Config;
+using Microsoft.Extensions.Options;
 
 namespace TestLinkExporter.Client;
 
-public class Client : IClient
+internal class Client : IClient
 {
     private readonly ILogger<Client> _logger;
     private readonly TestLink _client;
     private readonly string _projectName;
 
-    public Client(ILogger<Client> logger, IConfiguration configuration)
+    public Client(ILogger<Client> logger, IOptions<AppConfig> configuration)
     {
         _logger = logger;
 
-        var section = configuration.GetSection("testLink");
-        var url = section["url"];
+        var config = configuration.Value;
 
-        if (string.IsNullOrEmpty(url))
-        {
-            throw new ArgumentException("Url is not specified");
-        }
+        ArgumentNullException.ThrowIfNull(config.TestLink.Url);
 
-        var token = section["token"];
-
-        if (string.IsNullOrEmpty(token))
-        {
-            throw new ArgumentException("Private token is not specified");
-        }
-
-        var projectName = section["projectName"];
-
-        if (string.IsNullOrEmpty(projectName))
-        {
-            throw new ArgumentException("Project name is not specified");
-        }
-
-        _projectName = projectName;
-
+        var url = config.TestLink.Url;
+        var token = config.TestLink.Token;
+        _projectName = config.TestLink.ProjectName;
         _client = new TestLink(token, url);
     }
 
@@ -155,6 +143,15 @@ public class Client : IClient
             Layout = testCase.layout,
             IsOpen = testCase.is_open
         };
+    }
+
+    public List<string> GetKeywordsByTestCaseById(int id)
+    {
+        var keywords = _client.GetTestCaseKeywords(id);
+
+        _logger.LogDebug("Received keywords by test case id {Id}: {@Keywords}", id, keywords);
+
+        return keywords;
     }
 
     public List<TestLinkAttachment> GetAttachmentsByTestCaseId(int id)

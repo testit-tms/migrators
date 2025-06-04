@@ -1,4 +1,4 @@
-namespace TestLinkExporter.Models;
+namespace TestLinkExporter.Models.Attachment;
 
 public class TestLinkAttachment
 {

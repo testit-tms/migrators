@@ -1,11 +1,10 @@
 using TestLinkExporter.Client;
-using TestLinkExporter.Models;
-using TestLinkExporter.Services;
 using JsonWriter;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using System;
+using TestLinkExporter.Models.Attachment;
+using TestLinkExporter.Services.Implementations;
 
 namespace TestLinkExporterTests;
 

@@ -2,9 +2,12 @@ using Microsoft.Extensions.Logging;
 using Models;
 using System.Text.RegularExpressions;
 using TestLinkExporter.Client;
-using TestLinkExporter.Models;
+using TestLinkExporter.Models.TestCase;
+using TestCase = Models.TestCase;
+using Constants = TestLinkExporter.Models.Project.Constants;
+using System.Collections.Generic;
 
-namespace TestLinkExporter.Services;
+namespace TestLinkExporter.Services.Implementations;
 
 public class TestCaseService : ITestCaseService
 {
@@ -13,6 +16,7 @@ public class TestCaseService : ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
     public const int _duration = 10000;
+    private static readonly Regex _hyperLinkRegex = new Regex(@"\<a\shref=\""(?<url>[^""\s]+)\""\>(?<title>.*?)\<\/a\>");
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService)
@@ -23,7 +27,7 @@ public class TestCaseService : ITestCaseService
         _attachmentService = attachmentService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(Dictionary<int, Guid> sectionMap)
+    public async Task<List<TestCase>> ConvertTestCases(Dictionary<int, Guid> sectionMap, Dictionary<string, Guid> attributes)
     {
         _logger.LogInformation("Converting test cases");
 
@@ -40,7 +44,8 @@ public class TestCaseService : ITestCaseService
                 testCases.Add(
                     await ConvertTestCases(
                         _client.GetTestCaseById(testCaseId),
-                        section.Value
+                        section.Value,
+                        attributes
                     )
                 );
             }
@@ -51,9 +56,15 @@ public class TestCaseService : ITestCaseService
         return testCases;
     }
 
-    private async Task<TestCase> ConvertTestCases(TestLinkTestCase testCase, Guid sectionId)
+    private async Task<TestCase> ConvertTestCases(TestLinkTestCase testCase, Guid sectionId, Dictionary<string, Guid> attributes)
     {
         var testCaseId = Guid.NewGuid();
+        var keywords = _client.GetKeywordsByTestCaseById(testCase.Id);
+        var idAttribute = new CaseAttribute
+        {
+            Id = attributes[Constants.TestLinkId],
+            Value = Constants.TestLinkPrefixId + testCase.ExternalId,
+        };
 
         return new TestCase
         {
@@ -65,11 +76,11 @@ public class TestCaseService : ITestCaseService
             PreconditionSteps = ConvertPreconditionSteps(testCase.Preconditions),
             PostconditionSteps = new List<Step>(),
             Duration = _duration,
-            Attributes = new List<CaseAttribute>(),
-            Tags = new List<string>(),
+            Attributes = [idAttribute],
+            Tags = keywords,
             Attachments = await _attachmentService.DownloadAttachments(testCase.Id, testCaseId),
             Iterations = new List<Iteration>(),
-            Links = new List<Link>(),
+            Links = GettingHyperlinks(testCase.Preconditions),
             Name = testCase.Name,
             SectionId = sectionId
         };
@@ -91,7 +102,7 @@ public class TestCaseService : ITestCaseService
         return new List<Step> {
             new Step
             {
-                Action = Regex.Replace(preconditions, "<.*?>", String.Empty),
+                Action = Regex.Replace(preconditions, "<.*?>", string.Empty),
                 Expected = string.Empty,
                 TestData = string.Empty,
                 ActionAttachments = new List<string>(),
@@ -99,5 +110,32 @@ public class TestCaseService : ITestCaseService
                 TestDataAttachments = new List<string>()
             }
         };
+    }
+
+    public static List<Link> GettingHyperlinks(string description)
+    {
+        var matches = _hyperLinkRegex.Matches(description);
+        var links = new List<Link>();
+
+        if (matches.Count == 0)
+        {
+            return links;
+        }
+
+        foreach (Match match in matches)
+        {
+            var url = match.Groups["url"].Value;
+            var title = match.Groups["title"].Value;
+
+            links.Add(
+                new Link
+                {
+                    Url = url,
+                    Title = title,
+                }
+            );
+        }
+
+        return links;
     }
 }

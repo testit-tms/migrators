@@ -1,6 +1,6 @@
 using Models;
 
-namespace TestLinkExporter.Models;
+namespace TestLinkExporter.Models.Suite;
 
 public class SectionData
 {
