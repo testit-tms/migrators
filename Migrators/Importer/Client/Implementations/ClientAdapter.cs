@@ -7,6 +7,7 @@ using TestIT.ApiClient.Client;
 using TestIT.ApiClient.Model;
 using Attribute = Models.Attribute;
 using LinkType = TestIT.ApiClient.Model.LinkType;
+using Importer.Utils;
 
 namespace Importer.Client.Implementations;
 
@@ -39,10 +40,14 @@ public class ClientAdapter(
 
         try
         {
+            var projectFilter = new ProjectsFilterModel(name);
+
+            HtmlEscapeUtils.EscapeHtmlInObject(projectFilter);
+
             var projects = await
                 projectsApi.ApiV2ProjectsSearchPostAsync(
                     null, null, null!, null!, null!,
-                    new ProjectsFilterModel(name));
+                    projectFilter);
 
             logger.LogDebug("Got projects {@Project} by name {Name}", projects, name);
 
@@ -77,7 +82,11 @@ public class ClientAdapter(
 
         try
         {
-            var resp = await projectsApi.CreateProjectAsync(new CreateProjectApiModel(name: name));
+            var porject = new CreateProjectApiModel(name: name);
+
+            HtmlEscapeUtils.EscapeHtmlInObject(porject);
+
+            var resp = await projectsApi.CreateProjectAsync(porject);
 
             logger.LogDebug("Created project {@Project}", resp);
             logger.LogInformation("Created project {Name} with id {Id}", name, resp.Id);
@@ -111,6 +120,8 @@ public class ClientAdapter(
                     Expected = s.Expected
                 }).ToList()
             };
+
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Importing section {@Section}", model);
 
@@ -146,6 +157,8 @@ public class ClientAdapter(
                     || model.Type == CustomAttributeTypesEnum.MultipleOptions
                 ))
                 model.Options.Add(new CustomAttributeOptionPostModel("null"));
+
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Importing attribute {@Attribute}", model);
 
@@ -248,6 +261,8 @@ public class ClientAdapter(
                 Attachments = sharedStep.Attachments.Select(a => new AssignAttachmentApiModel(Guid.Parse(a))).ToList()
             };
 
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
+
             logger.LogDebug("Importing shared step {Name} and {@Model}", sharedStep.Name, model);
 
             var resp = await workItemsApi.CreateWorkItemAsync(model);
@@ -326,6 +341,8 @@ public class ClientAdapter(
                 Duration = testCase.Duration == 0 ? TenMinutes : testCase.Duration,
                 Description = testCase.Description
             };
+
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Importing test case {Name} and {@Model}", testCase.Name, model);
 
@@ -516,6 +533,8 @@ public class ClientAdapter(
                 }).ToList()
             };
 
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
+
             logger.LogDebug("Updating attribute {@Model}", model);
 
             var resp = await customAttributesApi
@@ -560,6 +579,8 @@ public class ClientAdapter(
                     IsDefault = o.IsDefault
                 }).ToList()
             };
+
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Updating attribute {@Model}", model);
 
@@ -613,6 +634,8 @@ public class ClientAdapter(
         {
             var model = new CreateParameterApiModel(name: parameter.Name,
                 value: parameter.Value);
+
+            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Creating parameter {@Model}", model);
 
