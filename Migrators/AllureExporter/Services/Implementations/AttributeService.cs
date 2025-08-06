@@ -49,6 +49,15 @@ internal class AttributeService(ILogger<AttributeService> logger, IClient client
             }
         });
 
+        attributes.Add(new Attribute
+        {
+            Id = Guid.NewGuid(),
+            Name = Constants.AllureId,
+            IsActive = true,
+            IsRequired = false,
+            Type = AttributeType.String,
+        });
+
         var testLayers = await client.GetTestLayers();
 
         attributes.Add(new Attribute
