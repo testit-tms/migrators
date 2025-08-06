@@ -325,10 +325,28 @@ internal class Client : IClient
 
     public async Task<List<BaseEntity>> GetSuites(long projectId)
     {
-        var requestUri = $"api/rs/testcasetree/group?projectId={projectId}&treeId=2";
-        var suites = await GetGenericTcData<BaseEntities>(requestUri, projectId,
-            "suites", "project");
-        return suites.Content.ToList();
+        var allSuites = new List<BaseEntity>();
+        var page = 0;
+        var countOfSuites = 0;
+
+        _logger.LogInformation("Getting suites by project id {Id}", projectId);
+
+        do
+        {
+            var requestUri = $"api/rs/testcasetree/group?projectId={projectId}&treeId=2&page={page}";
+            var suites = await GetGenericTcData<BaseEntities>(requestUri, projectId,
+                "suites", "project");
+
+            countOfSuites = suites.Content.Count;
+
+            allSuites.AddRange(suites.Content);
+
+            page++;
+
+            _logger.LogInformation("Got {Count} suites by project id {Id} from {Page} page", countOfSuites, projectId, page);
+        } while (countOfSuites > 0);
+
+        return allSuites;
     }
 
     public async Task<byte[]> DownloadAttachmentForTestCase(long attachmentId)

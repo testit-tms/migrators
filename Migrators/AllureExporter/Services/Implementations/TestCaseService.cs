@@ -204,6 +204,11 @@ internal sealed class TestCaseService(
                 Id = attributes[Constants.AllureStatus],
                 Value = testCase.Status!.Name
             },
+                        new()
+            {
+                Id = attributes[Constants.AllureId],
+                Value = testCase.Id.ToString()
+            },
             new()
             {
                 Id = attributes[Constants.AllureTestLayer],
