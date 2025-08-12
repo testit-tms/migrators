@@ -7,13 +7,13 @@ using TestIT.ApiClient.Client;
 using TestIT.ApiClient.Model;
 using Attribute = Models.Attribute;
 using LinkType = TestIT.ApiClient.Model.LinkType;
-using Importer.Utils;
 
 namespace Importer.Client.Implementations;
 
 public class ClientAdapter(
     ILogger<ClientAdapter> logger,
     IOptions<AppConfig> appConfig,
+    IAdapterHelper adapterHelper,
     IAttachmentsApi attachmentsApi,
     IProjectsApi projectsApi,
     IProjectAttributesApi projectAttributesApi,
@@ -40,14 +40,10 @@ public class ClientAdapter(
 
         try
         {
-            var projectFilter = new ProjectsFilterModel(name);
-
-            HtmlEscapeUtils.EscapeHtmlInObject(projectFilter);
-
             var projects = await
                 projectsApi.ApiV2ProjectsSearchPostAsync(
                     null, null, null!, null!, null!,
-                    projectFilter);
+                    new ProjectsFilterModel(name));
 
             logger.LogDebug("Got projects {@Project} by name {Name}", projects, name);
 
@@ -82,11 +78,7 @@ public class ClientAdapter(
 
         try
         {
-            var porject = new CreateProjectApiModel(name: name);
-
-            HtmlEscapeUtils.EscapeHtmlInObject(porject);
-
-            var resp = await projectsApi.CreateProjectAsync(porject);
+            var resp = await projectsApi.CreateProjectAsync(new CreateProjectApiModel(name: name));
 
             logger.LogDebug("Created project {@Project}", resp);
             logger.LogInformation("Created project {Name} with id {Id}", name, resp.Id);
@@ -120,8 +112,6 @@ public class ClientAdapter(
                     Expected = s.Expected
                 }).ToList()
             };
-
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Importing section {@Section}", model);
 
@@ -157,8 +147,6 @@ public class ClientAdapter(
                     || model.Type == CustomAttributeTypesEnum.MultipleOptions
                 ))
                 model.Options.Add(new CustomAttributeOptionPostModel("null"));
-
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Importing attribute {@Attribute}", model);
 
@@ -261,8 +249,6 @@ public class ClientAdapter(
                 Attachments = sharedStep.Attachments.Select(a => new AssignAttachmentApiModel(Guid.Parse(a))).ToList()
             };
 
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
-
             logger.LogDebug("Importing shared step {Name} and {@Model}", sharedStep.Name, model);
 
             var resp = await workItemsApi.CreateWorkItemAsync(model);
@@ -280,9 +266,12 @@ public class ClientAdapter(
         }
     }
 
-    public async Task ImportTestCase(Guid projectId, Guid parentSectionId, TmsTestCase testCase)
+
+
+    public async Task<bool> ImportTestCase(Guid projectId, Guid parentSectionId, TmsTestCase testCase)
     {
         logger.LogInformation("Importing test case {Name}", testCase.Name);
+
 
         try
         {
@@ -342,22 +331,26 @@ public class ClientAdapter(
                 Description = testCase.Description
             };
 
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
-
             logger.LogDebug("Importing test case {Name} and {@Model}", testCase.Name, model);
 
-            var resp = await workItemsApi.CreateWorkItemAsync(model);
+            var response = await adapterHelper.RetryCaller(
+                async () => await workItemsApi.CreateWorkItemAsync(model));
 
-            logger.LogDebug("Imported test case {@TestCase}", resp);
+            logger.LogDebug("Imported test case {@TestCase}", response);
 
-            logger.LogInformation("Imported test case {Name} with id {Id}", testCase.Name, resp.Id);
+            logger.LogInformation("Imported test case {Name} with id {Id}", testCase.Name, response.Id);
         }
         catch (Exception e)
         {
-            logger.LogError("Could not import test case {Name}: {Message}", testCase.Name, e.Message);
+            logger.LogError("Could not import test case {Name}: {Message}: {InnerMessage}; {Stack}",
+                testCase.Name, e.Message, e.InnerException?.Message, e.StackTrace);
             throw;
         }
+
+        return true;
     }
+
+
 
     public async Task<Guid> GetRootSectionId(Guid projectId)
     {
@@ -533,8 +526,6 @@ public class ClientAdapter(
                 }).ToList()
             };
 
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
-
             logger.LogDebug("Updating attribute {@Model}", model);
 
             var resp = await customAttributesApi
@@ -580,8 +571,6 @@ public class ClientAdapter(
                 }).ToList()
             };
 
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
-
             logger.LogDebug("Updating attribute {@Model}", model);
 
             await projectAttributesApi.UpdateProjectsAttributeAsync(
@@ -609,19 +598,21 @@ public class ClientAdapter(
 
         try
         {
-            var response = await attachmentsApi.ApiV2AttachmentsPostAsync(
-                new FileParameter(
-                    Path.GetFileName(fileName),
-                    content: content,
-                    contentType: "application/octet-stream"));
+            var response = await adapterHelper.RetryCaller(
+                async () => await attachmentsApi.ApiV2AttachmentsPostAsync(
+                    new FileParameter(
+                        Path.GetFileName(fileName),
+                        content: content,
+                        contentType: "application/octet-stream")));
 
             logger.LogDebug("Uploaded attachment {@Response}", response);
 
-            return response.Id;
+            return response!.Id;
         }
         catch (Exception e)
         {
-            logger.LogError("Could not upload attachment {Name}: {Message}", fileName, e.Message);
+            logger.LogError("Could not upload attachment {Name}: {Message}: {Inner}, {StackTrace}", fileName,
+                e.Message, e.InnerException?.Message, e.StackTrace);
             throw;
         }
     }
@@ -634,8 +625,6 @@ public class ClientAdapter(
         {
             var model = new CreateParameterApiModel(name: parameter.Name,
                 value: parameter.Value);
-
-            HtmlEscapeUtils.EscapeHtmlInObject(model);
 
             logger.LogDebug("Creating parameter {@Model}", model);
 

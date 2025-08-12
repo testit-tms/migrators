@@ -12,7 +12,7 @@ public interface IClientAdapter
     Task<TmsAttribute> ImportAttribute(Attribute attribute);
     Task<TmsAttribute> GetAttribute(Guid id);
     Task<Guid> ImportSharedStep(Guid projectId, Guid parentSectionId, SharedStep sharedStep);
-    Task ImportTestCase(Guid projectId, Guid parentSectionId, TmsTestCase testCase);
+    Task<bool> ImportTestCase(Guid projectId, Guid parentSectionId, TmsTestCase testCase);
     Task<Guid> GetRootSectionId(Guid projectId);
     Task<List<TmsAttribute>> GetProjectAttributes();
     Task<List<TmsAttribute>> GetRequiredProjectAttributesByProjectId(Guid projectId);

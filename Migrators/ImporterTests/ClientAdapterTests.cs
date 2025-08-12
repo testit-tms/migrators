@@ -1,3 +1,4 @@
+using Importer.Client;
 using Importer.Client.Implementations;
 using Importer.Models;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,7 @@ public class ClientAdapterTests
     private IWorkItemsApi _workItemsApi = null!;
     private IParametersApi _parametersApi = null!;
     private ClientAdapter _clientAdapter = null!;
+    private IAdapterHelper _adapterHelper = null!;
 
     [SetUp]
     public void Setup()
@@ -39,6 +41,7 @@ public class ClientAdapterTests
         _customAttributesApi = Substitute.For<ICustomAttributesApi>();
         _workItemsApi = Substitute.For<IWorkItemsApi>();
         _parametersApi = Substitute.For<IParametersApi>();
+        _adapterHelper = Substitute.For<IAdapterHelper>();
 
         _appConfig.Value.Returns(new AppConfig
         {
@@ -51,6 +54,7 @@ public class ClientAdapterTests
         _clientAdapter = new ClientAdapter(
             _logger,
             _appConfig,
+            _adapterHelper,
             _attachmentsApi,
             _projectsApi,
             _projectAttributesApi,
@@ -304,7 +308,7 @@ public class ClientAdapterTests
         // Arrange
         var attributeId = Guid.NewGuid();
         var attributeName = "TestAttribute";
-        var attributes = new List<CustomAttributeModel>
+        var attributes = new List<CustomAttributeSearchResponseModel>
         {
             new(
                 id: attributeId,

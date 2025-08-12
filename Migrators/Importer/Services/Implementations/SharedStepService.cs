@@ -9,8 +9,9 @@ internal class SharedStepService(
     ILogger<SharedStepService> logger,
     IClientAdapter clientAdapter,
     IParserService parserService,
+    IBaseWorkItemService baseWorkItemService,
     IAttachmentService attachmentService)
-    : BaseWorkItemService, ISharedStepService
+    : ISharedStepService
 {
     private readonly Dictionary<Guid, Guid> _sharedSteps = new();
     private Dictionary<Guid, TmsAttribute> _attributesMap = new();
@@ -35,10 +36,10 @@ internal class SharedStepService(
 
     private async Task ImportSharedStep(Guid projectId, SharedStep step)
     {
-        step.Attributes = ConvertAttributes(step.Attributes, _attributesMap);
+        step.Attributes = await baseWorkItemService.ConvertAttributes(step.Attributes, _attributesMap);
         var attachments = await attachmentService.GetAttachments(step.Id, step.Attachments);
         step.Attachments = attachments.Select(a => a.Value.ToString()).ToList();
-        step.Steps = AddAttachmentsToSteps(step.Steps, attachments);
+        step.Steps = baseWorkItemService.AddAttachmentsToSteps(step.Steps, attachments);
 
         var sectionId = _sectionsMap[step.SectionId];
 

@@ -15,8 +15,6 @@ internal class ImportService(
     IProjectService projectService)
     : IImportService
 {
-    private readonly IClientAdapter _clientAdapter = clientAdapter;
-
     private Dictionary<Guid, TmsAttribute> _attributesMap = new();
 
     public async Task ImportProject()
@@ -34,9 +32,14 @@ internal class ImportService(
         var sharedSteps = await sharedStepService.ImportSharedSteps(projectId, mainJsonResult.SharedSteps, sections,
             _attributesMap);
 
-        await testCaseService.ImportTestCases(projectId, mainJsonResult.TestCases, sections, _attributesMap,
+        var notImportedTestCasesNames = await testCaseService.ImportTestCases(projectId, mainJsonResult.TestCases, sections, _attributesMap,
             sharedSteps);
 
+        logger.LogError("Not imported test cases:");
+        foreach (var testCaseName in notImportedTestCasesNames)
+        {
+            logger.LogInformation($"\t{testCaseName}");
+        }
         logger.LogInformation("Project imported");
     }
 }
