@@ -17,11 +17,20 @@ internal class AttachmentService(
 
         foreach (var attachment in attachments)
         {
-            var stream = await parserService.GetAttachment(workItemId, attachment);
-            var id = await clientAdapter.UploadAttachment(Path.GetFileName(stream.Name), stream);
+            try
+            {
+                var stream = await parserService.GetAttachment(workItemId, attachment);
+                var id = await clientAdapter.UploadAttachment(Path.GetFileName(stream.Name), stream);
 
-            ids.Add(attachment, id);
+                ids.Add(attachment, id);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Failed to upload attachment, skip: {Attachment}", attachment);
+                // just skip this attachment and go next
+            }
         }
+        logger.LogInformation("Complete GetAttachments with {Count} attachments", ids.Count);
 
         return ids;
     }

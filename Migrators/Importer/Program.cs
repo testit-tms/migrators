@@ -48,19 +48,22 @@ internal class Program
                 services.AddSingleton<App>();
                 services.AddSingleton(SetupConfiguration());
                 services.RegisterAppConfig();
-
-                services.RegisterClient();
+                
                 services.RegisterApiServices();
-
+                services.RegisterClient();
+                
+                services.AddSingleton<IAdapterHelper, AdapterHelper>();
                 services.AddSingleton<IClientAdapter, ClientAdapter>();
                 services.AddSingleton<IParserService, ParserService>();
                 services.AddSingleton<IAttributeService, AttributeService>();
                 services.AddSingleton<IParameterService, ParameterService>();
                 services.AddSingleton<ISectionService, SectionService>();
+                services.AddSingleton<IBaseWorkItemService, BaseWorkItemService>();
                 services.AddSingleton<ISharedStepService, SharedStepService>();
                 services.AddSingleton<ITestCaseService, TestCaseService>();
                 services.AddSingleton<IAttachmentService, AttachmentService>();
                 services.AddSingleton<IProjectService, ProjectService>();
+                services.AddSingleton<ITestCaseImportErrorLogService, TestCaseImportErrorLogService>();
             });
     }
 

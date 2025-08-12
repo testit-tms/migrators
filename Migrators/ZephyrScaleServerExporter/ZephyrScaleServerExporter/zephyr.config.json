@@ -1,0 +1,19 @@
+{
+  "resultPath": "C:\\export\\29053",
+  "zephyr": {
+    "url": "http://localhost:8080",
+    "confluence": "http://localhost:8090",
+    "login": "admin",
+    "password": "admin",
+    "confluenceLogin": "admin",
+    "confluencePassword": "admin",
+    "projectKey": "MIGR",
+    "_token": "",
+    "_confluenceToken": "",
+    "partial": false,
+    "_partialFolderName": "batch",
+    "_count": 1000,
+    "ignoreFilter": true,
+    "merge": false
+  }
+}

@@ -1,8 +1,10 @@
 {
-  "resultPath" : "/Users/user01/Documents/importer",
-  "tms" : {
-    "url" : "https://testit.software/",
-    "privateToken" : "cmZzWDkYTfBvNvVMcXhzN3Vy",
-    "certValidation" : true
+  "resultPath": "C:/Users/user1/export",
+  "tms": {
+    "url": "https://team-xxxx.testit.software",
+    "privateToken": "XXXX",
+    "certValidation": true,
+    "importToExistingProject": false,
+    "timeout": 600
   }
 }

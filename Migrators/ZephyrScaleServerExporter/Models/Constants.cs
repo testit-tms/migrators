@@ -1,8 +1,8 @@
-namespace ZephyrScaleServerExporter.Models;
+namespace Models;
 
-public class Constants
+public static class Constants
 {
-    public const string ComponentAttribute = "Component";
-    public const string IdZephyrAttribute = "id zephyr";
-    public const string MainFolderKey = "ZephyrScaleMainFolderKey";
+        public const string MainJson = "main.json";
+        public const string SharedStep = "sharedstep.json";
+        public const string TestCase = "testcase.json";
 }

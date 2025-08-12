@@ -9,16 +9,18 @@ namespace Importer.Services.Implementations;
 internal class TestCaseService(
     ILogger<TestCaseService> logger,
     IClientAdapter clientAdapter,
+    IAdapterHelper adapterHelper,
     IParserService parserService,
     IParameterService parameterService,
+    IBaseWorkItemService baseWorkItemService,
     IAttachmentService attachmentService)
-    : BaseWorkItemService, ITestCaseService
+    : ITestCaseService
 {
     private Dictionary<Guid, TmsAttribute> _attributesMap = new();
     private Dictionary<Guid, Guid> _sectionsMap = new();
     private Dictionary<Guid, Guid> _sharedSteps = new();
 
-    public async Task ImportTestCases(Guid projectId, IEnumerable<Guid> testCases, Dictionary<Guid, Guid> sections,
+    public async Task<List<string>> ImportTestCases(Guid projectId, IEnumerable<Guid> testCases, Dictionary<Guid, Guid> sections,
         Dictionary<Guid, TmsAttribute> attributes, Dictionary<Guid, Guid> sharedSteps)
     {
         _attributesMap = attributes;
@@ -27,18 +29,26 @@ internal class TestCaseService(
 
         logger.LogInformation("Importing test cases");
 
+        // var allTestCases = new List<string>();
+        var notImportedTestCases = new List<string>();
+
         foreach (var testCase in testCases)
         {
             var tc = await parserService.GetTestCase(testCase);
+            // allTestCases.Add(tc.Name);
             try
             {
                 await ImportTestCase(projectId, tc);
             }
             catch (Exception e)
             {
-                logger.LogError("Could not import test case {Name} with error {Message}", tc.Name, e.Message);
+                logger.LogError("Could not import test case {Name} with error {Message}: {InnerMessage}; {Stack}",
+                    tc.Name, e.Message, e.InnerException?.Message, e.StackTrace);
+                notImportedTestCases.Add(tc.Name);
             }
         }
+
+        return notImportedTestCases;
     }
 
     private async Task ImportTestCase(Guid projectId, TestCase testCase)
@@ -47,11 +57,31 @@ internal class TestCaseService(
 
         logger.LogDebug("Importing test case {Name} to section {Id}", testCase.Name, sectionId);
 
-        testCase.Attributes = ConvertAttributes(testCase.Attributes, _attributesMap);
+        testCase.Attributes = await baseWorkItemService.ConvertAttributes(testCase.Attributes, _attributesMap);
 
+        logger.LogInformation("Try to parse shared steps");
         testCase.Steps.Where(s => s.SharedStepId != null)
             .ToList()
-            .ForEach(s => s.SharedStepId = _sharedSteps[s.SharedStepId!.Value]);
+            .ForEach(s =>
+            {
+                try
+                {
+                    if (_sharedSteps.TryGetValue(s.SharedStepId!.Value, out var sharedStepId))
+                    {
+                        s.SharedStepId = sharedStepId;
+                    }
+                    else
+                    {
+                        s.SharedStepId = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    logger.LogWarning("Exception {Exception} when trying to parse shared step {Name} with error {Message}",
+                        e, s.SharedStepId!.Value, e.Message);
+                    s.SharedStepId = null;
+                }
+            });
 
         var tmsTestCase = TmsTestCase.Convert(testCase);
 
@@ -84,13 +114,17 @@ internal class TestCaseService(
         tmsTestCase.TmsIterations = iterations;
 
         var attachments = await attachmentService.GetAttachments(testCase.Id, testCase.Attachments);
+        logger.LogInformation("Trying to select attachments");
         tmsTestCase.Attachments = attachments.Select(a => a.Value.ToString()).ToList();
 
-        tmsTestCase.Steps = AddAttachmentsToSteps(tmsTestCase.Steps, attachments);
-        tmsTestCase.PreconditionSteps = AddAttachmentsToSteps(tmsTestCase.PreconditionSteps, attachments);
-        tmsTestCase.PostconditionSteps = AddAttachmentsToSteps(tmsTestCase.PostconditionSteps, attachments);
+        logger.LogInformation("Trying to add attachments to steps");
+        tmsTestCase.Steps = baseWorkItemService.AddAttachmentsToSteps(tmsTestCase.Steps, attachments);
+        tmsTestCase.PreconditionSteps = baseWorkItemService.AddAttachmentsToSteps(tmsTestCase.PreconditionSteps, attachments);
+        tmsTestCase.PostconditionSteps = baseWorkItemService.AddAttachmentsToSteps(tmsTestCase.PostconditionSteps, attachments);
 
-        await clientAdapter.ImportTestCase(projectId, sectionId, tmsTestCase);
+        logger.LogInformation("Trying to import tc call");
+        var result = await adapterHelper.RetryCaller(async () =>
+        await clientAdapter.ImportTestCase(projectId, sectionId, tmsTestCase));
 
         logger.LogDebug("Imported test case {Name} to section {Id}", testCase.Name, sectionId);
     }

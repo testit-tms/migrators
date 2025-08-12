@@ -10,7 +10,7 @@ env:
   ALLURE_DIR: ./Migrators/AllureExporter
   AZURE_DIR: ./Migrators/AzureExporter
   ZEPHYR_SCALE_DIR: ./Migrators/ZephyrScaleExporter
-  ZEPHYR_SCALE_SERVER_DIR: ./Migrators/ZephyrScaleServerExporter
+  ZEPHYR_SCALE_SERVER_DIR: ./Migrators/ZephyrScaleServerExporter/ZephyrScaleServerExporter
   ZEPHYR_SQUAD_DIR: ./Migrators/ZephyrSquadExporter
   ZEPHYR_SQUAD_SERVER_DIR: ./Migrators/ZephyrSquadServerExporter
   XRAY_DIR: ./Migrators/XRayExporter
