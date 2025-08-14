@@ -43,7 +43,7 @@ public class ClientAdapter(
             var projects = await
                 projectsApi.ApiV2ProjectsSearchPostAsync(
                     null, null, null!, null!, null!,
-                    new ProjectsFilterModel(name));
+                    new ApiV2ProjectsSearchPostRequest(name));
 
             logger.LogDebug("Got projects {@Project} by name {Name}", projects, name);
 
@@ -78,7 +78,7 @@ public class ClientAdapter(
 
         try
         {
-            var resp = await projectsApi.CreateProjectAsync(new CreateProjectApiModel(name: name));
+            var resp = await projectsApi.CreateProjectAsync(new CreateProjectRequest(name: name));
 
             logger.LogDebug("Created project {@Project}", resp);
             logger.LogInformation("Created project {Name} with id {Id}", name, resp.Id);
@@ -98,7 +98,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new SectionPostModel(
+            var model = new CreateSectionRequest(
                 section.Name, parentId: parentSectionId, projectId: projectId, attachments: [])
             {
                 PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
@@ -135,7 +135,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new GlobalCustomAttributePostModel(attribute.Name)
+            var model = new ApiV2CustomAttributesGlobalPostRequest(attribute.Name)
             {
                 Type = Enum.Parse<CustomAttributeTypesEnum>(attribute.Type.ToString()),
                 IsRequired = attribute.IsRequired,
@@ -213,13 +213,13 @@ public class ClientAdapter(
     {
         try
         {
-            var model = new CreateWorkItemApiModel(
-                steps: new List<CreateStepApiModel>(),
-                preconditionSteps: new List<CreateStepApiModel>(),
-                postconditionSteps: new List<CreateStepApiModel>(),
+            var model = new CreateWorkItemRequest(
+                steps: new List<StepPostModel>(),
+                preconditionSteps: new List<StepPostModel>(),
+                postconditionSteps: new List<StepPostModel>(),
                 attributes: new Dictionary<string, object>(),
-                links: new List<CreateLinkApiModel>(),
-                tags: new List<TagModel>(),
+                links: new List<LinkPostModel>(),
+                tags: new List<TagPostModel>(),
                 name: sharedStep.Name)
             {
                 EntityTypeName = WorkItemEntityTypes.SharedSteps,
@@ -228,7 +228,7 @@ public class ClientAdapter(
                 State = Enum.Parse<WorkItemStates>(sharedStep.State.ToString()),
                 Priority = Enum.Parse<WorkItemPriorityModel>(sharedStep.Priority.ToString()),
                 Steps = sharedStep.Steps.Select(s =>
-                    new CreateStepApiModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
@@ -236,9 +236,9 @@ public class ClientAdapter(
                 Attributes = sharedStep.Attributes
                     .ToDictionary(a => a.Id.ToString(),
                         a => a.Value),
-                Tags = sharedStep.Tags.Select(t => new TagModel(t)).ToList(),
+                Tags = sharedStep.Tags.Select(t => new TagPostModel(t)).ToList(),
                 Links = sharedStep.Links.Select(l =>
-                    new CreateLinkApiModel(url: l.Url)
+                    new LinkPostModel(url: l.Url)
                     {
                         Title = l.Title,
                         Description = l.Description,
@@ -246,7 +246,7 @@ public class ClientAdapter(
                     }).ToList(),
                 Name = sharedStep.Name,
                 ProjectId = projectId,
-                Attachments = sharedStep.Attachments.Select(a => new AssignAttachmentApiModel(Guid.Parse(a))).ToList()
+                Attachments = sharedStep.Attachments.Select(a => new AttachmentPutModel(Guid.Parse(a))).ToList()
             };
 
             logger.LogDebug("Importing shared step {Name} and {@Model}", sharedStep.Name, model);
@@ -275,13 +275,13 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CreateWorkItemApiModel(
-                steps: new List<CreateStepApiModel>(),
-                preconditionSteps: new List<CreateStepApiModel>(),
-                postconditionSteps: new List<CreateStepApiModel>(),
+            var model = new CreateWorkItemRequest(
+                steps: new List<StepPostModel>(),
+                preconditionSteps: new List<StepPostModel>(),
+                postconditionSteps: new List<StepPostModel>(),
                 attributes: new Dictionary<string, object>(),
-                links: new List<CreateLinkApiModel>(),
-                tags: new List<TagModel>(),
+                links: new List<LinkPostModel>(),
+                tags: new List<TagPostModel>(),
                 name: testCase.Name)
             {
                 EntityTypeName = WorkItemEntityTypes.TestCases,
@@ -289,19 +289,19 @@ public class ClientAdapter(
                 State = Enum.Parse<WorkItemStates>(testCase.State.ToString()),
                 Priority = Enum.Parse<WorkItemPriorityModel>(testCase.Priority.ToString()),
                 PreconditionSteps = testCase.PreconditionSteps.Select(s =>
-                    new CreateStepApiModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
                     }).ToList(),
                 PostconditionSteps = testCase.PostconditionSteps.Select(s =>
-                    new CreateStepApiModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected
                     }).ToList(),
                 Steps = testCase.Steps.Select(s =>
-                    new CreateStepApiModel
+                    new StepPostModel
                     {
                         Action = s.Action,
                         Expected = s.Expected,
@@ -311,9 +311,9 @@ public class ClientAdapter(
                 Attributes = testCase.Attributes
                     .ToDictionary(a => a.Id.ToString(),
                         a => a.Value),
-                Tags = testCase.Tags.Select(t => new TagModel(t)).ToList(),
+                Tags = testCase.Tags.Select(t => new TagPostModel(t)).ToList(),
                 Links = testCase.Links.Select(l =>
-                    new CreateLinkApiModel(url: l.Url)
+                    new LinkPostModel(url: l.Url)
                     {
                         Title = l.Title,
                         Description = l.Description,
@@ -321,11 +321,11 @@ public class ClientAdapter(
                     }).ToList(),
                 Name = testCase.Name,
                 ProjectId = projectId,
-                Attachments = testCase.Attachments.Select(a => new AssignAttachmentApiModel(Guid.Parse(a))).ToList(),
+                Attachments = testCase.Attachments.Select(a => new AttachmentPutModel(Guid.Parse(a))).ToList(),
                 Iterations = testCase.TmsIterations.Select(i =>
                 {
                     var parameters = i.Parameters.Select(p => new ParameterIterationModel(p)).ToList();
-                    return new AssignIterationApiModel(parameters);
+                    return new IterationPutModel(parameters);
                 }).ToList(),
                 Duration = testCase.Duration == 0 ? TenMinutes : testCase.Duration,
                 Description = testCase.Description
@@ -378,8 +378,9 @@ public class ClientAdapter(
         try
         {
             var attributes = await customAttributesApi.ApiV2CustomAttributesSearchPostAsync(
-                customAttributeSearchQueryModel: new CustomAttributeSearchQueryModel(isGlobal: true,
-                    isDeleted: false));
+                apiV2CustomAttributesSearchPostRequest:
+                new ApiV2CustomAttributesSearchPostRequest(isGlobal: true, isDeleted: false));
+
 
             logger.LogDebug("Got project attributes {@Attributes}", attributes);
 
@@ -413,7 +414,7 @@ public class ClientAdapter(
         try
         {
             var attributes = await projectAttributesApi.SearchAttributesInProjectAsync(
-                projectId.ToString(), projectAttributesFilterModel: new ProjectAttributesFilterModel(
+                projectId.ToString(), searchAttributesInProjectRequest: new SearchAttributesInProjectRequest(
                     "",
                     true,
                     types: new List<CustomAttributeTypesEnum>
@@ -514,7 +515,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new GlobalCustomAttributeUpdateModel(attribute.Name)
+            var model = new ApiV2CustomAttributesGlobalIdPutRequest(attribute.Name)
             {
                 IsEnabled = attribute.IsEnabled,
                 IsRequired = attribute.IsRequired,
@@ -559,7 +560,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CustomAttributePutModel(attribute.Id, name: attribute.Name)
+            var model = new UpdateProjectsAttributeRequest(attribute.Id, name: attribute.Name)
             {
                 IsEnabled = attribute.IsEnabled,
                 IsRequired = attribute.IsRequired,
@@ -623,7 +624,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new CreateParameterApiModel(name: parameter.Name,
+            var model = new CreateParameterRequest(name: parameter.Name,
                 value: parameter.Value);
 
             logger.LogDebug("Creating parameter {@Model}", model);
@@ -654,8 +655,8 @@ public class ClientAdapter(
         try
         {
             var resp = await parametersApi.ApiV2ParametersSearchPostAsync(
-                parametersFilterApiModel:
-                new ParametersFilterApiModel(name: name, isDeleted: false));
+                apiV2ParametersSearchPostRequest:
+                new ApiV2ParametersSearchPostRequest(name: name, isDeleted: false));
 
 
             logger.LogDebug("Got parameter {@Response}", resp);
@@ -683,7 +684,7 @@ public class ClientAdapter(
 
         try
         {
-            var model = new SectionPostModel(
+            var model = new CreateSectionRequest(
                 section.Name, parentId: parentSectionId, projectId: projectId)
             {
                 PostconditionSteps = section.PostconditionSteps.Select(s => new StepPostModel
