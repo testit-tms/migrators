@@ -11,7 +11,7 @@ public class TestCaseClient(
     ILogger<TestCaseClient> logger)
     : ITestCaseClient
 {
-    
+
     public async Task<List<ZephyrTestCase>> GetTestCasesCoreHandlerNewApi(HttpClient httpClient, string projectKey, string reqString)
     {
         detailedLogService.LogDebug("reqString: {ReqString}", reqString);
@@ -30,7 +30,7 @@ public class TestCaseClient(
         detailedLogService.LogDebug("content: {ReqString}", content);
         return tcRoots.ToTestCases();
     }
-    
+
     public async Task<List<ZephyrTestCase>> GetTestCasesCoreHandler(HttpClient httpClient, string projectKey, string reqString)
     {
         detailedLogService.LogDebug("reqString: {ReqString}", reqString);
@@ -75,10 +75,10 @@ public class TestCaseClient(
                     {
                         Name: not null, FileName: not null, CreatedOn: not null, UserKey: not null
                     }).ToList();
-                
+
             });
         });
-        
+
         detailedLogService.LogDebug("Got test cases {@TestCases}", testCases);
 
         return testCases;
@@ -109,10 +109,10 @@ public class TestCaseClient(
                     {
                         Name: not null, FileName: not null, CreatedOn: not null, UserKey: not null
                     }).ToList();
-                
+
             });
         });
-        
+
         detailedLogService.LogDebug("Got test cases {@TestCases}", testCases);
 
         return testCases;
