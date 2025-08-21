@@ -69,6 +69,9 @@ namespace ZephyrScaleServerExporter.Models.TestCases
         [JsonPropertyName("id")]
         public int Id { get; set; }
 
+        [JsonPropertyName("archived")]
+        public bool Archived { get; set; }
+
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);

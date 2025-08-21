@@ -8,20 +8,27 @@ namespace ZephyrScaleServerExporter.Services.TestCase.Implementations;
 public class TestCaseAdditionalLinksService(
     IDetailedLogService detailedLogService,
     ILogger<TestCaseConvertService> logger,
-    IClient client) 
+    IClient client)
     : ITestCaseAdditionalLinksService
 {
-    
+
     public async Task<List<Link>> GetAdditionalLinks(ZephyrTestCase zephyrTestCase)
     {
         try
         {
             detailedLogService.LogDebug("Getting additional links for {Key}...", zephyrTestCase.Key);
-            var res = await client.GetTestCaseTracesV2(zephyrTestCase.Key!);
+            var res = await client.GetTestCaseTracesV2(
+                zephyrTestCase.Key!, zephyrTestCase.IsArchived);
             // otherwise = never?
             var tlRoot = res?.Results.FirstOrDefault() ?? await client.GetTestCaseTraces(zephyrTestCase.Key!);
+
+            if (tlRoot != null && tlRoot.Id.ToString() != zephyrTestCase.JiraId)
+            {
+                zephyrTestCase.JiraId = tlRoot.Id.ToString();
+            }
+
             if (tlRoot?.TraceLinks == null) {
-                return []; 
+                return [];
             }
             var links = ConvertWebLinksByPage(tlRoot.TraceLinks);
             links.AddRange(await ConvertConfluenceLinksByPage(tlRoot.TraceLinks));
@@ -35,7 +42,7 @@ public class TestCaseAdditionalLinksService(
         }
 
     }
-    
+
     private List<Link> ConvertWebLinksByPage(List<TraceLink> traceLinks)
     {
         logger.LogInformation("Converting web links for test case");
@@ -43,7 +50,7 @@ public class TestCaseAdditionalLinksService(
         var webLinks = traceLinks
             .Where(x => x is { UrlDescription: not null, Url: not null }).ToList();
 
-        var newLinks = webLinks.Select(webLink => 
+        var newLinks = webLinks.Select(webLink =>
             new Link { Title = webLink.UrlDescription!, Url = webLink.Url! }
         ).ToList();
 
@@ -57,7 +64,7 @@ public class TestCaseAdditionalLinksService(
         var confluenceTraceLinks = traceLinks.Where(x => x.ConfluencePageId != null).ToList();
 
         var newLinks = new List<Link>();
-     
+
         foreach (var confluenceTraceLink in confluenceTraceLinks)
         {
             try
@@ -85,7 +92,7 @@ public class TestCaseAdditionalLinksService(
 
         return newLinks;
     }
-    
+
     private async Task<List<Link>> ConvertIssueLinksByPage( List<TraceLink> traceLinks)
     {
         logger.LogInformation("Converting issue links for test case");

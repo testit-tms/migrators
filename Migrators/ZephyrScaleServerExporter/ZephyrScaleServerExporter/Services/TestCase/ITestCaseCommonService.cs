@@ -29,4 +29,8 @@ public interface ITestCaseCommonService
     Task<List<ZephyrTestCase>> GetTestCasesByConfig(IOptions<AppConfig> config,
         IClient client,
         int startAt, int maxResults, string statuses);
+
+    Task<List<ZephyrTestCase>> GetArchivedTestCases(IOptions<AppConfig> config,
+        IClient client,
+        int startAt, int maxResults, string statuses);
 }
