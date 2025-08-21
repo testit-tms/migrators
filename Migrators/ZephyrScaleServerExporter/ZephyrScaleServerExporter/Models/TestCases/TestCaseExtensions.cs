@@ -26,7 +26,7 @@ public static class TestCaseExtensions
             Folder = tc.Folder?.Name,
             Component = tc.Component,
             OwnerKey = tc.OwnerKey,
-            Parameters = tc.Parameters ?? new Dictionary<string, object>()
+            Parameters = new Dictionary<string, object>()
         };
     }
 

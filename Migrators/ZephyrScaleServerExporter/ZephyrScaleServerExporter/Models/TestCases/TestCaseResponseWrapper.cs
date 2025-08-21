@@ -148,7 +148,7 @@ namespace ZephyrScaleServerExporter.Models.TestCases
         public Dictionary<string, object>? CustomFields { get; set; }
 
         [JsonPropertyName("parameters")]
-        public Dictionary<string, object>? Parameters { get; set; }
+        public List<ZephyrParameter>? Parameters { get; set; }
 
         [JsonPropertyName("latestVersion")]
         public bool LatestVersion { get; set; }
@@ -179,7 +179,22 @@ namespace ZephyrScaleServerExporter.Models.TestCases
 
         [JsonPropertyName("owner")]
         public string? OwnerKey { get; set; }
+    }
 
+    // "defaultValue" : "pp2",
+    // "name" : "pp1",
+    // "index" : 0,
+    // "id" : 3
+    public class ZephyrParameter
+    {
+        [JsonPropertyName("defaultValue")]
+        public string DefaultValue { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+        [JsonPropertyName("index")]
+        public int Index { get; set; }
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
     }
 
     public class Status
