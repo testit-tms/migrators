@@ -21,8 +21,8 @@ internal class TestCaseBatchService(
 {
     private HashSet<string> _savedTestCaseNames = [];
     private string _batchProcessedFile = string.Empty;
-    
-    public async Task<TestCaseData> ExportTestCasesBatch(SectionData sectionData, 
+
+    public async Task<TestCaseData> ExportTestCasesBatch(SectionData sectionData,
         Dictionary<string, Attribute> attributeMap, string projectId)
     {
         InitBatch();
@@ -30,14 +30,21 @@ internal class TestCaseBatchService(
 
         var prepDataModel = await testCaseCommonService
             .PrepareForTestCasesExportAsync(attributeMap, projectId);
-        
+
         var testCaseIds = await ProcessBatchCycleBlock(
-            sectionData, attributeMap, prepDataModel);
+            sectionData, attributeMap, prepDataModel, testCaseCommonService.GetTestCasesByConfig);
+
+        if (config.Value.Zephyr.ExportArchived)
+        {
+            var archivedTestCaseIds = await ProcessBatchCycleBlock(
+                sectionData, attributeMap, prepDataModel, testCaseCommonService.GetArchivedTestCases);
+            testCaseIds.AddRange(archivedTestCaseIds);
+        }
 
         return testCaseCommonService
             .PrepareTestCaseIdsData(attributeMap, prepDataModel.OwnersAttribute, testCaseIds);
     }
-    
+
 
     private void InitBatch()
     {
@@ -46,17 +53,18 @@ internal class TestCaseBatchService(
         // read file strings to hashset
         _savedTestCaseNames = new HashSet<string>(File.ReadLines(_batchProcessedFile));
     }
-    
+
     /// <summary>
     /// берем, фильтруем, процессим, сохраняем, идем дальше. На выходе - список всех айдишников
     /// </summary>
     /// <returns></returns>
-    private async Task<List<Guid>> ProcessBatchCycleBlock(SectionData sectionData, 
+    private async Task<List<Guid>> ProcessBatchCycleBlock(SectionData sectionData,
         Dictionary<string, Attribute> attributeMap,
-        TestCaseExportRequiredModel requiredModel)
+        TestCaseExportRequiredModel requiredModel,
+        Func<IOptions<AppConfig>, IClient, int, int, string, Task<List<ZephyrTestCase>>> getTestCases)
     {
         List<Guid> testCaseIds = [];
-        
+
         var startAt = 0;
         var retryCount = 0;
         var maxResults = 100;
@@ -67,19 +75,20 @@ internal class TestCaseBatchService(
         {
             maxResults = maxCountPerBatch;
         }
-        
+
         // until there is new data
         while (true)
         {
-            (var origCases, retryCount) = await TryGetTestCasesWithRetries(requiredModel, retryCount, startAt, maxResults);
-            
+            (var origCases, retryCount) = await TryGetTestCasesWithRetries(
+                requiredModel, retryCount, startAt, maxResults, getTestCases);
+
             if (origCases == null)
             {
                 // Пропускаем этот пакет и пытаемся получить следующий
                 // Переходим к следующей итерации цикла
                 continue;
             }
-            
+
             if (origCases.Count == 0)
             {
                 OnZeroOriginalCasesGreetEndForBatch(countOfTests);
@@ -94,7 +103,7 @@ internal class TestCaseBatchService(
                 continue;
             }
 
-            (startAt, countOfTests, var isBreak) = await WriteFiltered(cases, sectionData, 
+            (startAt, countOfTests, var isBreak) = await WriteFiltered(cases, sectionData,
                 attributeMap, requiredModel, testCaseIds,
                 startAt, countOfTests, maxResults, maxCountPerBatch);
 
@@ -105,14 +114,16 @@ internal class TestCaseBatchService(
         return testCaseIds;
     }
 
-    
-    private async Task<(List<ZephyrTestCase>?, int)> TryGetTestCasesWithRetries(TestCaseExportRequiredModel requiredModel,
-        int retryCount, int startAt, int maxResults)
+
+    private async Task<(List<ZephyrTestCase>?, int)> TryGetTestCasesWithRetries(
+        TestCaseExportRequiredModel requiredModel,
+        int retryCount, int startAt, int maxResults,
+        Func<IOptions<AppConfig>, IClient, int, int, string, Task<List<ZephyrTestCase>>> getTestCases)
     {
         const int maxRetries = 5; // Максимальное количество попыток
         try
         {
-            var origCases = await testCaseCommonService.GetTestCasesByConfig(config, client, 
+            var origCases = await getTestCases(config, client,
                 startAt, maxResults,
                 requiredModel.StatusData.StringStatuses);
             retryCount = 0; // Сбрасываем счетчик при успехе
@@ -122,7 +133,7 @@ internal class TestCaseBatchService(
         {
             retryCount++;
             logger.LogError(ex, "Failed to get test cases starting from {StartAt} in batch mode (Attempt {RetryCount}/{MaxRetries})", startAt, retryCount, maxRetries);
-                
+
             if (retryCount >= maxRetries)
             {
                 logger.LogCritical("Failed to get test cases after {MaxRetries} attempts in batch mode. Exiting.", maxRetries);
@@ -157,7 +168,7 @@ internal class TestCaseBatchService(
 
     private async Task<(int, int, bool)> WriteFiltered(
         List<ZephyrTestCase> cases,
-        SectionData sectionData, 
+        SectionData sectionData,
         Dictionary<string, Attribute> attributeMap,
         TestCaseExportRequiredModel requiredModel,
         List<Guid> testCaseIds,
@@ -204,7 +215,7 @@ internal class TestCaseBatchService(
         // false for now
         return (startAt, countOfTests, isBreak);
     }
-    
+
     private static void CreateBatchIfNotExists(string path)
     {
         if (!File.Exists(path))
@@ -226,27 +237,27 @@ internal class TestCaseBatchService(
     private void GreetEndOfBatchProcessing(int countOfTests)
     {
         logger.LogInformation("[SUCCESS] This is the last batch, no more data for export exists");
-        logger.LogInformation("Last export: {CountOfTests} test cases, total batches: {Number}", 
+        logger.LogInformation("Last export: {CountOfTests} test cases, total batches: {Number}",
             countOfTests, writeService.GetBatchNumber());
         logger.LogInformation(
-            "You can check {BatchProcessedFile} for all test cases names exported with all batches (one per line)", 
+            "You can check {BatchProcessedFile} for all test cases names exported with all batches (one per line)",
             _batchProcessedFile);
     }
-    
+
     private void GreetNoDataForCurrentBatch()
     {
         logger.LogInformation("[SUCCESS] This is the last batch, no more data for export exists");
         logger.LogInformation("total batches: {Number}", writeService.GetBatchNumber() - 1);
         logger.LogInformation(
-            "You can check {BatchProcessedFile} for all test cases names exported with all batches (one per line)", 
+            "You can check {BatchProcessedFile} for all test cases names exported with all batches (one per line)",
             _batchProcessedFile);
 
     }
-    
-    
-    
-    
 
-    
-    
+
+
+
+
+
+
 }

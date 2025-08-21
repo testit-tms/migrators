@@ -17,27 +17,35 @@ internal class TestCaseService(
     IClient client)
     : ITestCaseService
 {
-    public async Task<TestCaseData> ExportTestCases(SectionData sectionData, 
+    public async Task<TestCaseData> ExportTestCases(SectionData sectionData,
         Dictionary<string, Attribute> attributeMap, string projectId)
     {
         logger.LogInformation("Converting test cases");
 
         var prepDataModel = await testCaseCommonService
             .PrepareForTestCasesExportAsync(attributeMap, projectId);
-        
+
         var testCaseIds = await ProcessCycleBlock(
-            sectionData, attributeMap, prepDataModel);
+            sectionData, attributeMap, prepDataModel, testCaseCommonService.GetTestCasesByConfig);
+
+        if (config.Value.Zephyr.ExportArchived)
+        {
+            var archivedTestCaseIds = await ProcessCycleBlock(
+                sectionData, attributeMap, prepDataModel, testCaseCommonService.GetArchivedTestCases);
+            testCaseIds.AddRange(archivedTestCaseIds);
+        }
 
         return testCaseCommonService
             .PrepareTestCaseIdsData(attributeMap, prepDataModel.OwnersAttribute, testCaseIds);
     }
-    
-    private async Task<List<Guid>> ProcessCycleBlock(SectionData sectionData, 
+
+    private async Task<List<Guid>> ProcessCycleBlock(SectionData sectionData,
         Dictionary<string, Attribute> attributeMap,
-        TestCaseExportRequiredModel requiredModel)
+        TestCaseExportRequiredModel requiredModel,
+        Func<IOptions<AppConfig>, IClient, int, int, string, Task<List<ZephyrTestCase>>> getTestCasesFunc)
     {
         List<Guid> testCaseIds = [];
-        
+
         var startAt = 0;
         var maxResults = 100;
         var countOfTests = 0;
@@ -50,7 +58,7 @@ internal class TestCaseService(
             List<ZephyrTestCase> origCases;
             try
             {
-                origCases = await testCaseCommonService.GetTestCasesByConfig(config, client, 
+                origCases = await getTestCasesFunc(config, client,
                     startAt, maxResults,
                     requiredModel.StatusData.StringStatuses);
                 retryCount = 0; // Сбрасываем счетчик при успехе
@@ -59,7 +67,7 @@ internal class TestCaseService(
             {
                 retryCount++;
                 logger.LogError(ex, "Failed to get test cases starting from {StartAt} (Attempt {RetryCount}/{MaxRetries})", startAt, retryCount, maxRetries);
-                
+
                 if (retryCount >= maxRetries)
                 {
                     logger.LogCritical("Failed to get test cases after {MaxRetries} attempts. Exiting.", maxRetries);
@@ -70,16 +78,16 @@ internal class TestCaseService(
 
                 logger.LogWarning("Waiting 3 seconds before next attempt...");
                 await Task.Delay(3000); // Задержка 3 секунды
-                
+
                 // Пропускаем этот пакет и пытаемся получить следующий
                 continue; // Переходим к следующей итерации цикла
             }
-            
+
             if (origCases.Count == 0)
             {
                 break;
             }
-            
+
             var ids = await testCaseCommonService.WriteTestCasesAsync(
                 origCases,
                 sectionData,
@@ -88,7 +96,7 @@ internal class TestCaseService(
                 requiredModel.OwnersAttribute);
 
             testCaseIds.AddRange(ids);
-            
+
             startAt += maxResults;
             countOfTests += origCases.Count;
 

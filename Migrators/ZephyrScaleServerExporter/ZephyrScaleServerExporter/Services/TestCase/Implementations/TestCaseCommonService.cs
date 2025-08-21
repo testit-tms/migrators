@@ -42,7 +42,7 @@ internal class TestCaseCommonService(
         attributeMap.Add(statusData.StatusAttribute.Name, statusData.StatusAttribute);
 
         detailedLogService.LogInformation("Get all attribute values {Attrs}: ", attributeMap.Values);
-        
+
         var requiredAttributeNames = attributeMap.Values
             .Where(a => a.IsRequired).Select(a => a.Name).ToList();
         detailedLogService.LogInformation("Get all required attributes: {List}", requiredAttributeNames);
@@ -75,7 +75,7 @@ internal class TestCaseCommonService(
             Attributes = tmsAttributes
         };
     }
-    
+
     /// <summary>
     /// change status attribute in place to it's remapping from mapping.json file
     /// </summary>
@@ -108,7 +108,7 @@ internal class TestCaseCommonService(
 
         return option!;
     }
-    
+
     public async Task<List<Guid>> WriteTestCasesAsync(
         List<ZephyrTestCase> cases,
         SectionData sectionData,
@@ -118,8 +118,8 @@ internal class TestCaseCommonService(
     {
         List<Guid> testCaseIds = [];
         var tasks = cases
-            .Select(x => 
-                ConvertAndWriteCaseAsync(x, sectionData, 
+            .Select(x =>
+                ConvertAndWriteCaseAsync(x, sectionData,
                     attributeMap, requiredAttributeNames, ownersAttribute)).ToList();
         try
         {
@@ -133,7 +133,7 @@ internal class TestCaseCommonService(
         }
         return testCaseIds;
     }
-    
+
     private async Task<Guid?> ConvertAndWriteCaseAsync(
         ZephyrTestCase zephyrTestCase,
         SectionData sectionData,
@@ -153,7 +153,7 @@ internal class TestCaseCommonService(
             {
                 logger.LogError("Conversion of ZephyrTestCase {Key} resulted in null, skipping write.", zephyrTestCase.Key);
                 return null;
-            } 
+            }
             await writeService.WriteTestCase(testCase);
             return testCase.Id;
         }
@@ -164,9 +164,8 @@ internal class TestCaseCommonService(
             throw;
         }
     }
-    
-    
-    public async Task<List<ZephyrTestCase>> GetTestCasesByConfig(IOptions<AppConfig> config, 
+
+    public async Task<List<ZephyrTestCase>> GetTestCasesByConfig(IOptions<AppConfig> config,
         IClient client,
         int startAt, int maxResults, string statuses)
     {
@@ -175,7 +174,7 @@ internal class TestCaseCommonService(
         {
             var nameFilter = config.Value.Zephyr.FilterName;
             filter.Append($" AND testCase.name LIKE \"{nameFilter}\" ");
-        } 
+        }
         if (config.Value.Zephyr.FilterSection != string.Empty)
         {
             var section = config.Value.Zephyr.FilterSection;
@@ -184,13 +183,31 @@ internal class TestCaseCommonService(
 
         if (filter.Length > 0)
         {
-            return await client.GetTestCasesWithFilter(startAt, maxResults, 
+            return await client.GetTestCasesWithFilter(startAt, maxResults,
                 statuses, filter.ToString());
         }
-        return await client.GetTestCases(startAt, maxResults, 
+
+        return await client.GetTestCases(startAt, maxResults,
             statuses);
     }
-    
-    
-    
+
+    public async Task<List<ZephyrTestCase>> GetArchivedTestCases(IOptions<AppConfig> config, IClient client,
+        int startAt, int maxResults, string statuses)
+    {
+        var archivedResults = await client.GetTestCasesArchived(startAt, maxResults,
+            statuses);
+
+        archivedResults.ForEach(x =>
+        {
+            x.Labels ??= [];
+            x.CustomFields ??= new Dictionary<string, object>();
+
+            x.Labels.Add("Archived");
+            x.CustomFields.Add("Archived", "true");
+            x.IsArchived = true;
+        });
+
+        return archivedResults;
+    }
+
 }

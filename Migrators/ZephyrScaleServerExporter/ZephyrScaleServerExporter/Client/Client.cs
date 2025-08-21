@@ -27,8 +27,8 @@ public class Client : IClient
     private bool _unaunthorizedConfluence;
     private readonly IDetailedLogService _detailedLogService;
 
-    public Client(ILogger<Client> logger, 
-        HttpClient httpClient, 
+    public Client(ILogger<Client> logger,
+        HttpClient httpClient,
         IOptions<AppConfig> config,
         ITestCaseClient testCaseClient,
         HttpClient confluenceHttpClient,
@@ -40,10 +40,10 @@ public class Client : IClient
         _projectKey = _config.Zephyr.ProjectKey;
         _url = new Uri(_config.Zephyr.Url);
         _detailedLogService = detailedLogService;
-        
+
         _httpClient = httpClient;
         _confluenceHttpClient = confluenceHttpClient;
-        
+
         InitHttpClient();
         InitConfluenceHttpClient();
     }
@@ -53,7 +53,7 @@ public class Client : IClient
         _httpClient.BaseAddress = _url;
         _httpClient.Timeout = TimeSpan.FromSeconds(1000);
 
-        var header = GetAuthHeaderBy(_config.Zephyr.Token, 
+        var header = GetAuthHeaderBy(_config.Zephyr.Token,
             _config.Zephyr.Login, _config.Zephyr.Password);
         if (header == null)
         {
@@ -68,7 +68,7 @@ public class Client : IClient
         _confluenceHttpClient.BaseAddress = new Uri(_config.Zephyr.Confluence);
         _confluenceHttpClient.Timeout = TimeSpan.FromSeconds(1000);
 
-        var header = GetAuthHeaderBy(_config.Zephyr.ConfluenceToken, 
+        var header = GetAuthHeaderBy(_config.Zephyr.ConfluenceToken,
             _config.Zephyr.ConfluenceLogin, _config.Zephyr.ConfluencePassword);
         if (header == null)
         {
@@ -162,7 +162,7 @@ public class Client : IClient
 
         return customFields;
     }
-    
+
     public async Task<List<ZephyrTestCase>> GetTestCasesWithFilter(int startAt, int maxResults, string statuses, string filter)
     {
         var reqString = $"/rest/tests/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=testCase.projectKey = \"{_projectKey}\" AND testCase.statusName IN ({statuses}) {filter}";
@@ -174,10 +174,15 @@ public class Client : IClient
         var reqString = $"/rest/atm/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=projectKey = \"{_projectKey}\" AND status IN ({statuses})";
         return await _testCaseClient.GetTestCasesCoreHandler(_httpClient, _projectKey, reqString);
     }
-    
-    
+
+    public async Task<List<ZephyrTestCase>> GetTestCasesArchived(int startAt, int maxResults, string statuses)
+    {
+        var reqString = $"rest/tests/1.0/testcase/search?query=testCase.projectKey=\"{_projectKey}\"+AND+testCase.statusName+IN+({statuses})&startAt={startAt}&maxResults={maxResults}&archived=true";
+        return await _testCaseClient.GetTestCasesCoreHandlerNewApi(_httpClient, _projectKey, reqString);
+    }
+
     [Obsolete("not used")]
-    private async Task<List<ZephyrTestCaseRoot>> GetTestCasesNew(string statuses)
+    public async Task<List<ZephyrTestCaseRoot>> GetTestCasesNew(string statuses)
     {
         _logger.LogInformation("Getting test cases by project key {Key}", _projectKey);
 
@@ -201,7 +206,7 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-        
+
             var wrapper = JsonSerializer.Deserialize<TestCaseResponseWrapper>(content)!;
 
             var testCases = wrapper.Results.ToList();
@@ -215,7 +220,7 @@ public class Client : IClient
                 countOfTests += testCases.Count;
 
                 _logger.LogInformation("Got {Count} test cases", countOfTests);
-        
+
             }
             else
             {
@@ -251,11 +256,11 @@ public class Client : IClient
     }
 
 
-    public async Task<TestCaseTracesResponseWrapper?> GetTestCaseTracesV2(string testCaseKey)
+    public async Task<TestCaseTracesResponseWrapper?> GetTestCaseTracesV2(string testCaseKey, bool isArchived)
     {
         _logger.LogInformation("Getting test case by key {Key} (TracesV2)", testCaseKey);
-        
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/search?maxResults={1}&query=testCase.key = \"{testCaseKey}\"");
+
+        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/search?maxResults={1}&query=testCase.key = \"{testCaseKey}\"&archived={isArchived}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -263,7 +268,7 @@ public class Client : IClient
                 testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
             return null;
         }
-        
+
         var content = await response.Content.ReadAsStringAsync();
         TestCaseTracesResponseWrapper? traceRoot  = null;
         try
@@ -292,7 +297,7 @@ public class Client : IClient
 
         var content = await response.Content.ReadAsStringAsync();
         var traceRoot = JsonSerializer.Deserialize<TraceLinksRoot>(content);
-        
+
         return traceRoot;
     }
 
@@ -412,7 +417,7 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        
+
         var issue = JsonSerializer.Deserialize<JiraIssue>(content)!;
 
         _detailedLogService.LogDebug("Got issue: {@Issue}", issue);
@@ -519,7 +524,7 @@ public class Client : IClient
         var confluenceLinks = await GetConfluenceLinksFromConfluenceApi(confluencePageId);
 
         _detailedLogService.LogDebug("Got confluence links: {@Issue}", confluenceLinks);
-        
+
         // exclude broken entities
         confluenceLinks = confluenceLinks.Where(x => x.Title != null).ToList();
         return confluenceLinks;
@@ -553,6 +558,28 @@ public class Client : IClient
             _logger.LogError($"Some error on ownerKey {ownerKey} parsing: {e.Message}");
         }
         return null;
+    }
+
+    public async Task<List<AltAttachmentResult>> GetAltAttachmentsForTestCase(string testCaseId)
+    {
+        _logger.LogInformation("Getting attachments by test case id {Id}", testCaseId);
+
+        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseId}?fields=attachments");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get attachments by test case Id {Id}. Status code: {StatusCode}. Response: {Response}",
+                testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new ApiException($"Failed to get attachments by test case key {testCaseId}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var attachmentsWrapper = JsonSerializer.Deserialize<AltAttachmentsResponse>(content);
+
+        _detailedLogService.LogDebug("Got attachments {@Attachments}", attachmentsWrapper.Attachments);
+
+        return attachmentsWrapper.Attachments;
     }
 
     public async Task<List<ZephyrAttachment>> GetAttachmentsForTestCase(string testCaseKey)

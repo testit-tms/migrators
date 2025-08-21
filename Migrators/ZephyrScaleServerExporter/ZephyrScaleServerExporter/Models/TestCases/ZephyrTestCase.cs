@@ -26,7 +26,7 @@ public class ZephyrTestCase
     [JsonPropertyName("status")]
     public string? Status { get; set; }
 
-    [JsonPropertyName("issueLinks")] 
+    [JsonPropertyName("issueLinks")]
     public List<string>? IssueLinks { get; set; } = new();
 
     [JsonPropertyName("testScript")]
@@ -35,7 +35,7 @@ public class ZephyrTestCase
     [JsonPropertyName("customFields")]
     public Dictionary<string, object>? CustomFields { get; set; }
 
-    [JsonPropertyName("parameters")] 
+    [JsonPropertyName("parameters")]
     public required Dictionary<string, object> Parameters { get; set; } = new();
 
     [JsonPropertyName("folder")]
@@ -46,6 +46,10 @@ public class ZephyrTestCase
 
     [JsonPropertyName("owner")]
     public string? OwnerKey { get; set; }
+
+    public string? JiraId { get; set; } = string.Empty;
+
+    public bool IsArchived { get; set; } = false;
 }
 
 public class ZephyrArchivedTestCase

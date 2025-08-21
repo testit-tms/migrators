@@ -6,17 +6,21 @@ You can use this exporter to export your test cases from Zephyr Scale Server.
 
 You can download the latest version of the ZephyrScaleServerExporter from the [releases](https://github.com/testit-tms/migrators/releases/latest) page.
 
-## Merge functionality for batches
+
+## Feature: exporting archived
+
+these testcases will have 'Archived' tag
+
+To enable archived export add this line to your configuration
 
 ```json
 {
   "zephyr": {
-    "merge": true
+    "exportArchived": true
   }
 }
 ```
 
-It will take in account `resultPath` and `projectKey`
 
 ## Feature: ignore filter
 
@@ -56,6 +60,17 @@ Where:
 "count": 1000                 // test cases per one batch
 ```
 
+## Merge functionality for batches
+
+```json
+{
+  "zephyr": {
+    "merge": true
+  }
+}
+```
+
+It will take in account `resultPath` and `projectKey`
 
 ## Mapping for attribute "Состояние":
 

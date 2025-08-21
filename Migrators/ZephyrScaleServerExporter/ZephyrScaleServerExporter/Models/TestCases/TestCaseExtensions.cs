@@ -12,6 +12,7 @@ public static class TestCaseExtensions
     {
         return new ZephyrTestCase
         {
+            JiraId = tc.Id.ToString(),
             Key = tc.Key,
             Name = tc.Name,
             Description = tc.Description,
