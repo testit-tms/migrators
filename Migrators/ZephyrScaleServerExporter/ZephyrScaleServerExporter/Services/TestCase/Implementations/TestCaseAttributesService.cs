@@ -1,7 +1,9 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Models;
 using ZephyrScaleServerExporter.AttrubuteMapping;
+using ZephyrScaleServerExporter.Models;
 using ZephyrScaleServerExporter.Models.TestCases;
 using Attribute = Models.Attribute;
 using Constants = ZephyrScaleServerExporter.Models.Common.Constants;
@@ -49,9 +51,9 @@ internal class TestCaseAttributesService(
             zephyrTestCase, attributes, attributeMap, requiredAttributeNames.ToImmutableList());
         requiredAttributeNames.Clear();
         requiredAttributeNames.AddRange(updatedRequiredNames);
-        
+
         PopulateAttributesWithEmptyCheckboxes(attributes, attributeMap);
-        
+
         return attributes;
     }
 
@@ -64,11 +66,11 @@ internal class TestCaseAttributesService(
         Dictionary<string, Attribute> attributeMap)
     {
         var allNotUsedAttributes = attributeMap
-            .Where(x => 
+            .Where(x =>
                 x.Value is { Type: AttributeType.Checkbox, IsRequired: false })
-            .Where(x => 
+            .Where(x =>
                 attributes.Find(a => a.Id == x.Value.Id) == null);
-        
+
         attributes.AddRange(
             allNotUsedAttributes.Select(x => new CaseAttribute
             {
@@ -77,7 +79,7 @@ internal class TestCaseAttributesService(
             })
         );
     }
-    
+
     /// <summary>
     /// Make attributeMap filled with isRequired = false attributes if needed
     /// (some attributes are not present in current testCase)
@@ -97,11 +99,11 @@ internal class TestCaseAttributesService(
             SetAttributesNotRequiredFromList(attributeMap, newRequiredAttributeNames);
             return (attributeMap, []);
         }
-        
+
         // add custom attributes
         attributes.AddRange(ConvertAttributes(zephyrTestCase.CustomFields!, attributeMap));
 
-        var (unusedRequiredAttributeNames, usedRequiredAttributeNames) 
+        var (unusedRequiredAttributeNames, usedRequiredAttributeNames)
             = GetUnusedRequiredAttributes(zephyrTestCase, newRequiredAttributeNames);
 
         detailedLogService.LogDebug("UnusedRequiredAttributeNames: {List}", unusedRequiredAttributeNames);
@@ -110,8 +112,8 @@ internal class TestCaseAttributesService(
 
         return (attributeMap, usedRequiredAttributeNames);
     }
-    
-    
+
+
     /// <summary>
     /// change status attribute in place to it's remapping from mapping.json file
     /// </summary>
@@ -130,16 +132,16 @@ internal class TestCaseAttributesService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error while mapping attribute value or read the file");
+            logger.LogWarning(ex, "Error while mapping attribute value or read the file");
         }
     }
-    
+
     private (ImmutableList<string>, ImmutableList<string>) GetUnusedRequiredAttributes(
         ZephyrTestCase zephyrTestCase, ImmutableList<string> requiredAttributeNames)
     {
         // make a copy for consistency
         var newRequiredAttributeNames = requiredAttributeNames.Select(x => x).ToList();
-        
+
         // all matched C = (A && B)
         var usedRequiredAttributeNames = zephyrTestCase.CustomFields!.Keys
             .Where(n => newRequiredAttributeNames.Contains(n)).ToList();
@@ -149,9 +151,9 @@ internal class TestCaseAttributesService(
         newRequiredAttributeNames.RemoveAll(n => usedRequiredAttributeNames.Contains(n));
         return (newRequiredAttributeNames.ToImmutableList(), usedRequiredAttributeNames.ToImmutableList());
     }
-    
+
     private void SetAttributesNotRequiredFromList(
-        Dictionary<string, Attribute> attributeMap, 
+        Dictionary<string, Attribute> attributeMap,
         ImmutableList<string> matchingList)
     {
         logger.LogInformation("Checking required attributes");
@@ -164,7 +166,7 @@ internal class TestCaseAttributesService(
         }
     }
 
-    private List<CaseAttribute> ConvertAttributes(Dictionary<string, object?> fields, 
+    private List<CaseAttribute> ConvertAttributes(Dictionary<string, object?> fields,
         Dictionary<string, Attribute> attributeMap)
     {
         detailedLogService.LogDebug("Converting attributes for test case");
@@ -187,8 +189,8 @@ internal class TestCaseAttributesService(
                 new CaseAttribute
                 {
                     Id = attribute.Id,
-                    Value = attribute.Type == AttributeType.MultipleOptions ? 
-                        ConvertMultipleValue(zephyrValue, attribute.Options) 
+                    Value = attribute.Type == AttributeType.MultipleOptions ?
+                        ConvertMultipleValue(zephyrValue, attribute.Options)
                         : zephyrValue,
                 }
             );
@@ -198,9 +200,9 @@ internal class TestCaseAttributesService(
 
         return attributes;
     }
-    
-    
-    
+
+
+
     private List<string> ConvertMultipleValue(string attributeValue, List<string> options)
     {
         logger.LogInformation("Converting multiple value {Value} with options {@Options}", attributeValue, options);
@@ -208,12 +210,12 @@ internal class TestCaseAttributesService(
         var testCaseValues = new List<string>();
 
         var selectedOptions = options
-            .Where(option => 
-                attributeValue.Contains(option) 
-                && (attributeValue.Contains(option + ", ") 
-                    || attributeValue.Contains(", " + option) 
+            .Where(option =>
+                attributeValue.Contains(option)
+                && (attributeValue.Contains(option + ", ")
+                    || attributeValue.Contains(", " + option)
                     || attributeValue == option));
-        
+
         foreach (var option in selectedOptions)
         {
             testCaseValues.Add(option);
