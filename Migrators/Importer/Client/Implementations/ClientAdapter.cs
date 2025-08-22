@@ -623,6 +623,11 @@ public class ClientAdapter(
 
         try
         {
+            // check parameter and if "" change to N/A
+            if (parameter.Value == null || parameter.Value.Trim() == string.Empty)
+            {
+                parameter.Value = "N/A";
+            }
             var model = new CreateParameterApiModel(name: parameter.Name,
                 value: parameter.Value);
 

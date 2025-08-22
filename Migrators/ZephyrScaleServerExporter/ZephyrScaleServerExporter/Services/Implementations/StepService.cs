@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Models;
 using ZephyrScaleServerExporter.Client;
 using ZephyrScaleServerExporter.Models.Attachment;
@@ -11,6 +12,7 @@ namespace ZephyrScaleServerExporter.Services.Implementations;
 internal partial class StepService(
     IDetailedLogService detailedLogService,
     IAttachmentService attachmentService,
+    ILogger<StepService> logger,
     IParameterService parameterService,
     IClient client)
     : IStepService
@@ -24,34 +26,41 @@ internal partial class StepService(
     /// Download `currentStep.TestCaseKey`, listed in `sharedSteps` for `testCaseId`
     /// </summary>
     /// <returns>List of downloaded files</returns>
-    private async Task<List<ZephyrAttachment>> DownloadSharedStepsAttachments(Guid testCaseId, 
+    private async Task<List<ZephyrAttachment>> DownloadSharedStepsAttachments(Guid testCaseId,
         ZephyrStep currentStep, List<Step> sharedSteps)
     {
-        if (currentStep.TestCaseKey == null)
-            return new List<ZephyrAttachment>();
-        var targetAttachments = new List<string>();
-        sharedSteps.ForEach(s =>
+        try
         {
-            targetAttachments.AddRange(s.GetAllAttachments());
-        });
-        var allCaseAttachments = await client.GetAttachmentsForTestCase(currentStep.TestCaseKey);
+            if (currentStep.TestCaseKey == null)
+                return [];
 
-        var sharedAttachments = allCaseAttachments
-            .Where(x => targetAttachments.Contains(x.FileName)).ToList();
+            var targetAttachments = new List<string>();
+            sharedSteps.ForEach(s => { targetAttachments.AddRange(s.GetAllAttachments()); });
+            var allCaseAttachments = await client.GetAttachmentsForTestCase(currentStep.TestCaseKey);
 
-        var tasks = sharedAttachments.AsParallel()
-            .WithDegreeOfParallelism(Utils.GetLogicalProcessors()).Select(async x =>
+            var sharedAttachments = allCaseAttachments
+                .Where(x => targetAttachments.Contains(x.FileName)).ToList();
+
+            var tasks = sharedAttachments.AsParallel()
+                .WithDegreeOfParallelism(Utils.GetLogicalProcessors()).Select(async x =>
+                {
+                    x.FileName = await attachmentService.DownloadAttachment(testCaseId, x, true);
+                    return x;
+                }).ToList();
+            var results = await Task.WhenAll(tasks);
+            sharedAttachments = results.ToList();
+
+            return sharedAttachments;
+        }
+        catch (Exception e)
         {
-            x.FileName = await attachmentService.DownloadAttachment(testCaseId, x, true);
-            return x;
-        }).ToList();
-        var results = await Task.WhenAll(tasks);
-        sharedAttachments = results.ToList();
-        
-        return sharedAttachments;
+            logger.LogWarning("Failed to get shared step attachment: {Message}, trace: {StackTrace}",
+                e.Message, e.StackTrace);
+        }
+        return [];
     }
 
-    private async Task<List<string>> HandleStepAttachments(Guid testCaseId, ZephyrStep step) 
+    private async Task<List<string>> HandleStepAttachments(Guid testCaseId, ZephyrStep step)
     {
         List<string> attachments = new List<string>();
         if (step.Attachments == null || step.Attachments.Count == 0)
@@ -65,7 +74,7 @@ internal partial class StepService(
                 .DownloadAttachmentById(testCaseId, x!, true)).ToList();
         var fileNames = await Task.WhenAll(calls);
         attachments.AddRange(fileNames);
-        
+
         return attachments;
     }
 
@@ -102,7 +111,7 @@ internal partial class StepService(
         };
     }
 
-    private async Task<List<Step>> ProcessStepOrSharedStep(Guid testCaseId, 
+    private async Task<List<Step>> ProcessStepOrSharedStep(Guid testCaseId,
         ZephyrStep step, List<Iteration> iterations, int stepNumber)
     {
         if (string.IsNullOrEmpty(step.TestCaseKey))
@@ -111,20 +120,20 @@ internal partial class StepService(
             detailedLogService.LogInformation("Converted step: {@Step}", newStep);
             return [newStep];
         }
-        
+
         // explicit copy before [AddSharedPreString] for duplicate prevention
         var sharedSteps = (await ConvertSharedSteps(testCaseId, step.TestCaseKey, iterations))
             .Select(Step.CopyFrom).ToList();
         detailedLogService.LogInformation("Converted shared steps: {@SharedSteps}", sharedSteps);
-        var sharedAttachments = await 
+        var sharedAttachments = await
             DownloadSharedStepsAttachments(testCaseId, step, sharedSteps);
         detailedLogService.LogInformation("Converted shared attachments: {@SharedAttachments}", sharedAttachments);
         AddSharedPreString(sharedSteps, stepNumber, step.TestCaseKey);
-        
+
         return sharedSteps;
     }
 
-    private async Task<StepsData> HandleStepTestScript(Guid testCaseId, ZephyrTestScript testScript, 
+    private async Task<StepsData> HandleStepTestScript(Guid testCaseId, ZephyrTestScript testScript,
         List<Iteration> iterations)
     {
         if (testScript.Steps == null)
@@ -141,21 +150,21 @@ internal partial class StepService(
             callList.Add(ProcessStepOrSharedStep(testCaseId, step, iterations, stepNumber));
         }
         var results = await Task.WhenAll(callList.ToArray());
-    
+
         var stepList = new List<Step>();
         results.ToList().ForEach(x => stepList.AddRange(x));
-    
+
         return new StepsData
         {
             Steps = stepList,
             Iterations = iterations
         };
     }
-    
+
     public async Task<StepsData> ConvertSteps(Guid testCaseId, ZephyrTestScript testScript, List<Iteration> iterations)
     {
         detailedLogService.LogInformation("Converting steps from test script {@TestScript}", testScript);
-        
+
         if (testScript.Steps != null)
         {
             return await HandleStepTestScript(testCaseId, testScript, iterations);
@@ -172,7 +181,7 @@ internal partial class StepService(
         };
     }
 
-    private async Task<List<Step>> ConvertArchivedSteps(Guid testCaseId, 
+    private async Task<List<Step>> ConvertArchivedSteps(Guid testCaseId,
         ZephyrArchivedTestScript testScript, List<Iteration> iterations)
     {
         detailedLogService.LogInformation("Converting steps from test script {@TestScript}", testScript);
@@ -188,7 +197,7 @@ internal partial class StepService(
                 if (string.IsNullOrEmpty(step.TestCaseKey))
                 {
                     var newStep = await ConvertStep(testCaseId, step, iterations);
-                    
+
                     stepList.Add(newStep);
                 }
                 else
@@ -269,7 +278,7 @@ internal partial class StepService(
         var t2 = DownloadAttachments(testCaseId, expected.Attachments, newStep.ExpectedAttachments);
         var t3 = DownloadAttachments(testCaseId, testData.Attachments, newStep.TestDataAttachments);
         await Task.WhenAll(t1, t2, t3);
-        
+
         return newStep;
     }
 
@@ -305,7 +314,7 @@ internal partial class StepService(
         {
             return $"<br><p>{customField.CustomField.Name}: " +
                    $"{customField.CustomField.Options
-                       .Find(o => 
+                       .Find(o =>
                            o.Id == customField.IntValue.GetValueOrDefault())?.Name}</p>";
         }
 
@@ -333,7 +342,7 @@ internal partial class StepService(
     {
 
         var ids = new List<int>();
-        
+
         var reg = StringIdRegex();
         MatchCollection m = reg.Matches(strWithIds);
 
@@ -346,12 +355,12 @@ internal partial class StepService(
     }
 
     /// <summary>
-    /// if testCaseKey already used somewhere and imported as shared steps container, then it 
+    /// if testCaseKey already used somewhere and imported as shared steps container, then it
     /// cached in _sharedStepsData and the data can be used again.
-    /// 
+    ///
     /// Proceed "AttachmentService.CopySharedAttachments" to copy attachment files to the testCaseId's folder.
     /// </summary>
-    private async Task<List<Step>> UseSharedStepsDataForKey(Guid testCaseId, string testCaseKey) 
+    private async Task<List<Step>> UseSharedStepsDataForKey(Guid testCaseId, string testCaseKey)
     {
         var data = _sharedStepsData[testCaseKey];
         detailedLogService.LogInformation("Return saved shared steps {@Steps}", data);
@@ -394,7 +403,7 @@ internal partial class StepService(
                 _sharedStepsData.TryAdd(testCaseKey, new List<Step>());
                 return new List<Step>();
             }
-            var archivedSharedSteps = await ConvertArchivedSteps(testCaseId, 
+            var archivedSharedSteps = await ConvertArchivedSteps(testCaseId,
                 zephyrArchivedTestCase.TestScript, iterations);
             _sharedStepsData.TryAdd(testCaseKey, archivedSharedSteps);
 
