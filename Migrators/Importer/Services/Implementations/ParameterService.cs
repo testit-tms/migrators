@@ -28,10 +28,33 @@ internal class ParameterService(ILogger<ParameterService> logger, IClientAdapter
                 continue;
             }
 
-            var newParameter = await clientAdapter.CreateParameter(parameter);
-            ids.Add(newParameter);
-        }
+            try
+            {
+                var newParameter = await clientAdapter.CreateParameter(parameter);
+                ids.Add(newParameter);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to create parameter {Name}", parameter.Name);
+                var tmsParametersAgain = await clientAdapter.GetParameter(parameter.Name);
+                var nAParameter = tmsParametersAgain.FirstOrDefault(p => p.Value == "N/A");
+                var nothingParameter = tmsParametersAgain.FirstOrDefault(p => p.Value == string.Empty);
+                if (nAParameter is not null)
+                {
+                    logger.LogDebug("Parameter {Name} already exist with N/A", parameter.Name);
 
+                    ids.Add(nAParameter);
+                    continue;
+                }
+                if (nothingParameter is not null)
+                {
+                    logger.LogDebug("Parameter {Name} already exist with empty string", parameter.Name);
+
+                    ids.Add(nothingParameter);
+                    continue;
+                }
+            }
+        }
         return ids;
     }
 }
