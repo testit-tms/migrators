@@ -235,7 +235,7 @@ namespace TestRailXmlExporter.Services
                 {
                     Id = customAttributes.FirstOrDefault(customAttribute =>
                         customAttribute.Name == attribute.Name)?.Id ?? Guid.NewGuid(),
-                    Value = XElement.Parse(attribute?.OuterXml ?? string.Empty)?.Element("value")?.Value ?? string.Empty
+                    Value = XElement.Parse(attribute?.OuterXml ?? string.Empty)?.Value ?? string.Empty
                 };
             }).ToList() ?? new List<CaseAttribute>();
 
