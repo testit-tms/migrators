@@ -618,7 +618,14 @@ public class Client : IClient
     {
         try
         {
-            return await _httpClient.GetByteArrayAsync(FromBase(url));
+            if (url.Contains("http://") || url.Contains("https://") || url.Contains(_baseUrl.ToString()))
+            {
+                return await _httpClient.GetByteArrayAsync(url);
+            }
+            else
+            {
+                return await _httpClient.GetByteArrayAsync(FromBase(url));
+            }
         }
         catch (Exception ex)
         {
