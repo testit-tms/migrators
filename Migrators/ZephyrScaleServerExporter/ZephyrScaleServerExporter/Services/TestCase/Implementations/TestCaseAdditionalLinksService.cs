@@ -100,16 +100,18 @@ public class TestCaseAdditionalLinksService(
         var newLinks = new List<Link>();
         var issueIds = traceLinks.Where(x => x.IssueId != null)
             .Select(x => x.IssueId).ToList();
-        var url = client.GetUrl();
+        var url = client.GetBaseUrl().ToString().TrimEnd('/');
 
         foreach (var issueId in issueIds)
         {
             var issue = await client.GetIssueById(issueId!);
+            var newUrl = url + "/browse/" + issue.Key;
+
             newLinks.Add(
                 new Link
                 {
                     Title = issue.Fields.Name,
-                    Url = new Uri(url, "browse/" + issue.Key).ToString()
+                    Url = newUrl
                 }
             );
         }

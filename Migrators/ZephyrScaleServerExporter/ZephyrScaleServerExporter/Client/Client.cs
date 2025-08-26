@@ -23,8 +23,9 @@ public class Client : IClient
     private readonly AppConfig _config;
     private readonly HttpClient _confluenceHttpClient;
     private readonly string _projectKey;
-    private readonly Uri _url;
-    private bool _unaunthorizedConfluence;
+    private readonly Uri _baseUrl;
+    private readonly Uri _confluenceBaseUrl;
+    private bool _unauthorizedConfluence;
     private readonly IDetailedLogService _detailedLogService;
 
     public Client(ILogger<Client> logger,
@@ -38,7 +39,8 @@ public class Client : IClient
         _config = config.Value;
         _logger = logger;
         _projectKey = _config.Zephyr.ProjectKey;
-        _url = new Uri(_config.Zephyr.Url);
+        _baseUrl = new Uri(_config.Zephyr.Url);
+        _confluenceBaseUrl = new Uri(_config.Zephyr.Confluence);
         _detailedLogService = detailedLogService;
 
         _httpClient = httpClient;
@@ -50,7 +52,6 @@ public class Client : IClient
 
     private void InitHttpClient()
     {
-        _httpClient.BaseAddress = _url;
         _httpClient.Timeout = TimeSpan.FromSeconds(1000);
 
         var header = GetAuthHeaderBy(_config.Zephyr.Token,
@@ -65,7 +66,6 @@ public class Client : IClient
 
     private void InitConfluenceHttpClient()
     {
-        _confluenceHttpClient.BaseAddress = new Uri(_config.Zephyr.Confluence);
         _confluenceHttpClient.Timeout = TimeSpan.FromSeconds(1000);
 
         var header = GetAuthHeaderBy(_config.Zephyr.ConfluenceToken,
@@ -77,6 +77,7 @@ public class Client : IClient
         _confluenceHttpClient.DefaultRequestHeaders
             .Add("Authorization", header);
     }
+
 
     private static string? GetAuthHeaderBy(string token, string login, string password)
     {
@@ -98,7 +99,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting project by key {ProjectKey}", _projectKey);
 
-        var response = await _httpClient.GetAsync($"/rest/api/2/project/{_projectKey}");
+        var response = await GetAsync($"/rest/api/2/project/{_projectKey}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get project by key {ProjectKey}. Status code: {StatusCode}. Response: {Response}",
@@ -119,7 +120,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting statuses by project id {Id}", projectId);
 
-        var response = await _httpClient.GetAsync($"rest/tests/1.0/testcasestatus?projectId={projectId}");
+        var response = await GetAsync($"rest/tests/1.0/testcasestatus?projectId={projectId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -141,7 +142,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting custom fields by project id {Id}", projectId);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/project/{projectId}/customfields/testcase");
+        var response = await GetAsync($"/rest/tests/1.0/project/{projectId}/customfields/testcase");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -166,13 +167,13 @@ public class Client : IClient
     public async Task<List<ZephyrTestCase>> GetTestCasesWithFilter(int startAt, int maxResults, string statuses, string filter)
     {
         var reqString = $"/rest/tests/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=testCase.projectKey = \"{_projectKey}\" AND testCase.statusName IN ({statuses}) {filter}";
-        return await _testCaseClient.GetTestCasesCoreHandlerNewApi(_httpClient, _projectKey, reqString);
+        return await _testCaseClient.GetTestCasesCoreHandlerNewApi(_httpClient, _projectKey, FromBase(reqString));
     }
 
     public async Task<List<ZephyrTestCase>> GetTestCases(int startAt, int maxResults, string statuses)
     {
         var reqString = $"/rest/atm/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=projectKey = \"{_projectKey}\" AND status IN ({statuses})";
-        return await _testCaseClient.GetTestCasesCoreHandler(_httpClient, _projectKey, reqString);
+        return await _testCaseClient.GetTestCasesCoreHandler(_httpClient, _projectKey, FromBase(reqString));
     }
 
     public async Task<List<ZephyrTestCase>> GetTestCasesArchived(int startAt, int maxResults, string statuses)
@@ -195,7 +196,7 @@ public class Client : IClient
         {
             var reqString = $"/rest/tests/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=testCase.projectKey = \"{_projectKey}\" AND testCase.statusName IN ({statuses})";
             _detailedLogService.LogDebug("reqString: {ReqString}", reqString);
-            var response = await _httpClient.GetAsync(reqString);
+            var response = await GetAsync(reqString);
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -237,7 +238,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test case by key {Key}", testCaseKey);
 
-        var response = await _httpClient.GetAsync($"/rest/atm/1.0/testcase/{testCaseKey}");
+        var response = await GetAsync($"/rest/atm/1.0/testcase/{testCaseKey}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -260,7 +261,8 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test case by key {Key} (TracesV2)", testCaseKey);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/search?maxResults={1}&query=testCase.key = \"{testCaseKey}\"&archived={isArchived}");
+        var response = await _httpClient.GetAsync(
+            FromBase($"/rest/tests/1.0/testcase/search?maxResults={1}&query=testCase.key = \"{testCaseKey}\"&archived={isArchived}"));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -286,7 +288,7 @@ public class Client : IClient
     {
 
         _logger.LogInformation("Getting test case by key {Key}", testCaseKey);
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseKey}");
+        var response = await GetAsync($"/rest/tests/1.0/testcase/{testCaseKey}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -305,7 +307,8 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test case by key {Key}", testCaseKey);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseKey}?fields=key,name,testScript(id,text,steps(index,reflectRef,description,text,expectedResult,testData,attachments,customFieldValues,id,stepParameters(id,testCaseParameterId,value),testCase(id,key,name,archived,majorVersion,latestVersion,parameters(id,name,defaultValue,index)))),testData,parameters(id,name,defaultValue,index),paramType");
+        var response = await GetAsync(
+            $"/rest/tests/1.0/testcase/{testCaseKey}?fields=key,name,testScript(id,text,steps(index,reflectRef,description,text,expectedResult,testData,attachments,customFieldValues,id,stepParameters(id,testCaseParameterId,value),testCase(id,key,name,archived,majorVersion,latestVersion,parameters(id,name,defaultValue,index)))),testData,parameters(id,name,defaultValue,index),paramType");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -327,7 +330,8 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting parameters by test case key {Key}", testCaseKey);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseKey}?fields=testData,parameters(id,name,defaultValue,index),paramType");
+        var response = await GetAsync(
+            $"/rest/tests/1.0/testcase/{testCaseKey}?fields=testData,parameters(id,name,defaultValue,index),paramType");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -351,7 +355,8 @@ public class Client : IClient
                 {
                     try
                     {
-                        var parameter = JsonSerializer.Deserialize<ZephyrDataParameter>(zephyrIteration[parameterName].ToString()!)!;
+                        var parameter = JsonSerializer.Deserialize<ZephyrDataParameter>(
+                            zephyrIteration[parameterName].ToString()!)!;
                         dataParameters[parameterName] = parameter;
                     }
                     catch (Exception)
@@ -384,14 +389,15 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting components by project key {Key}", _projectKey);
 
-        var response = await _httpClient.GetAsync($"/rest/api/2/project/{_projectKey}/components");
+        var response = await GetAsync($"/rest/api/2/project/{_projectKey}/components");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
                 "Failed to get components by project key {Key}. Status code: {StatusCode}. Response: {Response}",
                 _projectKey, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new ApiException($"Failed to get components by project key {_projectKey}. Status code: {response.StatusCode}");
+            throw new ApiException(
+                $"Failed to get components by project key {_projectKey}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -406,7 +412,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting issue by id {IssueId}", issueId);
 
-        var response = await _httpClient.GetAsync($"/rest/api/2/issue/{issueId}");
+        var response = await GetAsync($"/rest/api/2/issue/{issueId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -429,7 +435,8 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting web links by test case id {Id}", testCaseId);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseId}/tracelinks/weblink?fields=url,urlDescription");
+        var response = await GetAsync(
+            $"/rest/tests/1.0/testcase/{testCaseId}/tracelinks/weblink?fields=url,urlDescription");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -453,14 +460,16 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting confluence page ids by test case id {Id}", testCaseId);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseId}/tracelinks/confluencepage?fields=confluencePageId");
+        var response = await GetAsync(
+            $"/rest/tests/1.0/testcase/{testCaseId}/tracelinks/confluencepage?fields=confluencePageId");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
                 "Failed to get confluence page ids by test case id {Id}. Status code: {StatusCode}. Response: {Response}",
                 testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new ApiException($"Failed to get confluence page ids by test case id {testCaseId}. Status code: {response.StatusCode}");
+            throw new ApiException(
+                $"Failed to get confluence page ids by test case id {testCaseId}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -476,7 +485,7 @@ public class Client : IClient
     /// </summary>
     private async Task<List<ZephyrConfluenceLink>> GetConfluenceLinksFromConfluenceApi(string confluencePageId)
     {
-        if (_unaunthorizedConfluence)
+        if (_unauthorizedConfluence)
         {
             _detailedLogService.LogDebug("Unauthorized Confluence API");
             throw new ApiException($"Unauthorized Confluence API");
@@ -485,7 +494,8 @@ public class Client : IClient
 
         // Deprecated jira call:
         // .GetAsync($"/rest/tests/1.0/confluence?confluencePageIds={confluencePageId}");
-        var response = await _confluenceHttpClient.GetAsync($"/rest/api/content/{confluencePageId}");
+        var response = await GetConfluenceAsync(
+            $"/rest/api/content/{confluencePageId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -495,7 +505,7 @@ public class Client : IClient
 
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                _unaunthorizedConfluence = true;
+                _unauthorizedConfluence = true;
             }
             throw new HttpRequestException($"Failed to get confluence links by confluence page id {confluencePageId} (Confluence API). Status code: {response.StatusCode}");
         }
@@ -506,11 +516,7 @@ public class Client : IClient
         var uri = jsonData?["_links"]?["webui"]?.Value<string>() ?? null;
         if (title != null && uri != null)
         {
-            var baseUrl = _confluenceHttpClient.BaseAddress!.ToString();
-            int lastSlash = baseUrl.LastIndexOf('/');
-            baseUrl = (lastSlash > -1) ? baseUrl.Substring(0, lastSlash) : baseUrl;
-
-            var url = baseUrl + uri;
+            var url = _confluenceBaseUrl.ToString().TrimEnd('/') + uri;
             return [new ZephyrConfluenceLink(title, url)];
         }
         return [];
@@ -539,7 +545,7 @@ public class Client : IClient
         try
         {
             _logger.LogInformation("Getting owner by key {Key}", ownerKey);
-            var response = await _httpClient.GetAsync($"/rest/api/2/user?key={ownerKey}");
+            var response = await GetAsync($"/rest/api/2/user?key={ownerKey}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -564,14 +570,16 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting attachments by test case id {Id}", testCaseId);
 
-        var response = await _httpClient.GetAsync($"/rest/tests/1.0/testcase/{testCaseId}?fields=attachments");
+        var response = await GetAsync(
+            $"/rest/tests/1.0/testcase/{testCaseId}?fields=attachments");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
                 "Failed to get attachments by test case Id {Id}. Status code: {StatusCode}. Response: {Response}",
                 testCaseId, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new ApiException($"Failed to get attachments by test case key {testCaseId}. Status code: {response.StatusCode}");
+            throw new ApiException(
+                $"Failed to get attachments by test case key {testCaseId}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -586,14 +594,16 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting attachments by test case key {Key}", testCaseKey);
 
-        var response = await _httpClient.GetAsync($"/rest/atm/1.0/testcase/{testCaseKey}/attachments");
+        var response = await GetAsync(
+            $"/rest/atm/1.0/testcase/{testCaseKey}/attachments");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
                 "Failed to get attachments by test case key {Key}. Status code: {StatusCode}. Response: {Response}",
                 testCaseKey, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new ApiException($"Failed to get attachments by test case key {testCaseKey}. Status code: {response.StatusCode}");
+            throw new ApiException(
+                $"Failed to get attachments by test case key {testCaseKey}. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -608,7 +618,7 @@ public class Client : IClient
     {
         try
         {
-            return await _httpClient.GetByteArrayAsync(url);
+            return await _httpClient.GetByteArrayAsync(FromBase(url));
         }
         catch (Exception ex)
         {
@@ -623,7 +633,7 @@ public class Client : IClient
         var url = $"/rest/tests/1.0/attachment/{id}";
         try
         {
-            return await _httpClient.GetByteArrayAsync(url);
+            return await _httpClient.GetByteArrayAsync(FromBase(url));
         }
         catch (Exception ex)
         {
@@ -633,8 +643,28 @@ public class Client : IClient
         }
     }
 
-    public Uri GetUrl()
+    public Uri GetBaseUrl()
     {
-        return _url;
+        return _baseUrl;
+    }
+
+    private string FromBase(string uri)
+    {
+        return _baseUrl.ToString().TrimEnd('/') + '/' + uri.TrimStart('/');
+    }
+
+    private string FromConfluenceBase(string uri)
+    {
+        return _confluenceBaseUrl.ToString().TrimEnd('/') + '/' + uri.TrimStart('/');
+    }
+
+    private async Task<HttpResponseMessage> GetAsync(string requestUri)
+    {
+        return await _httpClient.GetAsync(FromBase(requestUri));
+    }
+
+    private async Task<HttpResponseMessage> GetConfluenceAsync(string requestUri)
+    {
+        return await _confluenceHttpClient.GetAsync(FromConfluenceBase(requestUri));
     }
 }
