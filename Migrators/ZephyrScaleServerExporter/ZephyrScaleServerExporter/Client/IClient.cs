@@ -28,5 +28,5 @@ public interface IClient
     Task<List<AltAttachmentResult>> GetAltAttachmentsForTestCase(string testCaseId);
     Task<byte[]> DownloadAttachment(string url, Guid testCaseId);
     Task<byte[]> DownloadAttachmentById(int id, Guid testCaseId);
-    Uri GetUrl();
+    Uri GetBaseUrl();
 }
