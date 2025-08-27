@@ -178,8 +178,8 @@ public class Client : IClient
 
     public async Task<List<ZephyrTestCase>> GetTestCasesArchived(int startAt, int maxResults, string statuses)
     {
-        var reqString = $"rest/tests/1.0/testcase/search?query=testCase.projectKey=\"{_projectKey}\"+AND+testCase.statusName+IN+({statuses})&startAt={startAt}&maxResults={maxResults}&archived=true";
-        return await _testCaseClient.GetTestCasesCoreHandlerNewApi(_httpClient, _projectKey, reqString);
+        var reqString = $"/rest/tests/1.0/testcase/search?query=testCase.projectKey=\"{_projectKey}\"+AND+testCase.statusName+IN+({statuses})&startAt={startAt}&maxResults={maxResults}&archived=true";
+        return await _testCaseClient.GetTestCasesCoreHandlerNewApi(_httpClient, _projectKey, FromBase(reqString));
     }
 
     [Obsolete("not used")]
@@ -261,8 +261,8 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting test case by key {Key} (TracesV2)", testCaseKey);
 
-        var response = await _httpClient.GetAsync(
-            FromBase($"/rest/tests/1.0/testcase/search?maxResults={1}&query=testCase.key = \"{testCaseKey}\"&archived={isArchived}"));
+        var response = await GetAsync(
+            $"/rest/tests/1.0/testcase/search?maxResults={1}&query=testCase.key = \"{testCaseKey}\"&archived={isArchived}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
