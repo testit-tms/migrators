@@ -38,6 +38,9 @@ jobs:
           - os: osx-x64
             artifact_name: Importer
             asset_name: Importer-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: Importer
+            asset_name: Importer-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -86,6 +89,9 @@ jobs:
           - os: osx-x64
             artifact_name: AllureExporter
             asset_name: AllureExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: AllureExporter
+            asset_name: AllureExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -133,6 +139,9 @@ jobs:
           - os: osx-x64
             artifact_name: AzureExporter
             asset_name: AzureExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -180,6 +189,9 @@ jobs:
           - os: osx-x64
             artifact_name: ZephyrScaleExporter
             asset_name: ZephyrScaleExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: ZephyrScaleExporter
+            asset_name: ZephyrScaleExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -227,6 +239,9 @@ jobs:
           - os: osx-x64
             artifact_name: ZephyrScaleServerExporter
             asset_name: ZephyrScaleServerExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: ZephyrScaleServerExporter
+            asset_name: ZephyrScaleServerExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -274,6 +289,9 @@ jobs:
           - os: osx-x64
             artifact_name: ZephyrSquadExporter
             asset_name: ZephyrSquadExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: ZephyrSquadExporter
+            asset_name: ZephyrSquadExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -321,6 +339,9 @@ jobs:
           - os: osx-x64
             artifact_name: ZephyrSquadServerExporter
             asset_name: ZephyrSquadServerExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: ZephyrSquadServerExporter
+            asset_name: ZephyrSquadServerExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -368,6 +389,9 @@ jobs:
           - os: osx-x64
             artifact_name: XRayExporter
             asset_name: XRayExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: XRayExporter
+            asset_name: XRayExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -415,6 +439,9 @@ jobs:
           - os: osx-x64
             artifact_name: TestLinkExporter
             asset_name: TestLinkExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: TestLinkExporter
+            asset_name: TestLinkExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -462,6 +489,9 @@ jobs:
           - os: osx-x64
             artifact_name: TestRailExporter
             asset_name: TestRailExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: TestRailExporter
+            asset_name: TestRailExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -509,6 +539,9 @@ jobs:
           - os: osx-x64
             artifact_name: TestRailXmlExporter
             asset_name: TestRailXmlExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: TestRailXmlExporter
+            asset_name: TestRailXmlExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -556,6 +589,9 @@ jobs:
           - os: osx-x64
             artifact_name: TestCollabExporter
             asset_name: TestCollabExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: TestCollabExporter
+            asset_name: TestCollabExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -603,6 +639,9 @@ jobs:
           - os: osx-x64
             artifact_name: PractiTestExporter
             asset_name: PractiTestExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: PractiTestExporter
+            asset_name: PractiTestExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -650,6 +689,9 @@ jobs:
           - os: osx-x64
             artifact_name: SpiraTestExporter
             asset_name: SpiraTestExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: SpiraTestExporter
+            asset_name: SpiraTestExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -697,6 +739,9 @@ jobs:
           - os: osx-x64
             artifact_name: HPALMExporter
             asset_name: HPALMExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: HPALMExporter
+            asset_name: HPALMExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -744,6 +789,9 @@ jobs:
           - os: osx-x64
             artifact_name: QaseExporter
             asset_name: QaseExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: QaseExporter
+            asset_name: QaseExporter-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
