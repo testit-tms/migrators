@@ -142,6 +142,30 @@ jobs:
           - os: osx-arm64
             artifact_name: AzureExporter
             asset_name: AzureExporter-osx-arm64-${{ github.event.release.tag_name }}
+          - os: win-x64
+            artifact_name: AzureExporter.exe
+            asset_name: AzureExporter-2019-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-2019-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-2019-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-2019-osx-arm64-${{ github.event.release.tag_name }}
+          - os: win-x64
+            artifact_name: AzureExporter.exe
+            asset_name: AzureExporter-2020-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-2020-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-2020-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: AzureExporter
+            asset_name: AzureExporter-2020-osx-arm64-${{ github.event.release.tag_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -152,6 +176,18 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8
+
+      - name: Set correct azure devops version
+        run: |
+          # If the asset_name contains '2019', update the package version in the csproj file
+          if [[ "${{ matrix.asset_name }}" == *2019* ]]; then
+            # Replace the PackageReference line with the required version
+            sed -i 's|<PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="[^"]*" />|<PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="16.153.0" />|' ${{ env.AZURE_DIR }}/AzureExporter.csproj
+          fi
+          if [[ "${{ matrix.asset_name }}" == *2020* ]]; then
+            # Replace the PackageReference line with the required version
+            sed -i 's|<PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="[^"]*" />|<PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="16.170.0" />|' ${{ env.AZURE_DIR }}/AzureExporter.csproj
+          fi
         
       - name: Restore dependencies
         run: dotnet restore ${{ env.AZURE_DIR }}

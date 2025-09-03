@@ -1,0 +1,49 @@
+name: Check TestCollab
+
+on:
+  pull_request:
+    paths:
+        - "Migrators/TestCollabExporter/**"
+env:
+  TESTCOLLAB_DIR: ./Migrators/TestCollabExporter
+
+
+jobs:
+   
+  testcollab_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestCollabExporter.exe
+            asset_name: TestCollabExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: TestCollabExporter
+            asset_name: TestCollabExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: TestCollabExporter
+          #   asset_name: TestCollabExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTCOLLAB_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTCOLLAB_DIR }} 
+                                    

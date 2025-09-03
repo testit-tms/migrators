@@ -1,0 +1,49 @@
+name: Check PractiTest
+
+on:
+  pull_request:
+    paths:
+        - "Migrators/PractiTestExporter/**"
+env:
+  PRACTITEST_DIR: ./Migrators/PractiTestExporter
+
+
+jobs: 
+                          
+  practitest_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: PractiTestExporter.exe
+            asset_name: PractiTestExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: PractiTestExporter
+            asset_name: PractiTestExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: PractiTestExporter
+          #   asset_name: PractiTestExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PRACTITEST_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.PRACTITEST_DIR }} 
+        

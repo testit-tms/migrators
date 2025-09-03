@@ -1,0 +1,88 @@
+name: Check Zephyr Scale
+
+on:
+  pull_request:
+    paths:
+        - "Migrators/ZephyrScaleExporter/**"
+        - "Migrators/ZephyrScaleServerExporter/**"
+env:
+  ZEPHYR_SCALE_DIR: ./Migrators/ZephyrScaleExporter
+  ZEPHYR_SCALE_SERVER_DIR: ./Migrators/ZephyrScaleServerExporter/ZephyrScaleServerExporter
+
+
+jobs:
+
+  zephyr_scale_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrScaleExporter.exe
+            asset_name: ZephyrScaleExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: ZephyrScaleExporter
+            asset_name: ZephyrScaleExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: ZephyrScaleExporter
+          #   asset_name: ZephyrScaleExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SCALE_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SCALE_DIR }} 
+                
+  zephyr_scale_server_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrScaleServerExporter.exe
+            asset_name: ZephyrScaleServerExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: ZephyrScaleServerExporter
+            asset_name: ZephyrScaleServerExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: ZephyrScaleServerExporter
+          #   asset_name: ZephyrScaleServerExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SCALE_SERVER_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SCALE_SERVER_DIR }} 
+                

@@ -8,6 +8,7 @@ namespace AzureExporter.Services;
 
 public class AttachmentService : IAttachmentService
 {
+    
     private readonly ILogger<AttachmentService> _logger;
     private readonly IClient _client;
     private readonly IWriteService _writeService;

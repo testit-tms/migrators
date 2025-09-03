@@ -1,0 +1,89 @@
+name: Check Zephyr Squad
+
+on:
+  pull_request:
+    paths:
+        - "Migrators/ZephyrSquadExporter/**"
+        - "Migrators/ZephyrSquadServerExporter/**"
+env:
+  ZEPHYR_SQUAD_DIR: ./Migrators/ZephyrSquadExporter
+  ZEPHYR_SQUAD_SERVER_DIR: ./Migrators/ZephyrSquadServerExporter
+
+
+jobs:
+
+  zephyr_squad_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrSquadExporter.exe
+            asset_name: ZephyrSquadExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: ZephyrSquadExporter
+            asset_name: ZephyrSquadExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: ZephyrSquadExporter
+          #   asset_name: ZephyrSquadExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SQUAD_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SQUAD_DIR }} 
+                   
+
+  zephyr_squad_server_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: ZephyrSquadServerExporter.exe
+            asset_name: ZephyrSquadServerExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: ZephyrSquadServerExporter
+            asset_name: ZephyrSquadServerExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: ZephyrSquadServerExporter
+          #   asset_name: ZephyrSquadServerExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.ZEPHYR_SQUAD_SERVER_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.ZEPHYR_SQUAD_SERVER_DIR }} 
+                   

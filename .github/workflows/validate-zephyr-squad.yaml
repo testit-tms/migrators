@@ -1,0 +1,13 @@
+name: Validate Zephyr Squad Tests
+
+on:
+  pull_request:
+    paths:
+      - "Migrators/ZephyrSquadExporterTests/**"
+      - "Migrators/ZephyrSquadExporter/**"
+
+jobs:
+  test:
+    uses: ./.github/workflows/test-workflow.yaml
+    with:
+      project_path: ./Migrators/ZephyrSquadExporterTests

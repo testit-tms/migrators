@@ -1,0 +1,48 @@
+name: Check SpiraTest
+
+on:
+  pull_request:
+    paths:
+        - "Migrators/SpiraTestExporter/**"
+env:
+  SPIRA_DIR: ./Migrators/SpiraTestExporter
+
+jobs:
+      
+  spiratest_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: SpiraTestExporter.exe
+            asset_name: SpiraTestExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: SpiraTestExporter
+            asset_name: SpiraTestExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: SpiraTestExporter
+          #   asset_name: SpiraTestExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SPIRA_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.SPIRA_DIR }} 
+        

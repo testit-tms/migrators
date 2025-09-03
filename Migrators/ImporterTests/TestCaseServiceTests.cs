@@ -13,9 +13,11 @@ public class TestCaseServiceTests
 {
     private ILogger<TestCaseService> _logger = null!;
     private IClientAdapter _clientAdapter = null!;
+    private IAdapterHelper _adapterHelper = null!;
     private IParserService _parserService = null!;
     private IParameterService _parameterService = null!;
     private IAttachmentService _attachmentService = null!;
+    private IBaseWorkItemService _baseWorkItemService = null!;
     private TestCaseService _testCaseService = null!;
 
     private static readonly Guid ProjectId = Guid.Parse("8e2b4dc4-f6c3-472f-a58f-d57b968bbee7");
@@ -27,10 +29,13 @@ public class TestCaseServiceTests
     {
         _logger = Substitute.For<ILogger<TestCaseService>>();
         _clientAdapter = Substitute.For<IClientAdapter>();
+        _adapterHelper = Substitute.For<IAdapterHelper>();
         _parserService = Substitute.For<IParserService>();
         _parameterService = Substitute.For<IParameterService>();
         _attachmentService = Substitute.For<IAttachmentService>();
-        _testCaseService = new TestCaseService(_logger, _clientAdapter, _parserService, _parameterService, _attachmentService);
+        _baseWorkItemService = Substitute.For<IBaseWorkItemService>();
+        _testCaseService = new TestCaseService(_logger, _clientAdapter, _adapterHelper, _parserService,
+            _parameterService, _baseWorkItemService, _attachmentService);
     }
 
     [Test]
