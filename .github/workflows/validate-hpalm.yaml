@@ -1,0 +1,13 @@
+name: Validate Hpalm Tests
+
+on:
+  pull_request:
+    paths:
+      - "Migrators/HPALMExporterTests/**"
+      - "Migrators/HPALMExporter/**"
+
+jobs:
+  test:
+    uses: ./.github/workflows/test-workflow.yaml
+    with:
+      project_path: ./Migrators/HPALMExporterTests

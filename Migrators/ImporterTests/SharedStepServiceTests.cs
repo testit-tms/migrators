@@ -14,6 +14,7 @@ public class SharedStepServiceTests
     private IClientAdapter _clientAdapter = null!;
     private IParserService _parserService = null!;
     private IAttachmentService _attachmentService = null!;
+    private IBaseWorkItemService _baseWorkItemService = null!;
     private SharedStepService _sharedStepService = null!;
 
     private static readonly Guid ProjectId = Guid.Parse("8e2b4dc4-f6c3-472f-a58f-d57b968bbee7");
@@ -26,8 +27,10 @@ public class SharedStepServiceTests
         _logger = Substitute.For<ILogger<SharedStepService>>();
         _clientAdapter = Substitute.For<IClientAdapter>();
         _parserService = Substitute.For<IParserService>();
+        _baseWorkItemService = Substitute.For<IBaseWorkItemService>();
         _attachmentService = Substitute.For<IAttachmentService>();
-        _sharedStepService = new SharedStepService(_logger, _clientAdapter, _parserService, _attachmentService);
+        _sharedStepService = new SharedStepService(_logger, _clientAdapter,
+            _parserService, _baseWorkItemService, _attachmentService);
     }
 
     [Test]

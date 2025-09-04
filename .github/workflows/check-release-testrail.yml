@@ -1,0 +1,88 @@
+name: Check TestRail
+
+on:
+  pull_request:
+    paths:
+        - "Migrators/TestRailExporter/**"
+        - "Migrators/TestRailXmlExporter/**"
+env:
+  TESTRAIL_DIR: ./Migrators/TestRailExporter
+  TESTRAIL_XML_DIR: ./Migrators/TestRailXmlExporter
+
+jobs:
+                 
+  testrail_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestRailExporter.exe
+            asset_name: TestRailExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: TestRailExporter
+            asset_name: TestRailExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: TestRailExporter
+          #   asset_name: TestRailExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTRAIL_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTRAIL_DIR }} 
+               
+  testrail_xml_build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: TestRailXmlExporter.exe
+            asset_name: TestRailXmlExporter-win-x64-TEST.exe
+          - os: linux-x64
+            artifact_name: TestRailXmlExporter
+            asset_name: TestRailXmlExporter-linux-x64-TEST
+          # - os: osx-x64
+          #   artifact_name: TestRailXmlExporter
+          #   asset_name: TestRailXmlExporter-osx-x64-TEST
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.TESTRAIL_XML_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.TESTRAIL_XML_DIR }} 
+           
+     

@@ -13,6 +13,9 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+        <!-- 16.153.0 for 2019 and later (?) -->
+        <!-- 16.170.0 for 2020 and later -->
+        <!-- 16.205.1 for 2022 and later -->
         <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="16.205.1" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="Serilog" Version="3.0.1" />

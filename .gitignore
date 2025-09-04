@@ -399,4 +399,5 @@ FodyWeavers.xsd
 
 .tms.config.*
 .allure.config.*
-
+users/
+migr_logs/
