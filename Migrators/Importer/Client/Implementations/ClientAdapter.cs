@@ -275,6 +275,37 @@ public class ClientAdapter(
 
         try
         {
+            var attributes = testCase.Attributes
+                .GroupBy(attr => attr.Id)
+                .Select(group =>
+                {
+                    // Filter values
+                    var validValues = group
+                        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                        .Where(attr => attr.Value != null &&
+                                       !(attr.Value is string str && string.IsNullOrEmpty(str)))
+                        .Select(attr => attr.Value)
+                        .ToList();
+
+
+                    // If there are some valid values - take first
+                    // else return null for filtering
+                    var finalValue = validValues.Count > 0 ? validValues[0] : null;
+
+                    return new
+                    {
+                        Id = group.Key,
+                        Value = finalValue
+                    };
+                })
+                // delete nulls
+                .Where(item => item.Value != null)
+                .ToDictionary(
+                    item => item.Id.ToString(),
+                    item => item.Value!
+                );
+
+
             var model = new CreateWorkItemApiModel(
                 steps: new List<CreateStepApiModel>(),
                 preconditionSteps: new List<CreateStepApiModel>(),
@@ -308,9 +339,7 @@ public class ClientAdapter(
                         WorkItemId = s.SharedStepId,
                         TestData = s.TestData
                     }).ToList(),
-                Attributes = testCase.Attributes
-                    .ToDictionary(a => a.Id.ToString(),
-                        a => a.Value),
+                Attributes = attributes,
                 Tags = testCase.Tags.Select(t => new TagModel(t)).ToList(),
                 Links = testCase.Links.Select(l =>
                     new CreateLinkApiModel(url: l.Url)
