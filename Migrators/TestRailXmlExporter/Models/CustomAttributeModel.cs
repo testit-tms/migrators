@@ -5,7 +5,7 @@ using TestRailXmlExporter.Enums;
 namespace TestRailXmlExporter.Models;
 
 [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
-public record class CustomAttributeModel : CustomAttributeBaseModel
+public record CustomAttributeModel : CustomAttributeBaseModel
 {
     /// <summary>
     /// Unique ID of the attribute

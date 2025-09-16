@@ -6,7 +6,6 @@ on:
       - released
 
 env:
-  IMPORTER_DIR: ./Migrators/Importer
   ALLURE_DIR: ./Migrators/AllureExporter
   AZURE_DIR: ./Migrators/AzureExporter
   ZEPHYR_SCALE_DIR: ./Migrators/ZephyrScaleExporter
@@ -24,58 +23,8 @@ env:
   QASE_DIR: ./Migrators/QaseExporter
 
 jobs:
-  importer_build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - os: win-x64
-            artifact_name: Importer.exe
-            asset_name: Importer-win-x64-${{ github.event.release.tag_name }}.exe
-          - os: linux-x64
-            artifact_name: Importer
-            asset_name: Importer-linux-x64-${{ github.event.release.tag_name }}
-          - os: osx-x64
-            artifact_name: Importer
-            asset_name: Importer-osx-x64-${{ github.event.release.tag_name }}
-          - os: osx-arm64
-            artifact_name: Importer
-            asset_name: Importer-osx-arm64-${{ github.event.release.tag_name }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8
-
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.IMPORTER_DIR }}
-
-      - name: Publish project
-        run: |
-          dotnet publish \
-          -r ${{ matrix.os }} \
-          --configuration Release \
-          --self-contained true \
-          --output ./publish \
-          --no-restore ${{ env.IMPORTER_DIR }} 
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: publish/${{ matrix.artifact_name }}
-          asset_name: ${{ matrix.asset_name }}
-          tag: ${{ github.ref }}
-          overwrite: true
-  
           
   allure_build:
-    needs: importer_build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -511,7 +460,6 @@ jobs:
           overwrite: true                  
 
   testrail_build:
-    needs: importer_build
     runs-on: ubuntu-latest
     strategy:
       matrix:

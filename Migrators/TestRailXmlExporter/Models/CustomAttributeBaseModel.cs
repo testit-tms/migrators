@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TestRailXmlExporter.Models;
 
-public abstract record class CustomAttributeBaseModel
+public abstract record CustomAttributeBaseModel
 {
     /// <summary>
     /// Name of the attribute

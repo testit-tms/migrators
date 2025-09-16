@@ -1,5 +1,7 @@
 # Migrators
 
+#### (!) Important update: we moved Importer project to the separate [repository](https://github.com/testit-tms/project-importer)
+
 You can migrate your test cases from other TMS systems to Test IT using our migrators.
 
 We support the following systems:

@@ -37,7 +37,7 @@ sudo chmod +x .\PractiTestExporter
 
 3. Check the results in the folder specified in the `resultPath` parameter.
 
-4. Use the results in the [importer](https://github.com/testit-tms/migrators/tree/main/Migrators/Importer/Readme.md).
+4. Use the results in the [importer](https://github.com/testit-tms/project-importer).
 
 ## Contributing
 
