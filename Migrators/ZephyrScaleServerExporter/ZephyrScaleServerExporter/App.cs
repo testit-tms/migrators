@@ -32,7 +32,7 @@ public class App(
     }
 
 
-    
+
 
 
     public void Run(string[] args)
@@ -53,10 +53,12 @@ public class App(
         }
         else
         {
-            exportService.ExportProject().Wait();
+            // TODO: fix
+            // exportService.ExportProject().Wait();
+            exportService.ExportProjectCloud().Wait();
         }
-        
-        
+
+
 
         logger.LogInformation("Ending application");
     }

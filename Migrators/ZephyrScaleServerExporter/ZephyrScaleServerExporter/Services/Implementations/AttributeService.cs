@@ -10,8 +10,8 @@ namespace ZephyrScaleServerExporter.Services.Implementations;
 
 internal class AttributeService(
     IDetailedLogService detailedLogService,
-    ILogger<AttributeService> logger, 
-    IClient client) 
+    ILogger<AttributeService> logger,
+    IClient client)
     : IAttributeService
 {
     public async Task<AttributeData> ConvertAttributes(string projectId)
@@ -51,6 +51,52 @@ internal class AttributeService(
         {
             Attributes = attributes,
             AttributeMap = attributes.ToDictionary(x => x.Name, x => x),
+        };
+    }
+
+    public const string StateAttributeCloud = "Zephyr State";
+    public const string PriorityAttributeCloud = "Zephyr Priority";
+
+    public async Task<AttributeData> ConvertAttributesCloud(string projectKey)
+    {
+        logger.LogInformation("Converting attributes");
+
+        var statuses = await client.GetStatusesCloud(projectKey);
+        var priorities = await client.GetPrioritiesCloud(projectKey);
+        // var customFields = await client.GetCustomFieldsForTestCases(projectId);
+
+
+        var attributes = new List<Attribute>
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = StateAttributeCloud,
+                Type = AttributeType.Options,
+                IsRequired = false,
+                IsActive = true,
+                Options = statuses.Select(x => x.Name).ToList()
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = PriorityAttributeCloud,
+                IsRequired = false,
+                IsActive = true,
+                Type = AttributeType.Options,
+                Options = priorities.Select(x => x.Name).ToList()
+            }
+        };
+
+        logger.LogDebug("Attributes: {@Attribute}", attributes);
+
+
+        return new AttributeData
+        {
+            Attributes = attributes,
+            AttributeMap = attributes.ToDictionary(x => x.Name, x => x),
+            // StateMap = statuses.ToDictionary(x => x.Id, x => x.Name),
+            // PriorityMap = priorities.ToDictionary(x => x.Id, x => x.Name)
         };
     }
 

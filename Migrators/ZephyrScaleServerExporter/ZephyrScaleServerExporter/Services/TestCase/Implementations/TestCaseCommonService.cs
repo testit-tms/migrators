@@ -5,6 +5,7 @@ using Models;
 using ZephyrScaleServerExporter.AttrubuteMapping;
 using ZephyrScaleServerExporter.Client;
 using ZephyrScaleServerExporter.Models;
+using ZephyrScaleServerExporter.Models.Client;
 using ZephyrScaleServerExporter.Models.Common;
 using ZephyrScaleServerExporter.Models.TestCases;
 using ZephyrScaleServerExporter.Models.TestCases.Export;
@@ -38,6 +39,37 @@ internal class TestCaseCommonService(
             Options = []
         };
         var statusData = await statusService.ConvertStatuses(projectId);
+
+        attributeMap.Add(statusData.StatusAttribute.Name, statusData.StatusAttribute);
+
+        detailedLogService.LogInformation("Get all attribute values {Attrs}: ", attributeMap.Values);
+
+        var requiredAttributeNames = attributeMap.Values
+            .Where(a => a.IsRequired).Select(a => a.Name).ToList();
+        detailedLogService.LogInformation("Get all required attributes: {List}", requiredAttributeNames);
+
+        return new TestCaseExportRequiredModel
+        {
+            OwnersAttribute = ownersAttribute,
+            StatusData = statusData,
+            RequiredAttributeNames = requiredAttributeNames
+        };
+    }
+
+    public async Task<TestCaseExportRequiredModel> CloudPrepareForTestCasesExportAsync(
+        Dictionary<string, Attribute> attributeMap,
+        string projectId, string projectKey)
+    {
+        var ownersAttribute = new Attribute()
+        {
+            Id = Guid.NewGuid(),
+            Name = Constants.OwnerAttribute,
+            Type = AttributeType.Options,
+            IsRequired = false,
+            IsActive = true,
+            Options = []
+        };
+        var statusData = await statusService.ConvertStatusesCloud(projectKey);
 
         attributeMap.Add(statusData.StatusAttribute.Name, statusData.StatusAttribute);
 
@@ -134,6 +166,31 @@ internal class TestCaseCommonService(
         return testCaseIds;
     }
 
+    public async Task<List<Guid>> WriteTestCasesCloudAsync(
+        List<CloudZephyrTestCase> cases,
+        SectionData sectionData,
+        Dictionary<string, Attribute> attributeMap,
+        List<string> requiredAttributeNames,
+        Attribute ownersAttribute)
+    {
+        List<Guid> testCaseIds = [];
+        var tasks = cases
+            .Select(x =>
+                ConvertAndWriteCaseCloudAsync(x, sectionData,
+                    attributeMap, requiredAttributeNames, ownersAttribute)).ToList();
+        try
+        {
+            var results = await Task.WhenAll(tasks);
+            testCaseIds = results.OfType<Guid>().ToList();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while writing test cases batch.");
+            // testCaseErrorLogService.LogError(ex, "An error occurred during Task.WhenAll in WriteTestCasesAsync while processing a batch.", null, cases);
+        }
+        return testCaseIds;
+    }
+
     private async Task<Guid?> ConvertAndWriteCaseAsync(
         ZephyrTestCase zephyrTestCase,
         SectionData sectionData,
@@ -144,6 +201,37 @@ internal class TestCaseCommonService(
         try
         {
             var testCase = await testCaseConvertService.ConvertTestCase(
+                zephyrTestCase,
+                sectionData,
+                attributeMap,
+                requiredAttributeNames,
+                ownersAttribute);
+            if (testCase == null)
+            {
+                logger.LogError("Conversion of ZephyrTestCase {Key} resulted in null, skipping write.", zephyrTestCase.Key);
+                return null;
+            }
+            await writeService.WriteTestCase(testCase);
+            return testCase.Id;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error during ConvertAndWriteCaseAsync for Test Case Key: {Key}", zephyrTestCase.Key);
+            testCaseErrorLogService.LogError(ex, $"Error processing individual test case in ConvertAndWriteCaseAsync.", problematicTestCase: zephyrTestCase);
+            throw;
+        }
+    }
+
+    private async Task<Guid?> ConvertAndWriteCaseCloudAsync(
+        CloudZephyrTestCase zephyrTestCase,
+        SectionData sectionData,
+        Dictionary<string, Attribute> attributeMap,
+        List<string> requiredAttributeNames,
+        Attribute ownersAttribute)
+    {
+        try
+        {
+            var testCase = await testCaseConvertService.ConvertTestCaseCloud(
                 zephyrTestCase,
                 sectionData,
                 attributeMap,
@@ -188,6 +276,14 @@ internal class TestCaseCommonService(
         }
 
         return await client.GetTestCases(startAt, maxResults,
+            statuses);
+    }
+
+    public async Task<List<CloudZephyrTestCase>> GetTestCasesByConfigCloud(IOptions<AppConfig> config,
+        IClient client,
+        int startAt, int maxResults, string statuses)
+    {
+        return await client.GetTestCasesCloud(startAt, maxResults,
             statuses);
     }
 

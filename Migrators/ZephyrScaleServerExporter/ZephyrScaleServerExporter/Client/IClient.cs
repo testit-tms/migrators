@@ -7,9 +7,13 @@ namespace ZephyrScaleServerExporter.Client;
 public interface IClient
 {
     Task<ZephyrProject> GetProject();
+    Task<ZephyrProject> GetProjectCloud();
+    Task<List<ZephyrStatus>> GetStatusesCloud(string projectKey);
+    Task<List<CloudZephyrPriority>> GetPrioritiesCloud(string projectKey);
     Task<List<ZephyrStatus>> GetStatuses(string projectId);
     Task<List<ZephyrCustomFieldForTestCase>> GetCustomFieldsForTestCases(string projectId);
     Task<List<ZephyrTestCase>> GetTestCases(int startAt, int maxResults, string statuses);
+    Task<List<CloudZephyrTestCase>> GetTestCasesCloud(int startAt, int maxResults, string statuses);
     Task<List<ZephyrTestCase>> GetTestCasesArchived(int startAt, int maxResults, string statuses);
     Task<List<ZephyrTestCaseRoot>> GetTestCasesNew(string statuses);
     Task<List<ZephyrTestCase>> GetTestCasesWithFilter(int startAt, int maxResults, string statuses, string filterName);

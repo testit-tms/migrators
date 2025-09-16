@@ -7,6 +7,7 @@ namespace ZephyrScaleServerExporter.Services;
 public interface ITestCaseService
 {
     Task<TestCaseData> ExportTestCases(SectionData sectionData, Dictionary<string, Attribute> attributeMap, string projectId);
-    
 
+    Task<TestCaseData> ExportTestCasesCloud(SectionData sectionData,
+        Dictionary<string, Attribute> attributeMap, string projectId, string projectKey);
 }

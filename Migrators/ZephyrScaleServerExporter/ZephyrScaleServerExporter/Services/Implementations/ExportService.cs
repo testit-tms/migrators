@@ -27,14 +27,25 @@ internal class ExportService(
 
         await WriteMainRoot(project, folders, testCaseData);
     }
-    
+
+    public async Task ExportProjectCloud()
+    {
+        logger.LogInformation("Exporting project");
+        var (project, folders, attributes) = await FetchProjectDataCloud();
+
+        var testCaseData = await testCaseService.ExportTestCasesCloud(folders, attributes.AttributeMap,
+            project.Id, project.Key);
+
+        await WriteMainRoot(project, folders, testCaseData);
+    }
+
     // записали в батч файл все сохраненные тест-кейсы
     // можно создавать второй файл main со всеми линками без привязки к первому
     public async Task ExportProjectBatch()
     {
         logger.LogInformation("Exporting project batch");
         var (project, folders, attributes) = await FetchProjectData();
-        
+
         var testCaseData = await testCaseBatchService.ExportTestCasesBatch(folders, attributes.AttributeMap, project.Id);
 
         await WriteMainRoot(project, folders, testCaseData);
@@ -47,7 +58,15 @@ internal class ExportService(
         var attributes = await attributeService.ConvertAttributes(project.Id);
         return (project, folders, attributes);
     }
-    
+
+    private async Task<(ZephyrProject, SectionData, AttributeData)> FetchProjectDataCloud()
+    {
+        var project = await client.GetProjectCloud();
+        var folders = folderService.ConvertSections(project.Name);
+        var attributes = await attributeService.ConvertAttributesCloud(project.Key);
+        return (project, folders, attributes);
+    }
+
     private async Task WriteMainRoot(ZephyrProject project,
         SectionData folders,
         TestCaseData testCaseData

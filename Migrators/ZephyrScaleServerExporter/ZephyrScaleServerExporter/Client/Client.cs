@@ -95,6 +95,79 @@ public class Client : IClient
         return null;
     }
 
+    public async Task<ZephyrProject> GetProjectCloud()
+    {
+        _logger.LogInformation("Getting project by key {ProjectKey}", _projectKey);
+
+        var response = await GetAsync("projects");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get project. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get project. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var projects = JsonSerializer.Deserialize<CloudZephyrProjects>(content);
+        var project = projects?.Projects.FirstOrDefault(p =>
+            string.Equals(p.Key, _projectKey, StringComparison.InvariantCultureIgnoreCase));
+
+        if (project != null) return new ZephyrProject()
+        {
+            Id = project.Id.ToString(),
+            Key = project.Key,
+            // TODO: Name?
+            Name = project.Key
+        };
+
+        _logger.LogError("Project not found");
+
+        throw new Exception("Project not found");
+    }
+
+    public async Task<List<ZephyrStatus>> GetStatusesCloud(string projectKey)
+    {
+        _logger.LogInformation("Getting statuses");
+
+        var response = await GetAsync($"statuses?projectKey={projectKey}&statusType=TEST_CASE");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get statuses. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get statuses. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var statuses = JsonSerializer.Deserialize<CloudZephyrStatuses>(content);
+
+        _logger.LogDebug("Got statuses {@Statuses}", statuses);
+
+        return statuses.Statuses;
+    }
+
+    public async Task<List<CloudZephyrPriority>> GetPrioritiesCloud(string projectKey)
+    {
+        _logger.LogInformation("Getting priorities");
+
+        var response = await GetAsync($"priorities?projectKey={projectKey}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError("Failed to get priorities. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get priorities. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var priorities = JsonSerializer.Deserialize<CloudZephyrPriorities>(content);
+
+        _logger.LogDebug("Got priorities {@Priorities}", priorities);
+
+        return priorities.Priorities;
+    }
+
     public async Task<ZephyrProject> GetProject()
     {
         _logger.LogInformation("Getting project by key {ProjectKey}", _projectKey);
@@ -175,6 +248,72 @@ public class Client : IClient
         var reqString = $"/rest/atm/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=projectKey = \"{_projectKey}\" AND status IN ({statuses})";
         return await _testCaseClient.GetTestCasesCoreHandler(_httpClient, _projectKey, FromBase(reqString));
     }
+
+    public async Task<List<ZephyrTestCase>> GetTestCasesCloudOld(int startAt, int maxResults, string statuses)
+    {
+        var based = "https://app.tm4j.smartbear.com/backend";
+        var reqString = $"/rest/tests/2.0/testcase/search?query=testCase.projectKey=\"{_projectKey}\"+AND+testCase.statusName+IN+({statuses})&startAt={startAt}&maxResults={maxResults}";
+        // var reqString = $"/rest/atm/1.0/testcase/search?maxResults={maxResults}&startAt={startAt}&query=projectKey = \"{_projectKey}\" AND status IN ({statuses})";
+        return await _testCaseClient.GetTestCasesCoreHandler(_httpClient, _projectKey, based + reqString);
+    }
+
+    public async Task<List<CloudZephyrTestCase>> GetTestCasesCloud(int startAt, int maxResults, string statuses)
+    {
+        _logger.LogInformation("Getting test cases for folder {FolderId}", _projectKey);
+
+        var response = await GetAsync($"testcases?maxResults={maxResults}&startAt={startAt}&projectKey={_projectKey}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test cases for project {ProjectKey}. Status code: {StatusCode}. Response: {Response}",
+                _projectKey, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test cases for project {_projectKey}. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testCases = JsonSerializer.Deserialize<CloudZephyrTestCases>(content);
+
+        _logger.LogDebug("Got test cases {@TestCases}", testCases);
+
+        return testCases.TestCases;
+        // return new List<ZephyrTestCase>();
+    }
+
+    // public async Task<List<ZephyrTestCase>> GetTestCasesByFolderCloud(string folderId)
+    // {
+    //     _logger.LogInformation("Getting test cases for folder {FolderId}", folderId);
+    //
+    //     var allTestCases = new List<ZephyrTestCase>();
+    //     var startAt = 0;
+    //     var maxResults = 100;
+    //     var isLast = false;
+    //
+    //     do
+    //     {
+    //         var response = await _httpClient.GetAsync($"testcases?maxResults={maxResults}&startAt={startAt}&projectKey={_projectName}&folderId={folderId}");
+    //         if (!response.IsSuccessStatusCode)
+    //         {
+    //             _logger.LogError(
+    //                 "Failed to get test cases for folder {FolderId}. Status code: {StatusCode}. Response: {Response}",
+    //                 folderId, response.StatusCode, await response.Content.ReadAsStringAsync());
+    //
+    //             throw new Exception($"Failed to get test cases for folder {folderId}. Status code: {response.StatusCode}");
+    //         }
+    //
+    //         var content = await response.Content.ReadAsStringAsync();
+    //         var testCases = JsonSerializer.Deserialize<ZephyrTestCases>(content);
+    //         isLast = testCases.IsLast;
+    //
+    //         allTestCases.AddRange(testCases.TestCases);
+    //
+    //         startAt += maxResults;
+    //
+    //         _logger.LogDebug("Got test cases {@TestCases}", testCases);
+    //     } while (!isLast);
+    //
+    //     return allTestCases;
+    // }
 
     public async Task<List<ZephyrTestCase>> GetTestCasesArchived(int startAt, int maxResults, string statuses)
     {
@@ -658,6 +797,13 @@ public class Client : IClient
     private string FromBase(string uri)
     {
         return _baseUrl.ToString().TrimEnd('/') + '/' + uri.TrimStart('/');
+    }
+
+    private string FromBaseCloudBackend(string uri)
+    {
+        var based = _baseUrl.ToString().TrimEnd('/');
+        return based.Substring(0, based.LastIndexOf("/v2", StringComparison.Ordinal))
+            + '/' + uri.TrimStart('/');
     }
 
     private string FromConfluenceBase(string uri)
