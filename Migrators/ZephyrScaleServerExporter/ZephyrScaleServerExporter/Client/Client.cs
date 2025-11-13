@@ -40,14 +40,20 @@ public class Client : IClient
         _logger = logger;
         _projectKey = _config.Zephyr.ProjectKey;
         _baseUrl = new Uri(_config.Zephyr.Url);
-        _confluenceBaseUrl = new Uri(_config.Zephyr.Confluence);
         _detailedLogService = detailedLogService;
 
         _httpClient = httpClient;
         _confluenceHttpClient = confluenceHttpClient;
 
         InitHttpClient();
-        InitConfluenceHttpClient();
+        _unauthorizedConfluence = true;
+
+        if (_config.Zephyr.Confluence.Length > 0)
+        {
+            _confluenceBaseUrl = new Uri(_config.Zephyr.Confluence);
+            InitConfluenceHttpClient();
+        }
+
     }
 
     private void InitHttpClient()
@@ -76,6 +82,7 @@ public class Client : IClient
         }
         _confluenceHttpClient.DefaultRequestHeaders
             .Add("Authorization", header);
+        _unauthorizedConfluence = false;
     }
 
 
