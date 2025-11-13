@@ -19,9 +19,13 @@ internal class MappingConfigReader: IMappingConfigReader
             return;
         }
         _isInit = true;
-        
+
         var config = ReadConfig(configFilePath);
-        
+        if (config == null)
+        {
+            return;
+        }
+
         _reverseMappings = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (var mappingBlock in config.Mappings)
@@ -34,7 +38,7 @@ internal class MappingConfigReader: IMappingConfigReader
         }
     }
 
-    private static MappingConfig ReadConfig(string configFilePath)
+    private static MappingConfig? ReadConfig(string configFilePath)
     {
         string json;
         try
@@ -43,9 +47,10 @@ internal class MappingConfigReader: IMappingConfigReader
         }
         catch (Exception e)
         {
-            throw new FileLoadException("Could not load configuration file: " + configFilePath, e);
+            // Console.WriteLine("Mapping configuration file is not defined");
+            return null;
         }
-        
+
         var config = JsonSerializer.Deserialize<MappingConfig>(json)
                      ?? throw new InvalidOperationException("Config file is empty or invalid.");
 
@@ -83,7 +88,7 @@ internal class MappingConfigReader: IMappingConfigReader
             }
         }
     }
-    
+
     public string? GetMappingForValue(string targetValue, string attributeName)
     {
         if (_reverseMappings.Count == 0)
