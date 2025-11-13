@@ -18,6 +18,7 @@ internal class TestCaseCommonService(
     IDetailedLogService detailedLogService,
     ILogger<TestCaseCommonService> logger,
     ITestCaseConvertService testCaseConvertService,
+    ITestCaseAdditionalLinksService testCaseAdditionalLinksService,
     IStatusService statusService,
     IMappingConfigReader mappingConfigReader,
     IWriteService writeService,
@@ -154,6 +155,8 @@ internal class TestCaseCommonService(
                 logger.LogError("Conversion of ZephyrTestCase {Key} resulted in null, skipping write.", zephyrTestCase.Key);
                 return null;
             }
+
+            testCase.Links = await PostProcessTestCaseLinks(testCase.Links);
             await writeService.WriteTestCase(testCase);
             return testCase.Id;
         }
@@ -164,6 +167,30 @@ internal class TestCaseCommonService(
             throw;
         }
     }
+
+    // convert skipped "/rest/api/2/issue/10001" to "/browse/TEST-2"
+    private async Task<List<Link>> PostProcessTestCaseLinks(List<Link> links)
+    {
+        for (var i = 0; i < links.Count; i++)
+        {
+            try
+            {
+                if (links[i].Url.Contains("/rest/api/2/issue/"))
+                {
+                    logger.LogWarning("Found incorrect issue link {Link}, trying to fix:", links[i].Url);
+                    links[i] = await testCaseAdditionalLinksService
+                        .ConvertIssueLinkByIssueId(links[i].Url.Split("/rest/api/2/issue/")[1]);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error during ProcessTestCaseLinks for link: {Link}", links[i].Url);
+            }
+        }
+
+        return links;
+    }
+
 
     public async Task<List<ZephyrTestCase>> GetTestCasesByConfig(IOptions<AppConfig> config,
         IClient client,
