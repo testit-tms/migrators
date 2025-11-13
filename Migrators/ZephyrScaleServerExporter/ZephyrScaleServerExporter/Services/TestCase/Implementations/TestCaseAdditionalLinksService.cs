@@ -120,4 +120,21 @@ public class TestCaseAdditionalLinksService(
 
         return newLinks;
     }
+
+
+    public async Task<Link> ConvertIssueLinkByIssueId(string issueId)
+    {
+        logger.LogInformation("Converting issue link");
+
+        var url = client.GetBaseUrl().ToString().TrimEnd('/');
+
+        var issue = await client.GetIssueById(issueId!);
+        var newUrl = url + "/browse/" + issue.Key;
+
+        return new Link
+        {
+            Title = issue.Fields.Name,
+            Url = newUrl
+        };
+    }
 }
