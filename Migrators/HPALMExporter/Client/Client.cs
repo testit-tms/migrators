@@ -64,7 +64,7 @@ public class Client : IClient
         var handler = new HttpClientHandler();
         handler.CookieContainer = cookie;
         _httpClient = new HttpClient(handler);
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
     }
 
     public string GetProjectName()
@@ -85,7 +85,7 @@ public class Client : IClient
 
         _logger.Debug("Connect to {Url}qcbin/rest/oauth2/login", _httpClient.BaseAddress.AbsoluteUri);
 
-        var response = await _httpClient.PostAsync("/qcbin/rest/oauth2/login", content);
+        var response = await _httpClient.PostAsync("qcbin/rest/oauth2/login", content);
         var responseString = await response.Content.ReadAsStringAsync();
 
         if (response.IsSuccessStatusCode)
@@ -111,7 +111,7 @@ public class Client : IClient
 
         var response =
             await _httpClient.GetStringAsync(
-                $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/test-folders?query={{parent-id[={id}]}}&page-size=max");
+                $"qcbin/rest/domains/{_domain}/projects/{_projectName}/test-folders?query={{parent-id[={id}]}}&page-size=max");
 
         _logger.Debug("Response string: {response}", response);
 
@@ -129,7 +129,7 @@ public class Client : IClient
             var startIndex = folders.Count + 1;
             response =
                 await _httpClient.GetStringAsync(
-                    $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/test-folders?query={{parent-id[={id}]}}&page-size=max&start-index={startIndex}");
+                    $"qcbin/rest/domains/{_domain}/projects/{_projectName}/test-folders?query={{parent-id[={id}]}}&page-size=max&start-index={startIndex}");
 
             _logger.Debug("Response string: {response}", response);
 
@@ -160,7 +160,7 @@ public class Client : IClient
 
         var response =
             await _httpClient.GetStringAsync(
-                $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/tests?query={{parent-id[={folderId}]}}&page-size=max");
+                $"qcbin/rest/domains/{_domain}/projects/{_projectName}/tests?query={{parent-id[={folderId}]}}&page-size=max");
 
         _logger.Debug("Response string: {response}", response);
 
@@ -179,7 +179,7 @@ public class Client : IClient
             var startIndex = tests.Count + 1;
             response =
                 await _httpClient.GetStringAsync(
-                    $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/tests?query={{parent-id[={folderId}]}}&page-size=max&start-index={startIndex}");
+                    $"qcbin/rest/domains/{_domain}/projects/{_projectName}/tests?query={{parent-id[={folderId}]}}&page-size=max&start-index={startIndex}");
 
             _logger.Debug("Response string: {response}", response);
 
@@ -212,7 +212,7 @@ public class Client : IClient
         {
             var response =
                 await _httpClient.GetStringAsync(
-                    $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/tests/{testId}");
+                    $"qcbin/rest/domains/{_domain}/projects/{_projectName}/tests/{testId}");
 
             _logger.Debug("Response string: {response}", response);
 
@@ -248,7 +248,7 @@ public class Client : IClient
 
         var response =
             await _httpClient.GetStringAsync(
-                $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/design-steps?query={{parent-id[={testId}]}}");
+                $"qcbin/rest/domains/{_domain}/projects/{_projectName}/design-steps?query={{parent-id[={testId}]}}");
 
         _logger.Debug("Response string: {response}", response);
 
@@ -279,7 +279,7 @@ public class Client : IClient
 
         var response =
             await _httpClient.GetStringAsync(
-                $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/tests/{testId}/attachments");
+                $"qcbin/rest/domains/{_domain}/projects/{_projectName}/tests/{testId}/attachments");
 
         _logger.Debug("Response string: {response}", response);
 
@@ -310,7 +310,7 @@ public class Client : IClient
 
         var response =
             await _httpClient.GetStringAsync(
-                $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/design-steps/{stepId}/attachments");
+                $"qcbin/rest/domains/{_domain}/projects/{_projectName}/design-steps/{stepId}/attachments");
 
         _logger.Debug("Response string: {response}", response);
 
@@ -367,7 +367,7 @@ public class Client : IClient
 
         var response =
             await _httpClient.GetStringAsync(
-                $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/test-parameters?query={{parent-id[={testId}]}}");
+                $"qcbin/rest/domains/{_domain}/projects/{_projectName}/test-parameters?query={{parent-id[={testId}]}}");
 
         _logger.Debug("Response string: {response}", response);
 
@@ -396,7 +396,7 @@ public class Client : IClient
             _projectName);
 
         var response = await _httpClient.GetAsync(
-            $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/customization/entities/test/fields?alt=application/json");
+            $"qcbin/rest/domains/{_domain}/projects/{_projectName}/customization/entities/test/fields?alt=application/json");
         var responseString = await response.Content.ReadAsStringAsync();
 
         _logger.Debug("Response string: {response}", responseString);
@@ -419,7 +419,7 @@ public class Client : IClient
             _projectName);
 
         var response = await _httpClient.GetAsync(
-            $"/qcbin/rest/domains/{_domain}/projects/{_projectName}/customization/entities/test/lists?alt=application/json");
+            $"qcbin/rest/domains/{_domain}/projects/{_projectName}/customization/entities/test/lists?alt=application/json");
 
         var responseString = await response.Content.ReadAsStringAsync();
 
@@ -431,5 +431,14 @@ public class Client : IClient
         _logger.Error("Get list attributes failed");
 
         throw new Exception(response.ReasonPhrase);
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

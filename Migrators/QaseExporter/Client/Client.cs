@@ -37,7 +37,7 @@ public class Client : IClient
         _projectKey = projectKey;
 
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Add("Token", token);
     }
 
@@ -45,7 +45,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting project by key {ProjectKey}", _projectKey);
 
-        var response = await _httpClient.GetAsync($"/v1/project/{_projectKey}");
+        var response = await _httpClient.GetAsync($"v1/project/{_projectKey}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get project by key {ProjectKey}. Status code: {StatusCode}. Response: {Response}",
@@ -74,7 +74,7 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"/v1/suite/{_projectKey}?limit={maxResults}&offset={startAt}");
+            var response = await _httpClient.GetAsync($"v1/suite/{_projectKey}?limit={maxResults}&offset={startAt}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -119,7 +119,7 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"/v1/case/{_projectKey}?limit={maxResults}&offset={startAt}&suite_id={suiteId}");
+            var response = await _httpClient.GetAsync($"v1/case/{_projectKey}?limit={maxResults}&offset={startAt}&suite_id={suiteId}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -164,7 +164,7 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"/v1/shared_step/{_projectKey}?limit={maxResults}&offset={startAt}");
+            var response = await _httpClient.GetAsync($"v1/shared_step/{_projectKey}?limit={maxResults}&offset={startAt}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -209,7 +209,7 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"/v1/custom_field?limit={maxResults}&offset={startAt}");
+            var response = await _httpClient.GetAsync($"v1/custom_field?limit={maxResults}&offset={startAt}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -246,7 +246,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting system fields");
 
-        var response = await _httpClient.GetAsync($"/v1/system_field");
+        var response = await _httpClient.GetAsync($"v1/system_field");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -272,5 +272,14 @@ public class Client : IClient
     public string GetProjectKey()
     {
         return _projectKey;
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

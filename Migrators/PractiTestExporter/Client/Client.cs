@@ -10,7 +10,7 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
     private readonly string _projectId;
-    private const int requestDelay = 2; 
+    private const int requestDelay = 2;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
     {
@@ -37,7 +37,7 @@ public class Client : IClient
 
         _projectId = projectId;
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Add("PTToken", token);
     }
 
@@ -222,5 +222,14 @@ public class Client : IClient
         var customField = JsonSerializer.Deserialize<SinglePractiTestCustomField>(content);
 
         return customField.Data;
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

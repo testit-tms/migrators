@@ -39,7 +39,7 @@ public class Client : IClient
             throw new ArgumentException("Access key is not specified");
         }
 
-        _baseUrl = url.Trim('/');
+        _baseUrl = CorrectBaseAddress(url);
         _projectId = projectId;
         _accessKey = accessKey;
     }
@@ -48,12 +48,12 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting cycles");
 
-        var url = $"/public/rest/api/1.0/cycles/search?projectId={_projectId}&versionId=-1";
-        var token = _tokenManager.GetToken("GET", url);
+        var uri = $"/public/rest/api/1.0/cycles/search?projectId={_projectId}&versionId=-1";
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(Section + url);
+        var response = await client.GetAsync(PrepareUri(uri));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get cycles. Status code: {StatusCode}. Response: {Response}",
@@ -74,12 +74,12 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting folders for cycle {CycleId}", cycleId);
 
-        var url = $"/public/rest/api/1.0/folders?cycleId={cycleId}&projectId={_projectId}&versionId=-1";
-        var token = _tokenManager.GetToken("GET", url);
+        var uri = $"/public/rest/api/1.0/folders?cycleId={cycleId}&projectId={_projectId}&versionId=-1";
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(Section + url);
+        var response = await client.GetAsync(PrepareUri(uri));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to folders for cycle {CycleId}. Status code: {StatusCode}. Response: {Response}",
@@ -100,14 +100,14 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting executions from cycle {CycleId}", cycleId);
 
-        var url =
+        var uri =
             $"/public/rest/api/2.0/executions/search/cycle/{cycleId}?offset=0&projectId={_projectId}&size=50&versionId=-1";
 
-        var token = _tokenManager.GetToken("GET", url);
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(Section + url);
+        var response = await client.GetAsync(PrepareUri(uri));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -129,12 +129,12 @@ public class Client : IClient
 
         while (listExecutions.Count < executions?.SearchResult?.TotalCount)
         {
-            url =
+            uri =
                 $"/public/rest/api/2.0/executions/search/cycle/{cycleId}?offset={executions?.SearchResult?.CurrentOffset}&projectId={_projectId}&size=50&versionId=-1";
-            token = _tokenManager.GetToken("GET", url);
+            token = _tokenManager.GetToken("GET", uri);
             client = GetClient(token);
 
-            response = await client.GetAsync(Section + url);
+            response = await client.GetAsync(PrepareUri(uri));
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -159,14 +159,14 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting executions from folder {FolderId}", folderId);
 
-        var url =
+        var uri =
             $"/public/rest/api/2.0/executions/search/folder/{folderId}?cycleId={cycleId}&offset=0&projectId={_projectId}&size=50&versionId=-1";
 
-        var token = _tokenManager.GetToken("GET", url);
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(Section + url);
+        var response = await client.GetAsync(PrepareUri(uri));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -188,12 +188,12 @@ public class Client : IClient
 
         while (listExecutions.Count < executions?.SearchResult?.TotalCount)
         {
-            url =
+            uri =
                 $"/public/rest/api/2.0/executions/search/folder/{folderId}?cycleId={cycleId}&offset={executions?.SearchResult?.CurrentOffset}&projectId={_projectId}&size=50&versionId=-1";
-            token = _tokenManager.GetToken("GET", url);
+            token = _tokenManager.GetToken("GET", uri);
             client = GetClient(token);
 
-            response = await client.GetAsync(Section + url);
+            response = await client.GetAsync(PrepareUri(uri));
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -218,12 +218,12 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting steps for issue {IssueId}", issueId);
 
-        var url = $"/public/rest/api/2.0/teststep/{issueId}?projectId={_projectId}";
-        var token = _tokenManager.GetToken("GET", url);
+        var uri = $"/public/rest/api/2.0/teststep/{issueId}?projectId={_projectId}";
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(Section + url);
+        var response = await client.GetAsync(PrepareUri(uri));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to steps for issue {IssueId}. Status code: {StatusCode}. Response: {Response}",
@@ -244,13 +244,13 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting attachments for issue {IssueId}", issueId);
 
-        var url =
+        var uri =
             $"/public/rest/api/1.0/attachment/search/execution?entityId={entityId}&issueId={issueId}&projectId={_projectId}";
-        var token = _tokenManager.GetToken("GET", url);
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetAsync(Section + url);
+        var response = await client.GetAsync(PrepareUri(uri));
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -272,13 +272,13 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting attachment for issue {IssueId}", issueId);
 
-        var url =
+        var uri =
             $"/public/rest/api/1.0/attachment/{entityId}?issueId={issueId}&projectId={_projectId}";
-        var token = _tokenManager.GetToken("GET", url);
+        var token = _tokenManager.GetToken("GET", uri);
 
         var client = GetClient(token);
 
-        var response = await client.GetByteArrayAsync(Section + url);
+        var response = await client.GetByteArrayAsync(PrepareUri(uri));
 
         return response;
     }
@@ -292,5 +292,19 @@ public class Client : IClient
         client.DefaultRequestHeaders.Add("User-Agent", "ZAPI");
 
         return client;
+    }
+
+    private string PrepareUri(string uri)
+    {
+        return (Section + uri).TrimStart('/');
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }
