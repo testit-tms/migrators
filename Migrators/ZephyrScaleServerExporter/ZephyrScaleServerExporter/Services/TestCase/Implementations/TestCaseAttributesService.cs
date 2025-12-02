@@ -132,7 +132,7 @@ internal class TestCaseAttributesService(
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Error while mapping attribute value or read the file");
+            logger.LogWarning("Error while mapping attribute value or read the file");
         }
     }
 

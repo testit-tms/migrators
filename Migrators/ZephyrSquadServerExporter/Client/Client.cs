@@ -34,7 +34,7 @@ public class Client : IClient
         var login = section["login"];
         var password = section["password"];
 
-        _baseUrl = url.Trim('/');
+        _baseUrl = CorrectBaseAddress(url);
         _projectKey = projectKey;
 
         _client = new HttpClient();
@@ -59,7 +59,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting project by key {ProjectKey}", _projectKey);
 
-        var response = await _client.GetAsync($"/rest/api/2/project/{_projectKey}");
+        var response = await _client.GetAsync($"rest/api/2/project/{_projectKey}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get project by key {ProjectKey}. Status code: {StatusCode}. Response: {Response}",
@@ -80,7 +80,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting zephyr issue type");
 
-        var response = await _client.GetAsync($"/rest/api/2/issuetype");
+        var response = await _client.GetAsync($"rest/api/2/issuetype");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get zephyr issue type. Status code: {StatusCode}. Response: {Response}",
@@ -107,7 +107,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting custom attributes by project id {ProjectId} and zephyr issue type id {ZephyrIssueTypeId}", projectId, zephyrIssueTypeId);
 
-        var response = await _client.GetAsync($"/rest/api/2/issue/createmeta/{projectId}/issuetypes/{zephyrIssueTypeId}");
+        var response = await _client.GetAsync($"rest/api/2/issue/createmeta/{projectId}/issuetypes/{zephyrIssueTypeId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get custom attributes by project id {ProjectId} and zephyr issue type id {ZephyrIssueTypeId}. Status code: {StatusCode}. Response: {Response}",
@@ -128,7 +128,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting cycles by project id {ProjectId} and version id {VersionId}", projectId, versionId);
 
-        var response = await _client.GetAsync($"/rest/zapi/latest/cycle?projectId={projectId}&versionId={versionId}");
+        var response = await _client.GetAsync($"rest/zapi/latest/cycle?projectId={projectId}&versionId={versionId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get cycles by project id {ProjectId} and version id {VersionId}. Status code: {StatusCode}. Response: {Response}",
@@ -166,7 +166,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting folders for cycle {CycleId} by project id {ProjectId} and version id {VersionId}", cycleId, projectId, versionId);
 
-        var response = await _client.GetAsync($"/rest/zapi/latest/cycle/{cycleId}/folders?projectId={projectId}&versionId={versionId}");
+        var response = await _client.GetAsync($"rest/zapi/latest/cycle/{cycleId}/folders?projectId={projectId}&versionId={versionId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to folders for cycle {CycleId} by project id {Id} and version id {VersionId}. Status code: {StatusCode}. Response: {Response}",
@@ -233,7 +233,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting steps for issue {IssueId}", issueId);
 
-        var response = await _client.GetAsync($"/rest/zapi/latest/teststep/{issueId}");
+        var response = await _client.GetAsync($"rest/zapi/latest/teststep/{issueId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to steps for issue {IssueId}. Status code: {StatusCode}. Response: {Response}",
@@ -254,7 +254,7 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting issue by id {IssueId}", issueId);
 
-        var response = await _client.GetAsync($"/rest/api/2/issue/{issueId}");
+        var response = await _client.GetAsync($"rest/api/2/issue/{issueId}");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
@@ -287,8 +287,17 @@ public class Client : IClient
         _logger.LogInformation("Getting attachment for step by id {FileId}", fileId);
 
         var response = await _client
-            .GetByteArrayAsync($"/rest/zapi/latest/attachment/{fileId}/file");
+            .GetByteArrayAsync($"rest/zapi/latest/attachment/{fileId}/file");
 
         return response;
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

@@ -38,7 +38,7 @@ public class Client : IClient
         _projectName = projectName;
         _token = token;
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
     }
 
     public async Task<TestCollabCompanies> GetCompany()
@@ -193,5 +193,14 @@ public class Client : IClient
         var httpClient = new HttpClient();
         return
             await httpClient.GetByteArrayAsync(link);
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

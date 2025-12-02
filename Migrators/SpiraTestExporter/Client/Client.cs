@@ -44,7 +44,7 @@ public class Client : IClient
         _projectName = projectName;
 
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Add("Accept", "*/*");
         _httpClient.DefaultRequestHeaders.Add("username", username);
         _httpClient.DefaultRequestHeaders.Add("api-key", token);
@@ -292,5 +292,14 @@ public class Client : IClient
         var response = await _httpClient.SendAsync(request);
 
         return await response.Content.ReadAsByteArrayAsync();
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

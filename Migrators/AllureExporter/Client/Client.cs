@@ -39,7 +39,7 @@ internal class Client : IClient
         var apiToken = config.Allure.ApiToken;
         var bearerToken = config.Allure.BearerToken;
 
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
 
         if (!string.IsNullOrEmpty(apiToken))
             _httpClient.DefaultRequestHeaders.Authorization =
@@ -447,5 +447,14 @@ internal class Client : IClient
 
         var content = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<T>(content)!;
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

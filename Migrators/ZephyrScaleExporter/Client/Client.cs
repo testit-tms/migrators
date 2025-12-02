@@ -11,6 +11,7 @@ public class Client : IClient
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
     private readonly string _projectName;
+    private readonly string _baseUrl;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
     {
@@ -37,7 +38,8 @@ public class Client : IClient
 
         _projectName = projectName;
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
+        _baseUrl = CorrectBaseAddress(url);
+        _httpClient.BaseAddress = new Uri(_baseUrl);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
@@ -214,5 +216,14 @@ public class Client : IClient
         var httpClient = new HttpClient();
 
         return await httpClient.GetByteArrayAsync(url);
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

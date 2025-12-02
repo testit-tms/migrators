@@ -37,7 +37,7 @@ public class Client : IClient
 
         _projectKey = projectKey;
         _httpClient = new HttpClient();
-        _httpClient.BaseAddress = new Uri(url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
@@ -157,5 +157,14 @@ public class Client : IClient
 
         return
             await _httpClient.GetByteArrayAsync(link.Split(_httpClient.BaseAddress.ToString())[1]);
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }

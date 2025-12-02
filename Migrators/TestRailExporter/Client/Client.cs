@@ -26,7 +26,7 @@ public class Client : IClient
 
     private void InitHttpClient()
     {
-        _httpClient.BaseAddress = new Uri(_config.TestRail.Url);
+        _httpClient.BaseAddress = new Uri(CorrectBaseAddress(_config.TestRail.Url));
 
         var header = GetAuthHeaderBy(_config.TestRail.Login, _config.TestRail.Password);
         if (header == null)
@@ -325,5 +325,14 @@ public class Client : IClient
 
             return [];
         }
+    }
+
+    private string CorrectBaseAddress(string url)
+    {
+        if (url.EndsWith('/'))
+        {
+            return url;
+        }
+        return url + '/';
     }
 }
