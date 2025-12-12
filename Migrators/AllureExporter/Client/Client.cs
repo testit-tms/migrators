@@ -55,7 +55,7 @@ internal class Client : IClient
     {
         _logger.LogInformation("Getting project id with name {Name}", _projectName);
 
-        var response = await _httpClient.GetAsync("api/rs/project");
+        var response = await _httpClient.GetAsync("api/rs/project?page=0&size=100");
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get project id. Status code: {StatusCode}. Response: {Response}",
