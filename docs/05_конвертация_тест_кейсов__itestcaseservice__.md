@@ -200,7 +200,7 @@ sequenceDiagram
         TcSvc->>Model: new TestCase(...)
         TcSvc-->>ExportSvc: Добавить TestCase в результат
     end
-    ExportSvc-->>: Список List<Models.TestCase> готов
+    ExportSvc-->>ExportSvc: Список List<Models.TestCase> готов
 ```
 
 Эта диаграмма показывает, что `TestCaseService` активно взаимодействует с другими сервисами ([`IClient`](06_клиент_api_экспортера__iclient__.md), `IStepService`, `IAttachmentService`) для получения и обработки всех частей тест-кейса перед тем, как собрать финальный объект `Models.TestCase`.
