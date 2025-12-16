@@ -7,7 +7,7 @@
 готовых для дальнейшего использования, например, для импорта в другую систему.
 
 
-**Source Repository:** [None](None)
+
 
 ```mermaid
 flowchart TD

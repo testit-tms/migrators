@@ -5,7 +5,7 @@
 Результат сохраняется в виде **JSON** файлов, готовых для импорта в другие системы, например, Test IT.
 
 
-**Source Repository:** [None](None)
+
 
 ```mermaid
 flowchart TD

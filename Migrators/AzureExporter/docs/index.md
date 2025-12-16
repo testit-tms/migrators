@@ -5,7 +5,7 @@
 Затем он *преобразует* эти данные в формат, совместимый с системой **Test IT**, и сохраняет результат в виде файлов JSON.
 
 
-**Source Repository:** [None](None)
+
 
 ```mermaid
 flowchart TD
