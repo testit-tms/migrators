@@ -63,6 +63,7 @@ public class Client : IClient
                        $"index.php?/api/v2/get_projects&offset={offset}&limit={_limit}"))
             {
                 request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
                 response = await _httpClient.SendAsync(request);
             }
 
@@ -104,6 +105,7 @@ public class Client : IClient
                    $"index.php?/api/v2/get_suites/{projectId}"))
         {
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+            request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
             response = await _httpClient.SendAsync(request);
         }
         if (!response.IsSuccessStatusCode)
@@ -137,6 +139,7 @@ public class Client : IClient
                        $"index.php?/api/v2/get_sections/{projectId}&limit={_limit}&offset={offset}"))
             {
                 request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
                 response = await _httpClient.SendAsync(request);
             }
             if (!response.IsSuccessStatusCode)
@@ -177,6 +180,7 @@ public class Client : IClient
                        $"index.php?/api/v2/get_sections/{projectId}&suite_id={suiteId}&limit={_limit}&offset={offset}"))
             {
                 request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
                 response = await _httpClient.SendAsync(request);
             }
             if (!response.IsSuccessStatusCode)
@@ -219,6 +223,7 @@ public class Client : IClient
                        $"index.php?/api/v2/get_shared_steps/{projectId}&limit={_limit}&offset={offset}"))
             {
                 request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
                 response = await _httpClient.SendAsync(request);
             }
             if (!response.IsSuccessStatusCode)
@@ -260,6 +265,7 @@ public class Client : IClient
                        $"index.php?/api/v2/get_cases/{projectId}&section_id={sectionId}&limit={_limit}&offset={offset}"))
             {
                 request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
                 response = await _httpClient.SendAsync(request);
             }
             if (!response.IsSuccessStatusCode)
@@ -303,6 +309,7 @@ public class Client : IClient
                        $"index.php?/api/v2/get_cases/{projectId}&suite_id={suiteId}&section_id={sectionId}&limit={_limit}&offset={offset}"))
             {
                 request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
                 response = await _httpClient.SendAsync(request);
             }
             if (!response.IsSuccessStatusCode)
@@ -339,6 +346,7 @@ public class Client : IClient
                    $"index.php?/api/v2/get_attachments_for_case/{testCaseId}"))
         {
             request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+            request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
             response = await _httpClient.SendAsync(request);
         }
         if (!response.IsSuccessStatusCode)
