@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -35,8 +36,8 @@ public class Client : IClient
         }
         _httpClient.DefaultRequestHeaders
             .Add("Authorization", header);
-        _httpClient.DefaultRequestHeaders
-            .Add("Content-Type", "application/json");
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
     }
 
     private static string? GetAuthHeaderBy(string login, string password)
@@ -59,7 +60,8 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_projects&offset={offset}&limit={_limit}");
+            var response = await _httpClient.GetAsync(
+                $"index.php?/api/v2/get_projects&offset={offset}&limit={_limit}");
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get project id. Status code: {StatusCode}. Response: {Response}",
