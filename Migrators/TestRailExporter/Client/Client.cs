@@ -36,8 +36,6 @@ public class Client : IClient
         }
         _httpClient.DefaultRequestHeaders
             .Add("Authorization", header);
-        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
     }
 
     private static string? GetAuthHeaderBy(string login, string password)
@@ -60,8 +58,14 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync(
-                $"index.php?/api/v2/get_projects&offset={offset}&limit={_limit}");
+            HttpResponseMessage response;
+            using (var request = new HttpRequestMessage(HttpMethod.Get,
+                       $"index.php?/api/v2/get_projects&offset={offset}&limit={_limit}"))
+            {
+                request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                response = await _httpClient.SendAsync(request);
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get project id. Status code: {StatusCode}. Response: {Response}",
@@ -95,7 +99,13 @@ public class Client : IClient
     {
         _logger.LogInformation("Getting suites by project id {Id}", projectId);
 
-        var response = await _httpClient.GetAsync($"index.php?/api/v2/get_suites/{projectId}");
+        HttpResponseMessage response;
+        using (var request = new HttpRequestMessage(HttpMethod.Get,
+                   $"index.php?/api/v2/get_suites/{projectId}"))
+        {
+            request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+            response = await _httpClient.SendAsync(request);
+        }
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError("Failed to get suites by project id {Id}. Status code: {StatusCode}. Response: {Response}",
@@ -122,7 +132,13 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_sections/{projectId}&limit={_limit}&offset={offset}");
+            HttpResponseMessage response;
+            using (var request = new HttpRequestMessage(HttpMethod.Get,
+                       $"index.php?/api/v2/get_sections/{projectId}&limit={_limit}&offset={offset}"))
+            {
+                request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                response = await _httpClient.SendAsync(request);
+            }
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get sections by project id {Id}. Status code: {StatusCode}. Response: {Response}",
@@ -156,7 +172,13 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_sections/{projectId}&suite_id={suiteId}&limit={_limit}&offset={offset}");
+            HttpResponseMessage response;
+            using (var request = new HttpRequestMessage(HttpMethod.Get,
+                       $"index.php?/api/v2/get_sections/{projectId}&suite_id={suiteId}&limit={_limit}&offset={offset}"))
+            {
+                request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                response = await _httpClient.SendAsync(request);
+            }
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError("Failed to get sections by project id {projectId} and suite id {suiteId}. Status code: {StatusCode}. Response: {Response}",
@@ -192,7 +214,13 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_shared_steps/{projectId}&limit={_limit}&offset={offset}");
+            HttpResponseMessage response;
+            using (var request = new HttpRequestMessage(HttpMethod.Get,
+                       $"index.php?/api/v2/get_shared_steps/{projectId}&limit={_limit}&offset={offset}"))
+            {
+                request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                response = await _httpClient.SendAsync(request);
+            }
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -227,7 +255,13 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_cases/{projectId}&section_id={sectionId}&limit={_limit}&offset={offset}");
+            HttpResponseMessage response;
+            using (var request = new HttpRequestMessage(HttpMethod.Get,
+                       $"index.php?/api/v2/get_cases/{projectId}&section_id={sectionId}&limit={_limit}&offset={offset}"))
+            {
+                request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                response = await _httpClient.SendAsync(request);
+            }
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -264,7 +298,13 @@ public class Client : IClient
 
         do
         {
-            var response = await _httpClient.GetAsync($"index.php?/api/v2/get_cases/{projectId}&suite_id={suiteId}&section_id={sectionId}&limit={_limit}&offset={offset}");
+            HttpResponseMessage response;
+            using (var request = new HttpRequestMessage(HttpMethod.Get,
+                       $"index.php?/api/v2/get_cases/{projectId}&suite_id={suiteId}&section_id={sectionId}&limit={_limit}&offset={offset}"))
+            {
+                request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+                response = await _httpClient.SendAsync(request);
+            }
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogError(
@@ -294,7 +334,13 @@ public class Client : IClient
     public async Task<List<TestRailAttachment>> GetAttachmentsByTestCaseId(int testCaseId)
     {
         _logger.LogInformation("Getting attachments by test case id {CaseId}", testCaseId);
-        var response = await _httpClient.GetAsync($"index.php?/api/v2/get_attachments_for_case/{testCaseId}");
+        HttpResponseMessage response;
+        using (var request = new HttpRequestMessage(HttpMethod.Get,
+                   $"index.php?/api/v2/get_attachments_for_case/{testCaseId}"))
+        {
+            request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+            response = await _httpClient.SendAsync(request);
+        }
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
