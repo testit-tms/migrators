@@ -35,6 +35,8 @@ public class Client : IClient
         }
         _httpClient.DefaultRequestHeaders
             .Add("Authorization", header);
+        _httpClient.DefaultRequestHeaders
+            .Add("Content-Type", "application/json");
     }
 
     private static string? GetAuthHeaderBy(string login, string password)
