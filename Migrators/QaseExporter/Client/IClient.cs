@@ -10,6 +10,7 @@ public interface IClient
     Task<List<QaseSharedStep>> GetSharedSteps();
     Task<List<QaseCustomField>> GetCustomFields();
     Task<List<QaseSystemField>> GetSystemFields();
+    Task<QaseAuthor> GetAuthor(int id);
     Task<byte[]> DownloadAttachment(string url);
     string GetProjectKey();
 }

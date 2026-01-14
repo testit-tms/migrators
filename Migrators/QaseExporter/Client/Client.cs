@@ -264,6 +264,28 @@ public class Client : IClient
         return systemFieldsData.Fields;
     }
 
+    public async Task<QaseAuthor> GetAuthor(int id)
+    {
+        _logger.LogInformation("Getting author by id {Id}", id);
+
+        var response = await _httpClient.GetAsync($"v1/author/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get system fields. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get system fields. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var author = JsonSerializer.Deserialize<QaseAuthor>(content)!;
+
+        _logger.LogDebug("Got author: {@Author}", author);
+
+        return author;
+    }
+
     public async Task<byte[]> DownloadAttachment(string url)
     {
         return await _httpClient.GetByteArrayAsync(url);

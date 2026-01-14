@@ -70,6 +70,15 @@ public class QaseTestCase
 
     [JsonPropertyName("isToBeAutomated")]
     public bool ToBeAutomated { get; set; }
+
+    [JsonPropertyName("author_id")]
+    public int AuthorId { get; set; }
+
+    [JsonPropertyName("created_at")]
+    public DateTime CreateAt { get; set; }
+
+    [JsonPropertyName("updated_at")]
+    public DateTime UpdateAt { get; set; }
 }
 
 public class QaseCustomFieldValues
