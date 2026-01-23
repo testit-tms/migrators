@@ -41,6 +41,8 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="ExporterTests" />
+        <InternalsVisibleTo Include="ZephyrScaleServerExporterTests" />
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 
 </Project>

@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrScaleServerExporter",
 		{6ABE461F-B644-40A5-A525-4F59ED1C177A} = {6ABE461F-B644-40A5-A525-4F59ED1C177A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExporterTests", "ExporterTests\ExporterTests.csproj", "{F3E31890-93FE-41FE-9F13-5E886BB2485D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,9 +21,8 @@ Global
 		{7DA3A57C-C9B4-485F-B3D1-32B8FDA960A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DA3A57C-C9B4-485F-B3D1-32B8FDA960A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DA3A57C-C9B4-485F-B3D1-32B8FDA960A4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3E31890-93FE-41FE-9F13-5E886BB2485D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3E31890-93FE-41FE-9F13-5E886BB2485D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3E31890-93FE-41FE-9F13-5E886BB2485D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3E31890-93FE-41FE-9F13-5E886BB2485D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
