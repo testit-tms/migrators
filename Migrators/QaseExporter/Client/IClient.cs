@@ -13,4 +13,5 @@ public interface IClient
     Task<QaseAuthor> GetAuthor(int id);
     Task<byte[]> DownloadAttachment(string url);
     string GetProjectKey();
+    Task<string?> GetComments(int id);
 }

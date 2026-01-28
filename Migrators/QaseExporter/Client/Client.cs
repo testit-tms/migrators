@@ -9,6 +9,7 @@ public class Client : IClient
 {
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
+    private readonly HttpClient _appClient;
     private readonly string _projectKey;
 
     public Client(ILogger<Client> logger, IConfiguration configuration)
@@ -39,6 +40,27 @@ public class Client : IClient
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Add("Token", token);
+
+        var appUrl = section["appUrl"];
+        if (!string.IsNullOrEmpty(appUrl))
+        {
+            var cookie = section["cookie"];
+            if (string.IsNullOrEmpty(cookie))
+            {
+                throw new ArgumentException("Cookie is not specified");
+            }
+
+            var xXsrfToken = section["xXsrfToken"];
+            if (string.IsNullOrEmpty(xXsrfToken))
+            {
+                throw new ArgumentException("xXsrfToken is not specified");
+            }
+
+            _appClient = new HttpClient();
+            _appClient.BaseAddress = new Uri(CorrectBaseAddress(appUrl));
+            _appClient.DefaultRequestHeaders.Add("Cookie", cookie);
+            _appClient.DefaultRequestHeaders.Add("x-xsrf-token", xXsrfToken);
+        }
     }
 
     public async Task<QaseProject> GetProject()
@@ -272,10 +294,10 @@ public class Client : IClient
         if (!response.IsSuccessStatusCode)
         {
             _logger.LogError(
-                "Failed to get system fields. Status code: {StatusCode}. Response: {Response}",
+                "Failed to get author. Status code: {StatusCode}. Response: {Response}",
                 response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            throw new Exception($"Failed to get system fields. Status code: {response.StatusCode}");
+            throw new Exception($"Failed to get author. Status code: {response.StatusCode}");
         }
 
         var content = await response.Content.ReadAsStringAsync();
@@ -303,5 +325,58 @@ public class Client : IClient
             return url;
         }
         return url + '/';
+    }
+
+    public async Task<string?> GetComments(int id)
+    {
+        if (_appClient.BaseAddress == null)
+        {
+            _logger.LogDebug("Skip get comments. AppClient is not initialized");
+
+            return null;
+        }
+
+        _logger.LogInformation("Getting comments by test case id {Id}", id);
+
+        var allComments = new List<string>();
+        var startAt = 0;
+        var maxResults = 100;
+        var countOfComments = 0;
+        var total = 0;
+
+        do
+        {
+            var response = await _appClient.GetAsync(
+                $"v1/projects/{_projectKey}/cases/{id}/comments?limit={maxResults}&offset={startAt}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get comments. Status code: {StatusCode}. Response: {Response}",
+                    response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception($"Failed to get comments. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var commentResponse = JsonSerializer.Deserialize<QaseCommentResponse>(content)!;
+
+            if (commentResponse.Comments.Count > 0)
+            {
+                _logger.LogDebug("Got {Count} comments", commentResponse.Comments.Count);
+
+                allComments.AddRange(commentResponse.Comments);
+                startAt += maxResults;
+                total = commentResponse.Total;
+                countOfComments += commentResponse.Comments.Count;
+            }
+            else
+            {
+                startAt = -1;
+            }
+
+            _logger.LogInformation("Got {Count} out of {Total} comments", countOfComments, total);
+        } while (countOfComments < total && startAt >= 0);
+
+        return string.Join("\n", allComments);
     }
 }

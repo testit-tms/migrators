@@ -84,6 +84,13 @@ public class TestCaseService : ITestCaseService
         var projectKey = _client.GetProjectKey();
         var testCaseId = Guid.NewGuid();
         var attachments = await _attachmentService.DownloadAttachments(qaseTestCase.Attachments, testCaseId);
+        var commentsFileName = await _attachmentService.DownloadComments(testCaseId, qaseTestCase.Id);
+
+        if (!string.IsNullOrEmpty(commentsFileName))
+        {
+            attachments.Add(commentsFileName);
+        }
+
         var steps = await _stepService.ConvertSteps(qaseTestCase.Steps, sharedSteps, testCaseId);
         var preconditionSteps = await _stepService.ConvertConditionSteps(qaseTestCase.Preconditions, testCaseId);
         var postconditionSteps = await _stepService.ConvertConditionSteps(qaseTestCase.Postconditions, testCaseId);
