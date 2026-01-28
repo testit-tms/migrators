@@ -5,7 +5,7 @@ namespace QaseExporter.Models;
 public class QaseTestRunResponse
 {
     [JsonPropertyName("result")]
-    public QaseTestRunResult Result { get; set; }
+    public QaseTestRunResult Result { get; set; } = null!;
 }
 
 public class QaseTestRunResult
@@ -17,7 +17,7 @@ public class QaseTestRunResult
     public int Count { get; set; }
 
     [JsonPropertyName("entities")]
-    public List<QaseTestRun> Entities { get; set; }
+    public List<QaseTestRun> Entities { get; set; } = new();
 }
 
 public class QaseTestRun

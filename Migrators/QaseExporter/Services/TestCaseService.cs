@@ -14,7 +14,7 @@ public class TestCaseService : ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
     private readonly IParameterService _parameterService;
-    private readonly Dictionary<int, Guid> _TestCaseMap;
+    private readonly Dictionary<int, Guid> _testCaseMap;
     public const int _duration = 10000;
     public List<string> _systemAttributeNames = [
         QaseSystemFieldNames.AutomationStatus,
@@ -35,6 +35,7 @@ public class TestCaseService : ITestCaseService
         _stepService = stepService;
         _attachmentService = attachmentService;
         _parameterService = parameterService;
+        _testCaseMap = new();
     }
 
     public async Task<TestCaseData> ConvertTestCases(Dictionary<int, Guid> sectionMap, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
@@ -64,7 +65,7 @@ public class TestCaseService : ITestCaseService
         return new()
         {
             TestCases = allTestCases,
-            TestCaseMap = _TestCaseMap,
+            TestCaseMap = _testCaseMap,
         };
     }
 
@@ -138,7 +139,7 @@ public class TestCaseService : ITestCaseService
             },
         ]);
 
-        _TestCaseMap.Add(qaseTestCase.Id, testCaseId);
+        _testCaseMap.Add(qaseTestCase.Id, testCaseId);
 
         return new TestCase
         {

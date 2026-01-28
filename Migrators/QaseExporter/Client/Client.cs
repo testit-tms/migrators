@@ -42,6 +42,7 @@ public class Client : IClient
         _httpClient.DefaultRequestHeaders.Add("Token", token);
 
         var appUrl = section["appUrl"];
+        _appClient = new HttpClient();
         if (!string.IsNullOrEmpty(appUrl))
         {
             var cookie = section["cookie"];
@@ -56,7 +57,6 @@ public class Client : IClient
                 throw new ArgumentException("xXsrfToken is not specified");
             }
 
-            _appClient = new HttpClient();
             _appClient.BaseAddress = new Uri(CorrectBaseAddress(appUrl));
             _appClient.DefaultRequestHeaders.Add("Cookie", cookie);
             _appClient.DefaultRequestHeaders.Add("x-xsrf-token", xXsrfToken);
