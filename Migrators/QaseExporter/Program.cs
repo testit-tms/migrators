@@ -62,6 +62,7 @@ namespace QaseExporter
                     services.AddSingleton<IAttachmentService, AttachmentService>();
                     services.AddSingleton<IAttributeService, AttributeService>();
                     services.AddSingleton<IParameterService, ParameterService>();
+                    services.AddSingleton<ITestResultService, TestResultService>();
                 });
         }
 

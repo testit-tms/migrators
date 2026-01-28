@@ -14,6 +14,7 @@ public class TestCaseService : ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
     private readonly IParameterService _parameterService;
+    private readonly Dictionary<int, Guid> _TestCaseMap;
     public const int _duration = 10000;
     public List<string> _systemAttributeNames = [
         QaseSystemFieldNames.AutomationStatus,
@@ -36,7 +37,7 @@ public class TestCaseService : ITestCaseService
         _parameterService = parameterService;
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(Dictionary<int, Guid> sectionMap, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
+    public async Task<TestCaseData> ConvertTestCases(Dictionary<int, Guid> sectionMap, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
     {
         _logger.LogInformation("Converting test cases");
 
@@ -60,7 +61,11 @@ public class TestCaseService : ITestCaseService
 
         _logger.LogInformation("Exported test cases");
 
-        return allTestCases;
+        return new()
+        {
+            TestCases = allTestCases,
+            TestCaseMap = _TestCaseMap,
+        };
     }
 
     private async Task<List<TestCase>> ConvertTestCases(List<QaseTestCase> qaseTestCases, Guid sectionId, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
@@ -133,6 +138,7 @@ public class TestCaseService : ITestCaseService
             },
         ]);
 
+        _TestCaseMap.Add(qaseTestCase.Id, testCaseId);
 
         return new TestCase
         {
