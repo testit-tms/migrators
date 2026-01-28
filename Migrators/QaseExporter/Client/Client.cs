@@ -12,9 +12,11 @@ public class Client : IClient
     private readonly HttpClient _appClient;
     private readonly string _projectKey;
 
-    public Client(ILogger<Client> logger, IConfiguration configuration)
+    public Client(ILogger<Client> logger, HttpClient httpClient, HttpClient appClient, IConfiguration configuration)
     {
         _logger = logger;
+        _httpClient = httpClient;
+        _appClient = appClient;
 
         var section = configuration.GetSection("qase");
         var url = section["url"];
@@ -37,12 +39,10 @@ public class Client : IClient
 
         _projectKey = projectKey;
 
-        _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Add("Token", token);
 
         var appUrl = section["appUrl"];
-        _appClient = new HttpClient();
         if (!string.IsNullOrEmpty(appUrl))
         {
             var cookie = section["cookie"];

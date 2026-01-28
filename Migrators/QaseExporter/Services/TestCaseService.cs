@@ -141,6 +141,11 @@ public class TestCaseService : ITestCaseService
 
         _testCaseMap.Add(qaseTestCase.Id, testCaseId);
 
+        var iterations = qaseTestCase.Parameters.ToString() != "[]"
+            ? _parameterService.ConvertParameters(
+                JsonSerializer.Deserialize<Dictionary<string, List<string>>>(qaseTestCase.Parameters.ToString()!)!)
+            : new List<Iteration>();
+
         return new TestCase
         {
             Id = testCaseId,
@@ -154,10 +159,7 @@ public class TestCaseService : ITestCaseService
             Attributes = testCaseAttributes,
             Tags = qaseTestCase.Tags.Select(t => t.Title).ToList(),
             Attachments = attachments,
-            Iterations = qaseTestCase.Parameters.ToString() != "[]"
-                ? _parameterService.ConvertParameters(
-                    JsonSerializer.Deserialize<Dictionary<string, List<string>>>(qaseTestCase.Parameters.ToString()!)!)
-                : new List<Iteration>(),
+            Iterations = iterations,
             Links = new List<Link>(),
             Name = qaseTestCase.Name,
             SectionId = sectionId
