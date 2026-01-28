@@ -10,6 +10,13 @@ public interface IClient
     Task<List<QaseSharedStep>> GetSharedSteps();
     Task<List<QaseCustomField>> GetCustomFields();
     Task<List<QaseSystemField>> GetSystemFields();
+    Task<QaseAuthor> GetAuthor(int id);
+    Task<List<QaseTestRun>> GetTestRuns();
+    Task<string?> GetTestRunHash(int id);
+    Task<Dictionary<string, QaseCaseStat>> GetTestResultStats(string testRunHash);
+    Task<QaseTestResult?> GetTestResult(string testRunHash, string testResultHash);
+    Task<QaseTestPlan> GetTestPlan(string id);
     Task<byte[]> DownloadAttachment(string url);
     string GetProjectKey();
+    Task<string?> GetComments(int id);
 }

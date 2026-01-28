@@ -9,11 +9,14 @@ public class Client : IClient
 {
     private readonly ILogger<Client> _logger;
     private readonly HttpClient _httpClient;
+    private readonly HttpClient _appClient;
     private readonly string _projectKey;
 
-    public Client(ILogger<Client> logger, IConfiguration configuration)
+    public Client(ILogger<Client> logger, HttpClient httpClient, HttpClient appClient, IConfiguration configuration)
     {
         _logger = logger;
+        _httpClient = httpClient;
+        _appClient = appClient;
 
         var section = configuration.GetSection("qase");
         var url = section["url"];
@@ -36,9 +39,28 @@ public class Client : IClient
 
         _projectKey = projectKey;
 
-        _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri(CorrectBaseAddress(url));
         _httpClient.DefaultRequestHeaders.Add("Token", token);
+
+        var appUrl = section["appUrl"];
+        if (!string.IsNullOrEmpty(appUrl))
+        {
+            var cookie = section["cookie"];
+            if (string.IsNullOrEmpty(cookie))
+            {
+                throw new ArgumentException("Cookie is not specified");
+            }
+
+            var xXsrfToken = section["xXsrfToken"];
+            if (string.IsNullOrEmpty(xXsrfToken))
+            {
+                throw new ArgumentException("xXsrfToken is not specified");
+            }
+
+            _appClient.BaseAddress = new Uri(CorrectBaseAddress(appUrl));
+            _appClient.DefaultRequestHeaders.Add("Cookie", cookie);
+            _appClient.DefaultRequestHeaders.Add("x-xsrf-token", xXsrfToken);
+        }
     }
 
     public async Task<QaseProject> GetProject()
@@ -264,6 +286,186 @@ public class Client : IClient
         return systemFieldsData.Fields;
     }
 
+    public async Task<QaseAuthor> GetAuthor(int id)
+    {
+        _logger.LogInformation("Getting author by id {Id}", id);
+
+        var response = await _httpClient.GetAsync($"v1/author/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get author. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get author. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var author = JsonSerializer.Deserialize<QaseAuthor>(content)!;
+
+        _logger.LogDebug("Got author: {@Author}", author);
+
+        return author;
+    }
+
+    public async Task<List<QaseTestRun>> GetTestRuns()
+    {
+        _logger.LogInformation("Getting test runs by project id {Id}", _projectKey);
+
+        var allTestRuns = new List<QaseTestRun>();
+        var startAt = 0;
+        var maxResults = 100;
+        var countOfFields = 0;
+        var total = 0;
+
+        do
+        {
+            var response = await _httpClient.GetAsync(
+                $"v1/run/{_projectKey}?limit={maxResults}&offset={startAt}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get test runs. Status code: {StatusCode}. Response: {Response}",
+                    response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception($"Failed to get test runs. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var testRunResponse = JsonSerializer.Deserialize<QaseTestRunResponse>(content)!;
+
+            if (testRunResponse.Result.Count > 0)
+            {
+                _logger.LogDebug("Got test runs {@Runs}", testRunResponse.Result.Entities);
+
+                allTestRuns.AddRange(testRunResponse.Result.Entities);
+                startAt += maxResults;
+                total = testRunResponse.Result.Filtered;
+                countOfFields += testRunResponse.Result.Count;
+            }
+            else
+            {
+                startAt = -1;
+            }
+
+            _logger.LogInformation("Got {Count} out of {Total} test runs", countOfFields, total);
+        } while (countOfFields < total && startAt >= 0);
+
+        return allTestRuns;
+    }
+
+    public async Task<string?> GetTestRunHash(int id)
+    {
+        if (_appClient.BaseAddress == null)
+        {
+            _logger.LogDebug("Skip get test run hash. AppClient is not initialized");
+
+            return null;
+        }
+
+        _logger.LogInformation("Getting test run hash by test run id {Id}", id);
+
+        var response = await _appClient.GetAsync($"v1/project/TP/run/{id}/dashboard/info");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test run hash. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test run hash. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testRunInfo = JsonSerializer.Deserialize<QaseTestRunInfo>(content)!;
+
+        _logger.LogDebug("Got test run: {@TestRun}", testRunInfo);
+
+        return testRunInfo.Hash;
+    }
+
+    public async Task<Dictionary<string, QaseCaseStat>> GetTestResultStats(string testRunHash)
+    {
+        if (_appClient.BaseAddress == null)
+        {
+            _logger.LogDebug("Skip get test result stats. AppClient is not initialized");
+
+            return new();
+        }
+
+        _logger.LogInformation("Getting test result stats by test run hash {Hash}", testRunHash);
+
+        var response = await _appClient.GetAsync(
+            $"v1/project/TP/run/{testRunHash}/dashboard/case-stats");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test run hash. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test run hash. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var qaseStats = JsonSerializer.Deserialize<QaseCaseStatsResponse>(content)!;
+
+        _logger.LogDebug("Got test result stats: {@Hashes}", qaseStats.StatMap);
+
+        return qaseStats.StatMap;
+    }
+
+    public async Task<QaseTestResult?> GetTestResult(string testRunHash, string testResultHash)
+    {
+        if (_appClient.BaseAddress == null)
+        {
+            _logger.LogDebug("Skip get test result. AppClient is not initialized");
+
+            return null;
+        }
+
+        _logger.LogInformation("Getting test result by test run hash {TestRunHash} and test result hash {TestResultHash}",
+            testRunHash, testResultHash);
+
+        var response = await _appClient.GetAsync(
+            $"v1/project/TP/run/{testRunHash}/dashboard/cases?ids={testResultHash}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test result. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test result. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testResults = JsonSerializer.Deserialize<List<QaseTestResult>>(content)!;
+
+        _logger.LogDebug("Got test result: {@Author}", testResults.First());
+
+        return testResults.First();
+    }
+
+    public async Task<QaseTestPlan> GetTestPlan(string id)
+    {
+        _logger.LogInformation("Getting test plan by id {Id}", id);
+
+        var response = await _httpClient.GetAsync($"v1/plan/{_projectKey}/{id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            _logger.LogError(
+                "Failed to get test plan. Status code: {StatusCode}. Response: {Response}",
+                response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            throw new Exception($"Failed to get test plan. Status code: {response.StatusCode}");
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+        var testPlanResponse = JsonSerializer.Deserialize<QaseTestPlanResponse>(content)!;
+
+        _logger.LogDebug("Got test plan: {@Plan}", testPlanResponse.Plan);
+
+        return testPlanResponse.Plan;
+    }
+
     public async Task<byte[]> DownloadAttachment(string url)
     {
         return await _httpClient.GetByteArrayAsync(url);
@@ -281,5 +483,58 @@ public class Client : IClient
             return url;
         }
         return url + '/';
+    }
+
+    public async Task<string?> GetComments(int id)
+    {
+        if (_appClient.BaseAddress == null)
+        {
+            _logger.LogDebug("Skip get comments. AppClient is not initialized");
+
+            return null;
+        }
+
+        _logger.LogInformation("Getting comments by test case id {Id}", id);
+
+        var allComments = new List<string>();
+        var startAt = 0;
+        var maxResults = 100;
+        var countOfComments = 0;
+        var total = 0;
+
+        do
+        {
+            var response = await _appClient.GetAsync(
+                $"v1/projects/{_projectKey}/cases/{id}/comments?limit={maxResults}&offset={startAt}");
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError(
+                    "Failed to get comments. Status code: {StatusCode}. Response: {Response}",
+                    response.StatusCode, await response.Content.ReadAsStringAsync());
+
+                throw new Exception($"Failed to get comments. Status code: {response.StatusCode}");
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var commentResponse = JsonSerializer.Deserialize<QaseCommentResponse>(content)!;
+
+            if (commentResponse.Comments.Count > 0)
+            {
+                _logger.LogDebug("Got {Count} comments", commentResponse.Comments.Count);
+
+                allComments.AddRange(commentResponse.Comments);
+                startAt += maxResults;
+                total = commentResponse.Total;
+                countOfComments += commentResponse.Comments.Count;
+            }
+            else
+            {
+                startAt = -1;
+            }
+
+            _logger.LogInformation("Got {Count} out of {Total} comments", countOfComments, total);
+        } while (countOfComments < total && startAt >= 0);
+
+        return string.Join("\n", allComments);
     }
 }

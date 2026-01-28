@@ -37,9 +37,9 @@ public class ExportService : IExportService
         var sectionData = await _sectionService.ConvertSections();
         var sharedSteps = await _sharedStepService.ConvertSharedSteps(sectionData.MainSection.Id);
         var attributes = await _attributeService.ConvertAttributes();
-        var testCases = await _testCaseService.ConvertTestCases(sectionData.SectionMap, sharedSteps, attributes);
+        var testCaseData = await _testCaseService.ConvertTestCases(sectionData.SectionMap, sharedSteps, attributes);
 
-        foreach (var testCase in testCases)
+        foreach (var testCase in testCaseData.TestCases)
         {
             await _writeService.WriteTestCase(testCase);
         }
@@ -53,7 +53,7 @@ public class ExportService : IExportService
         {
             ProjectName = project.Name,
             Sections = new List<Section> { sectionData.MainSection },
-            TestCases = testCases.Select(t => t.Id).ToList(),
+            TestCases = testCaseData.TestCases.Select(t => t.Id).ToList(),
             SharedSteps = sharedSteps.Values.Select(s => s.Id).ToList(),
             Attributes = attributes.Attributes,
         };

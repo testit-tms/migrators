@@ -29,8 +29,26 @@ public class AttributeService : IAttributeService
             new()
             {
                 Id = Guid.NewGuid(),
-                Name = Constants.IdQaseAttribute,
+                Name = Constants.QaseIdAttribute,
                 Type = AttributeType.String,
+                IsRequired = false,
+                IsActive = true,
+                Options = new List<string>(),
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = Constants.QaseAuthorAttribute,
+                Type = AttributeType.String,
+                IsRequired = false,
+                IsActive = true,
+                Options = new List<string>(),
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = Constants.QaseCreatedDateAttribute,
+                Type = AttributeType.Datetime,
                 IsRequired = false,
                 IsActive = true,
                 Options = new List<string>(),

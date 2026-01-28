@@ -2,6 +2,7 @@ using JsonWriter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Expressions;
@@ -52,7 +53,6 @@ namespace QaseExporter
                 {
                     services.AddSingleton<App>();
                     services.AddSingleton(SetupConfiguration());
-                    services.AddSingleton<IClient, Client.Client>();
                     services.AddSingleton<IWriteService, WriteService>();
                     services.AddSingleton<IExportService, ExportService>();
                     services.AddSingleton<ISectionService, SectionService>();
@@ -62,6 +62,19 @@ namespace QaseExporter
                     services.AddSingleton<IAttachmentService, AttachmentService>();
                     services.AddSingleton<IAttributeService, AttributeService>();
                     services.AddSingleton<IParameterService, ParameterService>();
+                    services.AddSingleton<ITestResultService, TestResultService>();
+                    services.AddTransient<IClient, Client.Client>(serviceProvider =>
+                    {
+                        var logger = serviceProvider.GetRequiredService<ILogger<Client.Client>>();
+                        var config = serviceProvider.GetRequiredService<IConfiguration>();
+
+                        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+
+                        var httpClient = httpClientFactory.CreateClient("DefaultHttpClient");
+                        var appClient = httpClientFactory.CreateClient("AppHttpClient");
+
+                        return new Client.Client(logger, httpClient, appClient, config);
+                    });
                 });
         }
 

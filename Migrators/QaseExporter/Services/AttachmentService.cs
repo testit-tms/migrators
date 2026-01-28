@@ -44,4 +44,17 @@ public class AttachmentService : IAttachmentService
 
         return names;
     }
+
+    public async Task<string?> DownloadComments(Guid workItemId, int qaseTestCaseId)
+    {
+        var comments = await _client.GetComments(qaseTestCaseId);
+
+        if (!string.IsNullOrEmpty(comments))
+        {
+            return await _writeService.WriteAttachment(
+                workItemId, System.Text.Encoding.Unicode.GetBytes(comments), Constants.QaseCommentsFileName);
+        }
+
+        return string.Empty;
+    }
 }

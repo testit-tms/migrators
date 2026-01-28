@@ -14,6 +14,7 @@ public class TestCaseService : ITestCaseService
     private readonly IStepService _stepService;
     private readonly IAttachmentService _attachmentService;
     private readonly IParameterService _parameterService;
+    private readonly Dictionary<int, Guid> _testCaseMap;
     public const int _duration = 10000;
     public List<string> _systemAttributeNames = [
         QaseSystemFieldNames.AutomationStatus,
@@ -34,13 +35,14 @@ public class TestCaseService : ITestCaseService
         _stepService = stepService;
         _attachmentService = attachmentService;
         _parameterService = parameterService;
+        _testCaseMap = new();
     }
 
-    public async Task<List<TestCase>> ConvertTestCases(Dictionary<int, Guid> sectionMap, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
+    public async Task<TestCaseData> ConvertTestCases(Dictionary<int, Guid> sectionMap, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
     {
         _logger.LogInformation("Converting test cases");
 
-        var testCases = new List<TestCase>();
+        var allTestCases = new List<TestCase>();
 
         foreach (var section in sectionMap)
         {
@@ -48,19 +50,23 @@ public class TestCaseService : ITestCaseService
 
             _logger.LogDebug("Found {Count} test cases", qaseTestCases.Count);
 
-            testCases.AddRange(
-                await ConvertTestCases(
-                    qaseTestCases,
-                    section.Value,
-                    sharedSteps,
-                    attributes
-                )
+            var testCases = await ConvertTestCases(
+                qaseTestCases,
+                section.Value,
+                sharedSteps,
+                attributes
             );
+
+            allTestCases.AddRange(testCases);
         }
 
         _logger.LogInformation("Exported test cases");
 
-        return testCases;
+        return new()
+        {
+            TestCases = allTestCases,
+            TestCaseMap = _testCaseMap,
+        };
     }
 
     private async Task<List<TestCase>> ConvertTestCases(List<QaseTestCase> qaseTestCases, Guid sectionId, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
@@ -69,67 +75,95 @@ public class TestCaseService : ITestCaseService
 
         foreach (var qaseTestCase in qaseTestCases)
         {
-            _logger.LogInformation("Converting test case {Name}", qaseTestCase.Name);
+            var testCase = await ConvertTestCase(qaseTestCase, sectionId, sharedSteps, attributes);
 
-            var projectKey = _client.GetProjectKey();
-            var testCaseId = Guid.NewGuid();
-            var attachments = await _attachmentService.DownloadAttachments(qaseTestCase.Attachments, testCaseId);
-            var steps = await _stepService.ConvertSteps(qaseTestCase.Steps, sharedSteps, testCaseId);
-            var preconditionSteps = await _stepService.ConvertConditionSteps(qaseTestCase.Preconditions, testCaseId);
-            var postconditionSteps = await _stepService.ConvertConditionSteps(qaseTestCase.Postconditions, testCaseId);
-
-            steps.ForEach(s =>
-            {
-                attachments.AddRange(s.ActionAttachments);
-                attachments.AddRange(s.ExpectedAttachments);
-                attachments.AddRange(s.TestDataAttachments);
-            });
-            preconditionSteps.ForEach(s =>
-            {
-                attachments.AddRange(s.ActionAttachments);
-            });
-            postconditionSteps.ForEach(s =>
-            {
-                attachments.AddRange(s.ActionAttachments);
-            });
-
-            var systemAttributes = ConvertSystemAttributes(attributes.SystemAttributeMap, qaseTestCase);
-            var customAttributes = ConvertCustomAttributes(attributes.CustomAttributeMap, qaseTestCase.CustomFields);
-            var testCaseAttributes = systemAttributes.Concat(customAttributes).ToList();
-
-            testCaseAttributes.Add(
-                new()
-                {
-                    Id = attributes.AttributeMap[Constants.IdQaseAttribute].Id,
-                    Value = projectKey + "-" + qaseTestCase.Id
-                }
-            );
-
-            testCases.Add(
-                new TestCase
-                {
-                    Id = testCaseId,
-                    Description = ConvertingDescription(qaseTestCase.Description),
-                    State = ConvertStatus(qaseTestCase.Status),
-                    Priority = ConvertPriority(qaseTestCase.Priority),
-                    Steps = steps,
-                    PreconditionSteps = preconditionSteps,
-                    PostconditionSteps = postconditionSteps,
-                    Duration = _duration,
-                    Attributes = testCaseAttributes,
-                    Tags = qaseTestCase.Tags.Select(t => t.Title).ToList(),
-                    Attachments = attachments,
-                    Iterations = qaseTestCase.Parameters.ToString() != "[]"
-                        ? _parameterService.ConvertParameters(JsonSerializer.Deserialize<Dictionary<string, List<string>>>(qaseTestCase.Parameters.ToString()!)!)
-                        : new List<Iteration>(),
-                    Links = new List<Link>(),
-                    Name = qaseTestCase.Name,
-                    SectionId = sectionId
-                }
-            );
+            testCases.Add(testCase);
         }
 
         return testCases;
+    }
+
+    private async Task<TestCase> ConvertTestCase(QaseTestCase qaseTestCase, Guid sectionId, Dictionary<string, SharedStep> sharedSteps, AttributeData attributes)
+    {
+        _logger.LogInformation("Converting test case {Name}", qaseTestCase.Name);
+
+        var projectKey = _client.GetProjectKey();
+        var testCaseId = Guid.NewGuid();
+        var attachments = await _attachmentService.DownloadAttachments(qaseTestCase.Attachments, testCaseId);
+        var commentsFileName = await _attachmentService.DownloadComments(testCaseId, qaseTestCase.Id);
+
+        if (!string.IsNullOrEmpty(commentsFileName))
+        {
+            attachments.Add(commentsFileName);
+        }
+
+        var steps = await _stepService.ConvertSteps(qaseTestCase.Steps, sharedSteps, testCaseId);
+        var preconditionSteps = await _stepService.ConvertConditionSteps(qaseTestCase.Preconditions, testCaseId);
+        var postconditionSteps = await _stepService.ConvertConditionSteps(qaseTestCase.Postconditions, testCaseId);
+
+        steps.ForEach(s =>
+        {
+            attachments.AddRange(s.ActionAttachments);
+            attachments.AddRange(s.ExpectedAttachments);
+            attachments.AddRange(s.TestDataAttachments);
+        });
+        preconditionSteps.ForEach(s =>
+        {
+            attachments.AddRange(s.ActionAttachments);
+        });
+        postconditionSteps.ForEach(s =>
+        {
+            attachments.AddRange(s.ActionAttachments);
+        });
+
+        var systemAttributes = ConvertSystemAttributes(attributes.SystemAttributeMap, qaseTestCase);
+        var customAttributes = ConvertCustomAttributes(attributes.CustomAttributeMap, qaseTestCase.CustomFields);
+        var testCaseAttributes = systemAttributes.Concat(customAttributes).ToList();
+        var author = await _client.GetAuthor(qaseTestCase.AuthorId);
+
+        testCaseAttributes.AddRange([
+            new()
+            {
+                Id = attributes.AttributeMap[Constants.QaseIdAttribute].Id,
+                Value = projectKey + "-" + qaseTestCase.Id
+            },
+            new()
+            {
+                Id = attributes.AttributeMap[Constants.QaseAuthorAttribute].Id,
+                Value = author.Result.Name
+            },
+            new()
+            {
+                Id = attributes.AttributeMap[Constants.QaseCreatedDateAttribute].Id,
+                Value = qaseTestCase.CreateAt
+            },
+        ]);
+
+        _testCaseMap.Add(qaseTestCase.Id, testCaseId);
+
+        var iterations = qaseTestCase.Parameters.ToString() != "[]"
+            ? _parameterService.ConvertParameters(
+                JsonSerializer.Deserialize<Dictionary<string, List<string>>>(qaseTestCase.Parameters.ToString()!)!)
+            : new List<Iteration>();
+
+        return new TestCase
+        {
+            Id = testCaseId,
+            Description = ConvertingDescription(qaseTestCase.Description),
+            State = ConvertStatus(qaseTestCase.Status),
+            Priority = ConvertPriority(qaseTestCase.Priority),
+            Steps = steps,
+            PreconditionSteps = preconditionSteps,
+            PostconditionSteps = postconditionSteps,
+            Duration = _duration,
+            Attributes = testCaseAttributes,
+            Tags = qaseTestCase.Tags.Select(t => t.Title).ToList(),
+            Attachments = attachments,
+            Iterations = iterations,
+            Links = new List<Link>(),
+            Name = qaseTestCase.Name,
+            SectionId = sectionId
+        };
     }
 
     private List<CaseAttribute> ConvertSystemAttributes(Dictionary<QaseSystemField, Guid> attributeMap, QaseTestCase qaseTestCase)
@@ -312,7 +346,7 @@ public class TestCaseService : ITestCaseService
 
             attributes.Add(attribute);
         }
-          
+
         return attributes;
     }
 
