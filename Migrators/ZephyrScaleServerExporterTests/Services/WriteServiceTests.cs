@@ -2,18 +2,14 @@ using Microsoft.Extensions.Options;
 using ZephyrScaleServerExporter.Models;
 using ZephyrScaleServerExporter.Services.Implementations;
 
-namespace ZephyrScaleServerExporterTests.Services;
-
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Models;
+
+namespace ZephyrScaleServerExporterTests.Services;
 
 [TestFixture]
 public class WriteServiceTests
@@ -332,7 +328,7 @@ public class WriteServiceTests
     public async Task WriteTestCase_WritesTestCaseJsonToFile()
     {
         // Arrange
-        var testCase = new TestCase
+        var testCase = new global::Models.TestCase
         {
             Id = Guid.NewGuid(),
             Name = "Sample TestCase"
@@ -342,7 +338,7 @@ public class WriteServiceTests
         await _writeService.WriteTestCase(testCase);
 
         // Assert
-        var (expectedFilePath, deserialized) = GetExpectedFilePath<TestCase>(testCase.Id, Constants.TestCase);
+        var (expectedFilePath, deserialized) = GetExpectedFilePath<global::Models.TestCase>(testCase.Id, Constants.TestCase);
         Assert.Multiple(() =>
         {
             Assert.That(File.Exists(expectedFilePath), Is.True);
