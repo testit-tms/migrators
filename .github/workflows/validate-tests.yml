@@ -1,0 +1,117 @@
+name: Validate Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      projects_list: ${{ steps.resolve.outputs.projects_list }}
+      has_projects: ${{ steps.resolve.outputs.has_projects }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Paths filter
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            allure:
+              - 'Migrators/AllureExporter/**'
+              - 'Migrators/AllureExporterTests/**'
+            azure:
+              - 'Migrators/AzureExporter/**'
+              - 'Migrators/AzureExporterTests/**'
+            hpalm:
+              - 'Migrators/HPALMExporter/**'
+              - 'Migrators/HPALMExporterTests/**'
+            practitest:
+              - 'Migrators/PractiTestExporter/**'
+              - 'Migrators/PractiTestExporterTests/**'
+            spira:
+              - 'Migrators/SpiraTestExporter/**'
+              - 'Migrators/SpiraTestExporterTests/**'
+            testcollab:
+              - 'Migrators/TestCollabExporter/**'
+              - 'Migrators/TestCollabExporterTests/**'
+            testlink:
+              - 'Migrators/TestLinkExporter/**'
+              - 'Migrators/TestLinkExporterTests/**'
+            xray:
+              - 'Migrators/XRayExporter/**'
+              - 'Migrators/XRayExporterTests/**'
+            zephyr_squad:
+              - 'Migrators/ZephyrSquadExporter/**'
+              - 'Migrators/ZephyrSquadExporterTests/**'
+            zephyr_scale:
+              - 'Migrators/ZephyrScaleExporter/**'
+              - 'Migrators/ZephyrScaleExporterTests/**'
+            zephyr_scale_server:
+              - 'Migrators/ZephyrScaleServerExporter/**'
+              - 'Migrators/ZephyrScaleServerExporterTests/**'
+            testrail_xml:
+              - 'Migrators/TestRailXmlExporter/**'
+              - 'Migrators/TestRailXmlExporterTests/**'
+              - 'Migrators/JsonWriter/**'
+
+      - name: Resolve affected projects (matrix → loop)
+        id: resolve
+        env:
+          PROJECT_MATRIX: |
+            allure:./Migrators/AllureExporterTests
+            azure:./Migrators/AzureExporterTests
+            hpalm:./Migrators/HPALMExporterTests
+            practitest:./Migrators/PractiTestExporterTests
+            spira:./Migrators/SpiraTestExporterTests
+            testcollab:./Migrators/TestCollabExporterTests
+            testlink:./Migrators/TestLinkExporterTests
+            xray:./Migrators/XRayExporterTests
+            zephyr_squad:./Migrators/ZephyrSquadExporterTests
+            zephyr_scale:./Migrators/ZephyrScaleExporterTests
+            zephyr_scale_server:./Migrators/ZephyrScaleServerExporterTests
+            testrail_xml:./Migrators/TestRailXmlExporterTests
+          filter_allure: ${{ steps.filter.outputs.allure }}
+          filter_azure: ${{ steps.filter.outputs.azure }}
+          filter_hpalm: ${{ steps.filter.outputs.hpalm }}
+          filter_practitest: ${{ steps.filter.outputs.practitest }}
+          filter_spira: ${{ steps.filter.outputs.spira }}
+          filter_testcollab: ${{ steps.filter.outputs.testcollab }}
+          filter_testlink: ${{ steps.filter.outputs.testlink }}
+          filter_xray: ${{ steps.filter.outputs.xray }}
+          filter_zephyr_squad: ${{ steps.filter.outputs.zephyr_squad }}
+          filter_zephyr_scale: ${{ steps.filter.outputs.zephyr_scale }}
+          filter_zephyr_scale_server: ${{ steps.filter.outputs.zephyr_scale_server }}
+          filter_testrail_xml: ${{ steps.filter.outputs.testrail_xml }}
+        run: |
+          set -e
+          PROJECTS=""
+          while IFS=: read -r key path; do
+            [ -z "$key" ] && continue
+            var="filter_${key}"
+            val="${!var}"
+            [ "$val" = "true" ] && PROJECTS="$PROJECTS $path"
+          done <<< "$PROJECT_MATRIX"
+          PROJECTS=$(echo "$PROJECTS" | xargs)
+          if [ -z "$PROJECTS" ]; then
+            echo "No affected test projects to run."
+            echo "has_projects=false" >> "$GITHUB_OUTPUT"
+            echo "projects_list=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "has_projects=true" >> "$GITHUB_OUTPUT"
+          echo "projects_list=$PROJECTS" >> "$GITHUB_OUTPUT"
+          echo "Running tests for:$PROJECTS"
+
+  test:
+    needs: validate
+    if: needs.validate.outputs.has_projects == 'true'
+    uses: ./.github/workflows/workflow-test.yaml
+    with:
+      projects_list: ${{ needs.validate.outputs.projects_list }}
