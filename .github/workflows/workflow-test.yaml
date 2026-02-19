@@ -31,11 +31,13 @@ jobs:
       - name: Restore and test affected projects
         run: |
           set -e
+          # Run dotnet-coverage via dotnet exec so .NET 8 is used (tool's native host expects 10.x on Linux)
+          COVERAGE_DLL=$(find "$HOME/.dotnet/tools/.store/dotnet-coverage" -name "dotnet-coverage.dll" 2>/dev/null | head -1)
           for proj in ${{ inputs.projects_list }}; do
             shortname=$(basename "$proj")
             echo "Restore and test: $proj"
             dotnet restore "$proj"
-            dotnet-coverage collect \
+            dotnet exec "$COVERAGE_DLL" collect \
               "dotnet test \"$proj\" --verbosity normal --no-restore --logger trx --results-directory \"./coverage-reports/$shortname\"" \
               -f cobertura \
               -o "./coverage-reports/$shortname/coverage.cobertura.xml"
