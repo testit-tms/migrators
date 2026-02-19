@@ -24,7 +24,8 @@ jobs:
         run: |
           # Pin 17.x: runs on .NET 8; 18.x requires .NET 10 app host on Linux
           dotnet tool install -g dotnet-coverage --version 17.14.2
-          dotnet tool install -g dotnet-reportgenerator-globaltool
+          # Pin 5.4.x: runs on .NET 8; 5.5.x uses .NET 10 app host on Linux
+          dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.4.18
           echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
           echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
 
