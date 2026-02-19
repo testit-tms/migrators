@@ -10,17 +10,20 @@ public class UtilsTests
 {
     #region ReplaceInvalidChars
 
-    [TestCase("invalid:file/name?.txt", "invalid_file_name_.txt")]
-    [TestCase("file<name>|text.txt", "file_name__text.txt")]
-    [TestCase("test\"file.txt", "test_file.txt")]
-    [TestCase("normal_file.txt", "normal_file.txt")]
-    [TestCase("file\tname.txt", "file_name.txt")]
-    [TestCase("file\nname.txt", "file_name.txt")]
-    [TestCase("", "")]
-    [TestCase("a", "a")]
-    public void ReplaceInvalidChars_WithDifferentInputs_ReplacesInvalidCharactersCorrectly(string fileName, string expected)
+    [TestCase("invalid:file/name?.txt")]
+    [TestCase("file<name>|text.txt")]
+    [TestCase("test\"file.txt")]
+    [TestCase("normal_file.txt")]
+    [TestCase("file\tname.txt")]
+    [TestCase("file\nname.txt")]
+    [TestCase("")]
+    [TestCase("a")]
+    public void ReplaceInvalidChars_WithDifferentInputs_ReplacesInvalidCharactersCorrectly(string fileName)
     {
-        // Arrange & Act
+        // Expected: same logic as implementation (Path.GetInvalidFileNameChars() is OS-dependent)
+        var expected = string.Join("_", fileName.Split(Path.GetInvalidFileNameChars()));
+
+        // Act
         var result = Utils.ReplaceInvalidChars(fileName);
 
         // Assert
