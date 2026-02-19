@@ -44,7 +44,6 @@ jobs:
           done
 
       - name: Merge coverage and convert to LCOV
-        if: always()
         run: |
           REPORTS=$(find ./coverage-reports -name "coverage.cobertura.xml" -type f 2>/dev/null | tr '\n' ';' | sed 's/;$//')
           if [ -n "$REPORTS" ]; then
