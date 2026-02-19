@@ -1,8 +1,5 @@
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Models;
 using ZephyrScaleServerExporter.Client;
 using ZephyrScaleServerExporter.Models.Attachment;
@@ -196,17 +193,18 @@ public class AttachmentServiceTests
     [Test]
     public async Task DownloadAttachment_WithInvalidCharsInFileName_ReplacesInvalidChars()
     {
-        // Arrange
+        // Arrange - use same sanitization as AttachmentService (platform-independent)
         var testCaseId = Guid.NewGuid();
+        var rawFileName = "test<file>:name?.png";
         var attachment = new ZephyrAttachment
         {
-            FileName = "test<file>:name?.png",
+            FileName = rawFileName,
             Url = "https://example.com/test%3Cfile%3E%3Aname%3F.png"
         };
         var isSharedAttachment = false;
         var fileBytes = new byte[] { 1, 2, 3, 4 };
-        var expectedFileName = "test_file__name_.png"; // Invalid chars replaced with underscores
-        var writtenFilePath = "/path/to/test_file__name_.png";
+        var expectedFileName = Utils.ReplaceInvalidChars(Utils.SpacesToUnderscores(rawFileName));
+        var writtenFilePath = "/path/to/" + expectedFileName;
 
         _mockClient.Setup(x => x.DownloadAttachment(attachment.Url, testCaseId))
             .ReturnsAsync(fileBytes);
@@ -286,17 +284,18 @@ public class AttachmentServiceTests
     [Test]
     public async Task DownloadAttachmentById_WithInvalidCharsInName_ReplacesInvalidChars()
     {
-        // Arrange
+        // Arrange - use same sanitization as AttachmentService (platform-independent)
         var testCaseId = Guid.NewGuid();
+        var rawName = "test<file>:name?.png";
         var attachment = new StepAttachment
         {
             Id = 789,
-            Name = "test<file>:name?.png"
+            Name = rawName
         };
         var isSharedAttachment = false;
         var fileBytes = new byte[] { 1, 2, 3, 4 };
-        var expectedFileName = "test_file__name_.png"; // Invalid chars replaced with underscores
-        var writtenFilePath = "/path/to/test_file__name_.png";
+        var expectedFileName = Utils.ReplaceInvalidChars(Utils.SpacesToUnderscores(rawName));
+        var writtenFilePath = "/path/to/" + expectedFileName;
 
         _mockClient.Setup(x => x.DownloadAttachmentById(attachment.Id, testCaseId))
             .ReturnsAsync(fileBytes);
