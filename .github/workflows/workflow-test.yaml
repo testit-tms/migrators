@@ -18,13 +18,12 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: |
-            8
-            10
+          dotnet-version: '8'
 
       - name: Install coverage and report tools
         run: |
-          dotnet tool install -g dotnet-coverage
+          # Pin 17.x: runs on .NET 8; 18.x requires .NET 10 app host on Linux
+          dotnet tool install -g dotnet-coverage --version 17.14.2
           dotnet tool install -g dotnet-reportgenerator-globaltool
           echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
           echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
