@@ -18,33 +18,29 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8'
+          dotnet-version: 8.0.x
 
-      - name: Install coverage and report tools
-        run: |
-          # Pin 17.x: runs on .NET 8; 18.x requires .NET 10 app host on Linux
-          dotnet tool install -g dotnet-coverage --version 17.14.2
-          # Pin 5.4.x: runs on .NET 8; 5.5.x uses .NET 10 app host on Linux
-          dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.4.18
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
-          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
-
-      - name: Restore and test affected projects
+      - name: Restore and test
         run: |
           set -e
-          # Run dotnet-coverage via dotnet exec so .NET 8 is used (tool's native host expects 10.x on Linux)
-          COVERAGE_DLL=$(find "$HOME/.dotnet/tools/.store/dotnet-coverage" -name "dotnet-coverage.dll" 2>/dev/null | head -1)
           for proj in ${{ inputs.projects_list }}; do
             shortname=$(basename "$proj")
             echo "Restore and test: $proj"
             dotnet restore "$proj"
-            dotnet exec "$COVERAGE_DLL" collect \
-              "dotnet test \"$proj\" --verbosity normal --no-restore --logger trx --results-directory \"./coverage-reports/$shortname\"" \
-              -f cobertura \
-              -o "./coverage-reports/$shortname/coverage.cobertura.xml"
+            dotnet test "$proj" \
+              --no-restore \
+              --verbosity normal \
+              --logger trx \
+              --results-directory "./coverage-reports/$shortname" \
+              --collect:"XPlat Code Coverage"
           done
 
-      - name: Merge coverage and convert to LCOV
+      - name: Install ReportGenerator
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.4.18
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Convert to LCOV format
         run: |
           REPORTS=$(find ./coverage-reports -name "coverage.cobertura.xml" -type f 2>/dev/null | tr '\n' ';' | sed 's/;$//')
           if [ -n "$REPORTS" ]; then
