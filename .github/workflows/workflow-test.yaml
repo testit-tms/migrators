@@ -20,6 +20,13 @@ jobs:
         with:
           dotnet-version: '8'
 
+      - name: Install coverage and report tools
+        run: |
+          dotnet tool install -g dotnet-coverage
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
+
       - name: Restore and test affected projects
         run: |
           set -e
@@ -27,16 +34,11 @@ jobs:
             shortname=$(basename "$proj")
             echo "Restore and test: $proj"
             dotnet restore "$proj"
-            dotnet test "$proj" \
-              --verbosity normal \
-              --no-restore \
-              --collect:"XPlat Code Coverage" \
-              --logger trx \
-              --results-directory "./coverage-reports/$shortname"
+            dotnet-coverage collect \
+              "dotnet test \"$proj\" --verbosity normal --no-restore --logger trx --results-directory \"./coverage-reports/$shortname\"" \
+              -f cobertura \
+              -o "./coverage-reports/$shortname/coverage.cobertura.xml"
           done
-
-      - name: Install ReportGenerator
-        run: dotnet tool install -g dotnet-reportgenerator-globaltool
 
       - name: Merge coverage and convert to LCOV
         run: |
