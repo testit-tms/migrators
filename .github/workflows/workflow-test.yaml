@@ -1,0 +1,62 @@
+name: Run Tests
+
+on:
+  workflow_call:
+    inputs:
+      projects_list:
+        required: true
+        type: string
+        description: "Space-separated paths to test projects (e.g. ./Migrators/AzureExporterTests ./Migrators/AllureExporterTests)"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore and test
+        run: |
+          set -e
+          for proj in ${{ inputs.projects_list }}; do
+            shortname=$(basename "$proj")
+            echo "Restore and test: $proj"
+            dotnet restore "$proj"
+            dotnet test "$proj" \
+              --no-restore \
+              --verbosity normal \
+              --logger trx \
+              --results-directory "./coverage-reports/$shortname" \
+              --collect:"XPlat Code Coverage"
+          done
+
+      - name: Install ReportGenerator
+        run: |
+          dotnet tool install -g dotnet-reportgenerator-globaltool --version 5.4.18
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Convert to LCOV format
+        run: |
+          REPORTS=$(find ./coverage-reports -name "coverage.cobertura.xml" -type f 2>/dev/null | tr '\n' ';' | sed 's/;$//')
+          if [ -n "$REPORTS" ]; then
+            reportgenerator -reports:"$REPORTS" -targetdir:./coverage-merged -reporttypes:LCOV \
+              -filefilters:"-**/obj/**" \
+              -filefilters:"-**/bin/**" \
+              -filefilters:"-**/NuGet/**" \
+              -filefilters:"-**/packages/**"
+          fi
+
+      - name: Upload coverage to Coveralls
+        if: always()
+        uses: coverallsapp/github-action@v2
+        continue-on-error: true
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage-merged/lcov.info
+          flag-name: migrators
+          parallel: false

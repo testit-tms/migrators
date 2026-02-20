@@ -23,3 +23,7 @@ We support the following systems:
 - [Qase](https://github.com/testit-tms/migrators/tree/main/Migrators/QaseExporter/Readme.md)
 
 We are constantly working on new migrators. If you need a migrator for a system that is not listed here, please contact us at [support@yoonion.ru](mailto:support@yoonion.ru).
+
+<a href='https://coveralls.io/github/testit-tms/migrators?branch=main'>
+  <img src='https://coveralls.io/repos/github/testit-tms/migrators/badge.svg?branch=main' alt='Coverage Status' />
+</a>
