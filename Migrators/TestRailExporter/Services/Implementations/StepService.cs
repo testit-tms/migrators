@@ -12,7 +12,11 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
     : IStepService
 {
     private readonly IClient _client = client;
-    private AttachmentsInfo _attachmentsInfo = new();
+    private AttachmentsInfo _attachmentsInfo = new()
+    {
+        AttachmentNames = new List<string>(),
+        AttachmentsMap = new Dictionary<string, string>()
+    };
     private static readonly Regex _ImgRegex = new Regex(@"!\[\]\(([^)]*)\)");
     private static readonly Regex _HyperlinkRegex = new Regex(@"\[[^\[\]]*\]\([^()\s]*\)");
     private static readonly Regex _UrlRegex = new Regex(@"\(([^()\s]+)\)");
@@ -56,10 +60,18 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
     {
         logger.LogDebug("Converting steps for shared step {Name}", sharedStep.Title);
 
+        // Shared steps do not preload AttachmentsInfo (unlike test cases).
+        // Reset map so ExtractAttachments does not NRE on AttachmentsMap.
+        _attachmentsInfo = new AttachmentsInfo
+        {
+            AttachmentNames = new List<string>(),
+            AttachmentsMap = new Dictionary<string, string>()
+        };
+
         var steps = new List<Step>();
         var attachmentNames = new List<string>();
 
-        foreach (var testRailStep in sharedStep.Steps)
+        foreach (var testRailStep in sharedStep.Steps ?? [])
         {
             var step = await ConvertStep(testRailStep.Action, testRailStep.Expected, sharedStepId);
 
@@ -159,13 +171,23 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
             return info;
         }
 
+        if (_attachmentsInfo.AttachmentsMap == null)
+        {
+            _attachmentsInfo.AttachmentsMap = new Dictionary<string, string>();
+        }
+
+        if (_attachmentsInfo.AttachmentNames == null)
+        {
+            _attachmentsInfo.AttachmentNames = new List<string>();
+        }
+
         foreach (Match match in matches)
         {
             var url = match.Groups[1].Value;
             var attachmentId = url.Split('/').Last();
             var fileName = string.Empty;
 
-            if (!_attachmentsInfo.AttachmentsMap.TryGetValue(attachmentId, out fileName))
+            if (!_attachmentsInfo.AttachmentsMap.TryGetValue(attachmentId, out fileName!))
             {
                 fileName = await GetAttachmentName(attachmentId, id);
             }

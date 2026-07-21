@@ -1,4 +1,3 @@
-using System.Net.Http.Headers;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -50,6 +49,49 @@ public class Client : IClient
         return "Basic " + basicAuthenticationValue;
     }
 
+    /// <summary>
+    /// Supports both TestRail response formats:
+    /// - legacy: [ {...}, {...} ]
+    /// - paginated: { "offset", "limit", "size", "&lt;collection&gt;": [ ... ] }
+    /// For legacy arrays Size is 0 so pagination loops stop after one page.
+    /// </summary>
+    private static (List<T> Items, int Size) ParseListResponse<T>(string content, string collectionPropertyName)
+    {
+        using var doc = JsonDocument.Parse(content);
+        var root = doc.RootElement;
+
+        if (root.ValueKind == JsonValueKind.Array)
+        {
+            var items = JsonSerializer.Deserialize<List<T>>(content) ?? [];
+            return (items, 0);
+        }
+
+        if (root.ValueKind == JsonValueKind.Object)
+        {
+            var items = new List<T>();
+            if (root.TryGetProperty(collectionPropertyName, out var collection) &&
+                collection.ValueKind == JsonValueKind.Array)
+            {
+                items = JsonSerializer.Deserialize<List<T>>(collection.GetRawText()) ?? [];
+            }
+
+            var size = 0;
+            if (root.TryGetProperty("size", out var sizeElement) && sizeElement.TryGetInt32(out var parsedSize))
+            {
+                size = parsedSize;
+            }
+            else
+            {
+                size = items.Count;
+            }
+
+            return (items, size);
+        }
+
+        throw new JsonException(
+            $"Unexpected JSON root kind {root.ValueKind} while reading '{collectionPropertyName}'");
+    }
+
     public async Task<TestRailProject> GetProject()
     {
         _logger.LogInformation("Getting project by name {Name}", _projectName);
@@ -76,9 +118,9 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var projects = JsonSerializer.Deserialize<TestRailProjects>(content)!;
+            var (projects, pageSize) = ParseListResponse<TestRailProject>(content, "projects");
 
-            var project = projects.Projects.Find(p => p.Name.Equals(_projectName));
+            var project = projects.Find(p => p.Name.Equals(_projectName));
 
             if (project != null)
             {
@@ -87,7 +129,7 @@ public class Client : IClient
                 return project;
             }
 
-            size = projects.Size;
+            size = pageSize;
             offset += size;
         } while (size > 0);
 
@@ -117,11 +159,11 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var suites = JsonSerializer.Deserialize<TestRailSuites>(content)!;
+        var (suites, _) = ParseListResponse<TestRailSuite>(content, "suites");
 
-        _logger.LogDebug("Got {Count} suites by project id {Id}: {@Suites}", suites.Suites.Count, projectId, suites);
+        _logger.LogDebug("Got {Count} suites by project id {Id}: {@Suites}", suites.Count, projectId, suites);
 
-        return suites.Suites;
+        return suites;
     }
 
     public async Task<List<TestRailSection>> GetSectionsByProjectId(int projectId)
@@ -151,10 +193,10 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var sections = JsonSerializer.Deserialize<TestRailSections>(content)!;
+            var (sections, pageSize) = ParseListResponse<TestRailSection>(content, "sections");
 
-            allSections.AddRange(sections.Sections);
-            size = sections.Size;
+            allSections.AddRange(sections);
+            size = pageSize;
             offset += size;
 
             _logger.LogInformation("Got {Count} sections by project id {Id}", offset, projectId);
@@ -192,10 +234,10 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var sections = JsonSerializer.Deserialize<TestRailSections>(content)!;
+            var (sections, pageSize) = ParseListResponse<TestRailSection>(content, "sections");
 
-            allSections.AddRange(sections.Sections);
-            size = sections.Size;
+            allSections.AddRange(sections);
+            size = pageSize;
             offset += size;
 
             _logger.LogInformation("Got {Count} sections by project id {projectId} and suite id {suiteId}", offset, projectId, suiteId);
@@ -237,11 +279,11 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var sharedSteps = JsonSerializer.Deserialize<TestRailSharedSteps>(content)!;
+            var (sharedSteps, pageSize) = ParseListResponse<TestRailSharedStep>(content, "shared_steps");
 
-            allSharedSteps.AddRange(sharedSteps.SharedSteps);
+            allSharedSteps.AddRange(sharedSteps);
 
-            size = sharedSteps.Size;
+            size = pageSize;
             offset += size;
 
             _logger.LogInformation("Got {Count} shared step ids by project id {ProjectId}", offset, projectId);
@@ -279,11 +321,11 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var testCases = JsonSerializer.Deserialize<TestRailCases>(content)!;
+            var (testCases, pageSize) = ParseListResponse<TestRailCase>(content, "cases");
 
-            allTestCases.AddRange(testCases.Cases);
+            allTestCases.AddRange(testCases);
 
-            size = testCases.Size;
+            size = pageSize;
             offset += size;
 
             _logger.LogInformation("Got {Count} test case ids by project id {ProjectId} and section id {SectionId}", offset, projectId, sectionId);
@@ -323,11 +365,11 @@ public class Client : IClient
             }
 
             var content = await response.Content.ReadAsStringAsync();
-            var testCases = JsonSerializer.Deserialize<TestRailCases>(content)!;
+            var (testCases, pageSize) = ParseListResponse<TestRailCase>(content, "cases");
 
-            allTestCases.AddRange(testCases.Cases);
+            allTestCases.AddRange(testCases);
 
-            size = testCases.Size;
+            size = pageSize;
             offset += size;
 
             _logger.LogInformation(
@@ -360,13 +402,13 @@ public class Client : IClient
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        var attachments = JsonSerializer.Deserialize<TestRailAttachments>(content)!;
+        var (attachments, _) = ParseListResponse<TestRailAttachment>(content, "attachments");
 
         _logger.LogDebug(
             "Got {Count} attachments by test case id {CaseId}: {@Attachments}",
-            attachments.Attachments.Count, testCaseId, attachments.Attachments);
+            attachments.Count, testCaseId, attachments);
 
-        return attachments.Attachments;
+        return attachments;
     }
 
     public async Task<byte[]> GetAttachmentById(int attachmentId)
