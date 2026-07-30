@@ -35,7 +35,7 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
 
             logger.LogDebug("Downloading attachment: {Name}", attachment.Name);
 
-            var bytes = await client.GetAttachmentById(attachment.Id);
+            var bytes = await DownloadAttachmentWithFallback(attachment.Id, attachment.Guid);
             if (bytes.Length == 0)
             {
                 logger.LogWarning("Failed to download attachment by id {AttachmentId}", attachment.Id);
@@ -63,7 +63,7 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
     {
         logger.LogInformation("Downloading attachment by id {Id}", attachmentId);
 
-        var bytes = await client.GetAttachmentById(attachmentId);
+        var bytes = await DownloadAttachmentWithFallback(attachmentId);
         if (bytes.Length == 0)
             return string.Empty;
 
@@ -73,6 +73,37 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
         logger.LogDebug("Ending downloading attachment: {Name}", name);
 
         return name;
+    }
+
+    private async Task<byte[]> DownloadAttachmentWithFallback(string attachmentId, string? alternateId = null)
+    {
+        var bytes = await client.GetAttachmentById(attachmentId);
+        if (bytes.Length > 0)
+            return bytes;
+
+        if (!string.IsNullOrEmpty(alternateId) && alternateId != attachmentId)
+        {
+            logger.LogDebug("Retrying attachment download with alternate id {AlternateId}", alternateId);
+            bytes = await client.GetAttachmentById(alternateId);
+            if (bytes.Length > 0)
+                return bytes;
+        }
+
+        if (int.TryParse(attachmentId, out var legacyId))
+        {
+            logger.LogDebug("Retrying attachment download using legacy numeric id {LegacyId}", legacyId);
+            bytes = await client.GetAttachmentById(legacyId);
+            if (bytes.Length > 0)
+                return bytes;
+        }
+
+        if (!string.IsNullOrEmpty(alternateId) && int.TryParse(alternateId, out var alternateLegacyId))
+        {
+            logger.LogDebug("Retrying attachment download using legacy numeric alternate id {LegacyId}", alternateLegacyId);
+            bytes = await client.GetAttachmentById(alternateLegacyId);
+        }
+
+        return bytes;
     }
 
     private string CorrectAttachmentName(string name)

@@ -218,16 +218,16 @@ internal class StepService(ILogger<StepService> logger, IClient client) : IStepS
     {
         var builder = new StringBuilder();
 
-        if (!string.IsNullOrEmpty(step.Keyword)) builder.AppendLine($"<p>{step.Keyword}</p>");
+        if (!string.IsNullOrEmpty(step.Keyword)) builder.Append($"<p>{step.Keyword}</p>\n");
 
-        builder.AppendLine($"<p>{step.Name}</p>");
+        builder.Append($"<p>{step.Name}</p>\n");
 
         step.Steps
             .ForEach(s =>
             {
-                if (!string.IsNullOrEmpty(s.Keyword)) builder.AppendLine($"<p>{s.Keyword}</p>");
+                if (!string.IsNullOrEmpty(s.Keyword)) builder.Append($"<p>{s.Keyword}</p>\n");
 
-                builder.AppendLine($"<p>{s.Name}</p>");
+                builder.Append($"<p>{s.Name}</p>\n");
             });
 
         return builder.ToString();

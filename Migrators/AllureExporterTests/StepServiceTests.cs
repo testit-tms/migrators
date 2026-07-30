@@ -107,19 +107,19 @@ public class StepServiceTests
             Assert.That(steps, Has.Count.EqualTo(3));
 
             // Verify first step
-            var expectedAction = "<p>When</p>\r\n<p>Test step 1</p>\r\n<p>Test step 1.1</p>\r\n<p>And</p>\r\n<p>Test step 1.2</p>\r\n";
+            var expectedAction = "<p>When</p>\n<p>Test step 1</p>\n<p>Test step 1.1</p>\n<p>And</p>\n<p>Test step 1.2</p>\n";
             Assert.That(steps[0].Action, Is.EqualTo(expectedAction));
             Assert.That(steps[0].Expected, Is.EqualTo("Expected result"));
             Assert.That(steps[0].ActionAttachments, Has.Count.EqualTo(3));
             Assert.That(steps[0].ActionAttachments.ToList(), Is.EqualTo(new List<string> { "image.png", "image2.png", "image3.png" }));
 
             // Verify second step
-            Assert.That(steps[1].Action, Is.EqualTo("<p></p>\r\n"));
+            Assert.That(steps[1].Action, Is.EqualTo("<p></p>\n"));
             Assert.That(steps[1].Expected, Is.Empty);
             Assert.That(steps[1].ActionAttachments, Is.Empty);
 
             // Verify third step
-            Assert.That(steps[2].Action, Is.EqualTo("<p>Test step 3</p>\r\n"));
+            Assert.That(steps[2].Action, Is.EqualTo("<p>Test step 3</p>\n"));
             Assert.That(steps[2].Expected, Is.Empty);
             Assert.That(steps[2].ActionAttachments, Is.Empty);
         });

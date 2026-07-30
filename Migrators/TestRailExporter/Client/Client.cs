@@ -427,6 +427,9 @@ public class Client : IClient
         }
     }
 
+    public Task<byte[]> GetAttachmentById(int attachmentId) =>
+        GetAttachmentById(attachmentId.ToString());
+
     private string CorrectBaseAddress(string url)
     {
         if (url.EndsWith('/'))

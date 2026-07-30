@@ -3,6 +3,8 @@ using AllureExporter.Models.Project;
 using AllureExporter.Services.Implementations;
 using Microsoft.Extensions.Logging;
 using Moq;
+using AttributeType = Models.AttributeType;
+using Constants = AllureExporter.Models.Project.Constants;
 
 namespace AllureExporterTests;
 
@@ -137,7 +139,7 @@ public class AttributeServiceTests
         var attributes = await _sut.GetCustomAttributes(1);
 
         // Assert
-        Assert.That(attributes, Has.Count.EqualTo(3));
+        Assert.That(attributes, Has.Count.EqualTo(4));
         Assert.That(attributes[0].Name, Is.EqualTo("Custom Field 1"));
         Assert.That(attributes[0].Options, Has.Count.EqualTo(3));
         Assert.That(attributes[0].Options[0], Is.EqualTo("Value 1"));
@@ -149,11 +151,13 @@ public class AttributeServiceTests
         Assert.That(attributes[1].Options[1], Is.EqualTo("Active"));
         Assert.That(attributes[1].Options[2], Is.EqualTo("Outdated"));
         Assert.That(attributes[1].Options[3], Is.EqualTo("Review"));
-        Assert.That(attributes[2].Name, Is.EqualTo(Constants.AllureTestLayer));
-        Assert.That(attributes[2].Options, Has.Count.EqualTo(3));
-        Assert.That(attributes[2].Options[0], Is.EqualTo("Test Layer 1"));
-        Assert.That(attributes[2].Options[1], Is.EqualTo("Test Layer 2"));
-        Assert.That(attributes[2].Options[2], Is.EqualTo("Test Layer 3"));
+        Assert.That(attributes[2].Name, Is.EqualTo(Constants.AllureId));
+        Assert.That(attributes[2].Type, Is.EqualTo(AttributeType.String));
+        Assert.That(attributes[3].Name, Is.EqualTo(Constants.AllureTestLayer));
+        Assert.That(attributes[3].Options, Has.Count.EqualTo(3));
+        Assert.That(attributes[3].Options[0], Is.EqualTo("Test Layer 1"));
+        Assert.That(attributes[3].Options[1], Is.EqualTo("Test Layer 2"));
+        Assert.That(attributes[3].Options[2], Is.EqualTo("Test Layer 3"));
 
         _client.Verify(x => x.GetCustomFieldNames(1), Times.Once);
         _client.Verify(x => x.GetCustomFieldValues(1, 1), Times.Once);
