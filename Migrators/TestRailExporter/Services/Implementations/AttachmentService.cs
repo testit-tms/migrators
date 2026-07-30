@@ -24,7 +24,8 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
 
         foreach (var attachment in attachments)
         {
-            if (attachmentsMap.ContainsKey(attachment.Id) || attachmentsMap.ContainsKey(attachment.Guid))
+            if (attachmentsMap.ContainsKey(attachment.Id) ||
+                (!string.IsNullOrEmpty(attachment.Guid) && attachmentsMap.ContainsKey(attachment.Guid)))
             {
                 logger.LogDebug("Attachment with id {Id} and guid {Guid} has already been added to attachment map: {@AttachmentsMap}",
                     attachment.Id, attachment.Guid, attachmentsMap);
@@ -34,19 +35,19 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
 
             logger.LogDebug("Downloading attachment: {Name}", attachment.Name);
 
-            if (!int.TryParse(attachment.Id, out int value))
+            var bytes = await client.GetAttachmentById(attachment.Id);
+            if (bytes.Length == 0)
             {
-                logger.LogInformation("There is no way to download attachment by id {AttachmentId}", attachment.Id);
-
+                logger.LogWarning("Failed to download attachment by id {AttachmentId}", attachment.Id);
                 continue;
             }
 
-            var bytes = await client.GetAttachmentById(value);
             var name = await writeService.WriteAttachment(id, bytes, CorrectAttachmentName(attachment.Name));
 
             names.Add(name);
-            attachmentsMap.Add(attachment.Id, name);
-            attachmentsMap.Add(attachment.Guid, name);
+            attachmentsMap[attachment.Id] = name;
+            if (!string.IsNullOrEmpty(attachment.Guid))
+                attachmentsMap[attachment.Guid] = name;
         }
 
         logger.LogDebug("Ending downloading attachments: {@Names}", names);
@@ -58,13 +59,16 @@ public class AttachmentService(ILogger<AttachmentService> logger, IClient client
         };
     }
 
-    public async Task<string> DownloadAttachmentById(int attachmentId, Guid id)
+    public async Task<string> DownloadAttachmentById(string attachmentId, Guid id)
     {
         logger.LogInformation("Downloading attachment by id {Id}", attachmentId);
 
         var bytes = await client.GetAttachmentById(attachmentId);
-        var attahmentName = Guid.NewGuid().ToString() + "-attachment";
-        var name = await writeService.WriteAttachment(id, bytes, attahmentName);
+        if (bytes.Length == 0)
+            return string.Empty;
+
+        var attachmentName = Guid.NewGuid().ToString() + "-attachment";
+        var name = await writeService.WriteAttachment(id, bytes, attachmentName);
 
         logger.LogDebug("Ending downloading attachment: {Name}", name);
 

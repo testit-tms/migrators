@@ -208,15 +208,12 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
 
     private async Task<string> GetAttachmentName(string attachmentId, Guid id)
     {
-        if (!int.TryParse(attachmentId, out int value))
-        {
+        var fileName = await attachmentService.DownloadAttachmentById(attachmentId, id);
+        if (string.IsNullOrEmpty(fileName))
             return string.Empty;
-        }
-
-        var fileName = await attachmentService.DownloadAttachmentById(value, id);
 
         _attachmentsInfo.AttachmentNames.Add(fileName);
-        _attachmentsInfo.AttachmentsMap.Add(attachmentId, fileName);
+        _attachmentsInfo.AttachmentsMap[attachmentId] = fileName;
 
         return fileName;
     }

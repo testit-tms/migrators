@@ -411,7 +411,7 @@ public class Client : IClient
         return attachments;
     }
 
-    public async Task<byte[]> GetAttachmentById(int attachmentId)
+    public async Task<byte[]> GetAttachmentById(string attachmentId)
     {
         _logger.LogInformation("Downloading attachment by id {AttachmentId}", attachmentId);
 
