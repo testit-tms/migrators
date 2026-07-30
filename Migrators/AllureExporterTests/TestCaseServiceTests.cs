@@ -92,6 +92,7 @@ public class TestCaseServiceTests
         var attributes = new Dictionary<string, Guid>
         {
             { Constants.AllureStatus, Guid.NewGuid() },
+            { Constants.AllureId, Guid.NewGuid() },
             { Constants.AllureTestLayer, Guid.NewGuid() },
             { Constants.Feature, featureAttributeId },
             { Constants.Story, storyAttributeId }
@@ -249,6 +250,7 @@ public class TestCaseServiceTests
             new Dictionary<string, Guid>
             {
                 { Constants.AllureStatus, Guid.NewGuid() },
+                { Constants.AllureId, Guid.NewGuid() },
                 { Constants.AllureTestLayer, Guid.NewGuid() },
                 { Constants.Feature, Guid.NewGuid() },
                 { Constants.Story, Guid.NewGuid() }
@@ -281,6 +283,7 @@ public class TestCaseServiceTests
         var attributes = new Dictionary<string, Guid>
         {
             { Constants.AllureStatus, Guid.NewGuid() },
+            { Constants.AllureId, Guid.NewGuid() },
             { Constants.AllureTestLayer, Guid.NewGuid() },
             { Constants.Feature, featureAttributeId },
             { Constants.Story, storyAttributeId }

@@ -220,7 +220,7 @@ internal sealed class TestCaseService(
 
         foreach (var attribute in attributes)
         {
-            if (attribute.Key is Constants.AllureStatus or Constants.AllureTestLayer) continue;
+            if (attribute.Key is Constants.AllureStatus or Constants.AllureId or Constants.AllureTestLayer) continue;
 
             var customField = customFields.FirstOrDefault(
                 cf => cf.CustomField!.Name == attribute.Key);

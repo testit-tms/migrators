@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Models;
 using ZephyrScaleServerExporter.BatchMerging;
 using ZephyrScaleServerExporter.Models;
 using ZephyrScaleServerExporter.Services;
@@ -31,17 +32,12 @@ public class App(
         return null;
     }
 
-
-    
-
-
     public void Run(string[] args)
     {
         var os = GetOperatingSystem();
         var osVersion = Environment.OSVersion;
-        var ver = "0.2.1";
-        logger.LogInformation("version: {Version} ; OS - {Os} : {OsVer} \n logical core count: {Count}",
-            ver, os, osVersion, Utils.GetLogicalProcessors());
+        logger.LogInformation("Version: {Version} ; OS - {Os} : {OsVer} ; logical core count: {Count}",
+            AppVersion.Current, os, osVersion, Utils.GetLogicalProcessors());
 
         if (config.Value.Zephyr.Merge)
         {

@@ -1,14 +1,14 @@
 using Microsoft.Extensions.Logging;
+using Models;
 using TestRailExporter.Services;
 
 namespace TestRailExporter;
 
 public class App(ILogger<App> logger, IExportService exportService)
 {
-
     public void Run(string[] args)
     {
-        logger.LogInformation("Starting application");
+        logger.LogInformation("Starting application. Version: {Version}", AppVersion.Current);
 
         try
         {

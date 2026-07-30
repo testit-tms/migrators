@@ -1,5 +1,6 @@
 using System.Xml;
 using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace TestRailXmlExporter.Models;
 
@@ -16,7 +17,11 @@ public record struct TestRailsXmlCaseData
     [XmlElement(ElementName = "preconds")]
     public string? Preconditions { get; set; }
 
-    public readonly List<TestRailsXmlStep> Steps => StepsSeparated.Concat(StepsCases).ToList();
+    [JsonIgnore]
+    public readonly List<TestRailsXmlStep> Steps =>
+        (StepsSeparated ?? Array.Empty<TestRailsXmlStep>())
+            .Concat(StepsCases ?? Array.Empty<TestRailsXmlStep>())
+            .ToList();
 
     [XmlArray(ElementName = "steps_separated")]
     [XmlArrayItem(ElementName = "step")]

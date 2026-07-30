@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Models;
 using TestCollabExporter.Services;
 
 namespace TestCollabExporter;
@@ -16,7 +17,7 @@ public class App
 
     public void Run(string[] args)
     {
-        _logger.LogInformation("Starting application");
+        _logger.LogInformation("Starting application. Version: {Version}", AppVersion.Current);
 
         _exportService.ExportProject().Wait();
 

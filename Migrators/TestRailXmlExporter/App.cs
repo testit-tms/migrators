@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Models;
 using TestRailXmlExporter.Services;
 
 namespace TestRailXmlExporter;
@@ -12,7 +13,7 @@ public class App(
 {
     public async Task RunAsync()
     {
-        logger.LogInformation("Starting application");
+        logger.LogInformation("Starting application. Version: {Version}", AppVersion.Current);
         var filePath = configuration["xmlPath"];
 
         try

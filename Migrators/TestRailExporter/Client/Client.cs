@@ -411,7 +411,7 @@ public class Client : IClient
         return attachments;
     }
 
-    public async Task<byte[]> GetAttachmentById(int attachmentId)
+    public async Task<byte[]> GetAttachmentById(string attachmentId)
     {
         _logger.LogInformation("Downloading attachment by id {AttachmentId}", attachmentId);
 
@@ -426,6 +426,9 @@ public class Client : IClient
             return [];
         }
     }
+
+    public Task<byte[]> GetAttachmentById(int attachmentId) =>
+        GetAttachmentById(attachmentId.ToString());
 
     private string CorrectBaseAddress(string url)
     {
