@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace TestRailExporter.Models.Client;
@@ -22,6 +23,9 @@ public class TestRailCase
     [JsonPropertyName("priority_id")]
     public int PriorityId { get; set; }
 
+    [JsonPropertyName("status_id")]
+    public int? StatusId { get; set; }
+
     [JsonPropertyName("is_deleted")]
     public int IsDeleted { get; set; }
 
@@ -45,6 +49,9 @@ public class TestRailCase
 
     [JsonPropertyName("custom_steps_separated")]
     public List<TestRailStep>? Steps { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement> CustomFields { get; set; } = [];
 }
 
 public class TestRailCases : TastRailBaseEntity

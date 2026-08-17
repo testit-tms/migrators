@@ -14,7 +14,7 @@ public class TestCaseService(
     : ITestCaseService
 {
     public async Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<int, SharedStep> sharedStepMap,
-        SectionInfo sectionInfo)
+        SectionInfo sectionInfo, AttributeData attributeData)
     {
         var sectionIdMap = sectionInfo.SectionsMap;
         var suiteIdMap = sectionInfo.SuitesMap;
@@ -24,19 +24,11 @@ public class TestCaseService(
 
         foreach (var section in sectionIdMap)
         {
-            var testRailCases = new List<TestRailCase>();
+            var testRailCases = suiteIdMap.TryGetValue(section.Key, out int suiteId)
+                ? await client.GetTestCaseIdsByProjectIdAndSuiteIdAndSectionId(projectId, suiteId, section.Key)
+                : await client.GetTestCaseIdsByProjectIdAndSectionId(projectId, section.Key);
 
-            if (suiteIdMap.TryGetValue(section.Key, out int suiteId))
-            {
-                testRailCases = await client.GetTestCaseIdsByProjectIdAndSuiteIdAndSectionId(projectId, suiteId, section.Key);
-            }
-            else
-            {
-                testRailCases = await client.GetTestCaseIdsByProjectIdAndSectionId(projectId, section.Key);
-            }
-
-            var testCases = await ConvertTestCases(testRailCases, sharedStepMap, section.Value);
-
+            var testCases = await ConvertTestCases(testRailCases, sharedStepMap, section.Value, attributeData);
             allTestCases.AddRange(testCases);
         }
 
@@ -48,13 +40,14 @@ public class TestCaseService(
     private async Task<List<TestCase>> ConvertTestCases(
         List<TestRailCase> testRailCases,
         Dictionary<int, SharedStep> sharedStepMap,
-        Guid sectionId)
+        Guid sectionId,
+        AttributeData attributeData)
     {
         var testCases = new List<TestCase>();
 
         foreach (var testRailCase in testRailCases)
         {
-            var testCase = await ConvertTestCase(testRailCase, sharedStepMap, sectionId);
+            var testCase = await ConvertTestCase(testRailCase, sharedStepMap, sectionId, attributeData);
             testCases.Add(testCase);
         }
 
@@ -64,7 +57,8 @@ public class TestCaseService(
     protected async Task<TestCase> ConvertTestCase(
         TestRailCase testRailCase,
         Dictionary<int, SharedStep> sharedStepMap,
-        Guid sectionId)
+        Guid sectionId,
+        AttributeData attributeData)
     {
         logger.LogDebug("Converting test case: {@Case}", testRailCase);
 
@@ -85,8 +79,8 @@ public class TestCaseService(
         {
             Id = testCaseGuid,
             Name = testRailCase.Title,
-            State = StateType.NotReady,
-            Priority = ConvertPriority(testRailCase.PriorityId),
+            State = CaseConverter.ConvertState(testRailCase, attributeData),
+            Priority = CaseConverter.ConvertPriority(testRailCase.PriorityId, attributeData.PriorityNames),
             PreconditionSteps = preconditionSteps,
             PostconditionSteps = new List<Step>(),
             Tags = new List<string>(),
@@ -94,6 +88,7 @@ public class TestCaseService(
             SectionId = sectionId,
             Attachments = attachmentsInfo.AttachmentNames,
             Steps = steps,
+            Attributes = CaseConverter.ConvertAttributes(testRailCase, attributeData),
         };
 
         logger.LogDebug("Converted test case: {@TestCase}", testCase);
@@ -107,17 +102,5 @@ public class TestCaseService(
             return input; // Return the input as-is if it's null or empty.
 
         return input.Length <= charCount ? input : input.Substring(0, charCount - 9) + "...";
-    }
-
-    private static PriorityType ConvertPriority(int priority)
-    {
-        return priority switch
-        {
-            1 => PriorityType.Low,
-            2 => PriorityType.Medium,
-            3 => PriorityType.High,
-            4 => PriorityType.Highest,
-            _ => PriorityType.Medium
-        };
     }
 }

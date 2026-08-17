@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISharedStepService, SharedStepService>();
         services.AddSingleton<IStepService, StepService>();
         services.AddSingleton<ITestCaseService, TestCaseService>();
+        services.AddSingleton<IAttributeService, AttributeService>();
     }
 
     public static void RegisterAppConfig(this IServiceCollection services)

@@ -5,5 +5,6 @@ namespace TestRailExporter.Services;
 
 public interface ITestCaseService
 {
-    Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<int, SharedStep> sharedStepMap,  SectionInfo sectionInfo);
+    Task<List<TestCase>> ConvertTestCases(int projectId, Dictionary<int, SharedStep> sharedStepMap,
+        SectionInfo sectionInfo, AttributeData attributeData);
 }

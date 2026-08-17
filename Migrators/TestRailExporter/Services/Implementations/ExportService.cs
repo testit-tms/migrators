@@ -11,7 +11,8 @@ public class ExportService(
     IWriteService writeService,
     ISectionService sectionService,
     ISharedStepService sharedStepService,
-    ITestCaseService testCaseService)
+    ITestCaseService testCaseService,
+    IAttributeService attributeService)
     : IExportService
 {
     public virtual async Task ExportProject()
@@ -19,9 +20,11 @@ public class ExportService(
         logger.LogInformation("Starting export");
 
         var project = await client.GetProject();
+        var attributeData = await attributeService.ConvertAttributes();
         var sectionsInfo = await sectionService.ConvertSections(project.Id);
         var sharedStepsInfo = await sharedStepService.ConvertSharedSteps(project.Id, sectionsInfo.MainSection.Id);
-        var testCases = await testCaseService.ConvertTestCases(project.Id, sharedStepsInfo.SharedStepsMap, sectionsInfo);
+        var testCases = await testCaseService.ConvertTestCases(
+            project.Id, sharedStepsInfo.SharedStepsMap, sectionsInfo, attributeData);
 
         foreach (var sharedStep in sharedStepsInfo.SharedSteps)
         {
@@ -36,6 +39,7 @@ public class ExportService(
         var mainJson = new Root
         {
             ProjectName = project.Name,
+            Attributes = attributeData.Attributes,
             Sections = new List<Section> { sectionsInfo.MainSection },
             TestCases = testCases.Select(t => t.Id).ToList(),
             SharedSteps = sharedStepsInfo.SharedSteps.Select(s => s.Id).ToList(),

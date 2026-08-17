@@ -14,4 +14,7 @@ public interface IClient
     Task<List<TestRailAttachment>> GetAttachmentsByTestCaseId(int testCaseId);
     Task<byte[]> GetAttachmentById(string attachmentId);
     Task<byte[]> GetAttachmentById(int attachmentId);
+    Task<List<TestRailPriority>> GetPriorities();
+    Task<List<TestRailCaseField>> GetCaseFields();
+    Task<List<TestRailCaseStatus>> GetCaseStatuses();
 }
