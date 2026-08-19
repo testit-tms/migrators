@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailXmlExporter", "Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailExporter", "TestRailExporter\TestRailExporter.csproj", "{1FD6902A-9ADC-4FAE-B528-39012EE755A0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRailExporterTests", "TestRailExporterTests\TestRailExporterTests.csproj", "{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrSquadServerExporter", "ZephyrSquadServerExporter\ZephyrSquadServerExporter.csproj", "{EEE73191-7836-4171-9357-FCA9A06F7529}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZephyrScaleServerExporter", "ZephyrScaleServerExporter\ZephyrScaleServerExporter\ZephyrScaleServerExporter.csproj", "{7DA3A57C-C9B4-485F-B3D1-32B8FDA960A4}"
@@ -372,6 +374,18 @@ Global
 		{1FD6902A-9ADC-4FAE-B528-39012EE755A0}.Release|x64.Build.0 = Release|Any CPU
 		{1FD6902A-9ADC-4FAE-B528-39012EE755A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{1FD6902A-9ADC-4FAE-B528-39012EE755A0}.Release|x86.Build.0 = Release|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Debug|x64.Build.0 = Debug|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Debug|x86.Build.0 = Debug|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Release|x64.ActiveCfg = Release|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Release|x64.Build.0 = Release|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Release|x86.ActiveCfg = Release|Any CPU
+		{A3C4E8F1-7B2D-4A91-9E55-2F6C8D0B1A47}.Release|x86.Build.0 = Release|Any CPU
 		{EEE73191-7836-4171-9357-FCA9A06F7529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EEE73191-7836-4171-9357-FCA9A06F7529}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEE73191-7836-4171-9357-FCA9A06F7529}.Debug|x64.ActiveCfg = Debug|Any CPU

@@ -430,6 +430,64 @@ public class Client : IClient
     public Task<byte[]> GetAttachmentById(int attachmentId) =>
         GetAttachmentById(attachmentId.ToString());
 
+    public async Task<List<TestRailPriority>> GetPriorities()
+    {
+        _logger.LogInformation("Getting priorities");
+        var (ok, status, content) = await GetAsync("index.php?/api/v2/get_priorities");
+        if (!ok)
+        {
+            _logger.LogError("Failed to get priorities. Status code: {StatusCode}. Response: {Response}",
+                status, content);
+            throw new Exception($"Failed to get priorities. Status code: {status}");
+        }
+
+        var (priorities, _) = ParseListResponse<TestRailPriority>(content, "priorities");
+        _logger.LogDebug("Got {Count} priorities: {@Priorities}", priorities.Count, priorities);
+        return priorities;
+    }
+
+    public async Task<List<TestRailCaseField>> GetCaseFields()
+    {
+        _logger.LogInformation("Getting case fields");
+        var (ok, status, content) = await GetAsync("index.php?/api/v2/get_case_fields");
+        if (!ok)
+        {
+            _logger.LogError("Failed to get case fields. Status code: {StatusCode}. Response: {Response}",
+                status, content);
+            throw new Exception($"Failed to get case fields. Status code: {status}");
+        }
+
+        var (fields, _) = ParseListResponse<TestRailCaseField>(content, "fields");
+        _logger.LogDebug("Got {Count} case fields: {@Fields}", fields.Count, fields);
+        return fields;
+    }
+
+    public async Task<List<TestRailCaseStatus>> GetCaseStatuses()
+    {
+        _logger.LogInformation("Getting case statuses");
+        var (ok, status, content) = await GetAsync("index.php?/api/v2/get_case_statuses");
+        if (!ok)
+        {
+            _logger.LogInformation(
+                "Case statuses are not supported (status {StatusCode}). Continuing without them", status);
+            return [];
+        }
+
+        var (statuses, _) = ParseListResponse<TestRailCaseStatus>(content, "case_statuses");
+        _logger.LogDebug("Got {Count} case statuses: {@Statuses}", statuses.Count, statuses);
+        return statuses;
+    }
+
+    private async Task<(bool Ok, System.Net.HttpStatusCode Status, string Content)> GetAsync(string url)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.TryAddWithoutValidation("Content-Type", "application/json");
+        request.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+        using var response = await _httpClient.SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
+        return (response.IsSuccessStatusCode, response.StatusCode, content);
+    }
+
     private string CorrectBaseAddress(string url)
     {
         if (url.EndsWith('/'))

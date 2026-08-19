@@ -60,6 +60,10 @@ jobs:
               - 'Migrators/TestRailXmlExporter/**'
               - 'Migrators/TestRailXmlExporterTests/**'
               - 'Migrators/JsonWriter/**'
+            testrail:
+              - 'Migrators/TestRailExporter/**'
+              - 'Migrators/TestRailExporterTests/**'
+              - 'Migrators/JsonWriter/**'
 
       - name: Resolve affected projects (matrix → loop)
         id: resolve
@@ -77,6 +81,7 @@ jobs:
             zephyr_scale:./Migrators/ZephyrScaleExporterTests
             zephyr_scale_server:./Migrators/ZephyrScaleServerExporterTests
             testrail_xml:./Migrators/TestRailXmlExporterTests
+            testrail:./Migrators/TestRailExporterTests
           filter_allure: ${{ steps.filter.outputs.allure }}
           filter_azure: ${{ steps.filter.outputs.azure }}
           filter_hpalm: ${{ steps.filter.outputs.hpalm }}
@@ -89,6 +94,7 @@ jobs:
           filter_zephyr_scale: ${{ steps.filter.outputs.zephyr_scale }}
           filter_zephyr_scale_server: ${{ steps.filter.outputs.zephyr_scale_server }}
           filter_testrail_xml: ${{ steps.filter.outputs.testrail_xml }}
+          filter_testrail: ${{ steps.filter.outputs.testrail }}
         run: |
           set -e
           PROJECTS=""

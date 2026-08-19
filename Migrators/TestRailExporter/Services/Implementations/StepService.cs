@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using TestRailExporter.Client;
 using Microsoft.Extensions.Logging;
@@ -17,12 +18,18 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         AttachmentNames = new List<string>(),
         AttachmentsMap = new Dictionary<string, string>()
     };
-    private static readonly Regex _ImgRegex = new Regex(@"!\[\]\(([^)]*)\)");
-    private static readonly Regex _HyperlinkRegex = new Regex(@"\[[^\[\]]*\]\([^()\s]*\)");
-    private static readonly Regex _UrlRegex = new Regex(@"\(([^()\s]+)\)");
-    private static readonly Regex _TitleRegex = new Regex(@"\[([^\[\]]+)\]");
-    private static readonly Regex _TableRegex = new Regex(@"(\|{2,}[^\n]*\n)+");
-    private static readonly Regex _CellRegex = new Regex(@"\|([^\|\n]+)");
+    private static readonly Regex _ImgRegex = new(@"!\[([^\]]*)\]\(([^)]+)\)");
+    private static readonly Regex _HyperlinkRegex = new(@"\[[^\[\]]*\]\([^()\s]*\)");
+    private static readonly Regex _UrlRegex = new(@"\(([^()\s]+)\)");
+    private static readonly Regex _TitleRegex = new(@"\[([^\[\]]+)\]");
+    private static readonly Regex _TableRegex = new(@"(\|{2,}[^\n]*\n)+");
+    private static readonly Regex _CellRegex = new(@"\|([^\|\n]+)");
+    private static readonly Regex _MarkdownTableRegex = new(@"((?:^[ \t]*\|[^\n]+\|[ \t]*\r?\n)+)", RegexOptions.Multiline);
+    private static readonly Regex _MarkdownSeparatorRegex = new(@"^:?-+:?$");
+    private static readonly HashSet<string> AllowedHtmlTags = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "a", "table", "tbody", "tr", "td", "p", "br"
+    };
 
     public async Task<List<Step>> ConvertStepsForTestCase(TestRailCase testCase, Guid testCaseId, Dictionary<int, SharedStep> sharedStepMap, AttachmentsInfo attachmentsInfo)
     {
@@ -140,8 +147,8 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
 
         return new Step
         {
-            Action = ConvertTabels(ConvertingHyperlinks(actionData.Description)),
-            Expected = ConvertTabels(ConvertingHyperlinks(expectedData.Description)),
+            Action = FormatStepText(actionData.Description),
+            Expected = FormatStepText(expectedData.Description),
             ActionAttachments = actionData.AttachmentNames,
             ExpectedAttachments = expectedData.AttachmentNames,
         };
@@ -183,7 +190,7 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
 
         foreach (Match match in matches)
         {
-            var url = match.Groups[1].Value;
+            var url = match.Groups[2].Value;
             var attachmentId = url.Split('/').Last();
             var fileName = string.Empty;
 
@@ -216,6 +223,14 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
         _attachmentsInfo.AttachmentsMap[attachmentId] = fileName;
 
         return fileName;
+    }
+
+    public static string FormatStepText(string description)
+    {
+        if (string.IsNullOrEmpty(description))
+            return description;
+
+        return EscapeUnknownXml(ConvertMarkdownTables(ConvertTabels(ConvertingHyperlinks(description))));
     }
 
     public static string ConvertingHyperlinks(string description)
@@ -299,4 +314,116 @@ public class StepService(ILogger<StepService> logger, IClient client, IAttachmen
 
         return cells;
     }
+
+    private static string ConvertMarkdownTables(string description)
+    {
+        var tableMatches = _MarkdownTableRegex.Matches(description);
+        if (tableMatches.Count == 0)
+            return description;
+
+        foreach (Match tableMatch in tableMatches)
+        {
+            var table = tableMatch.Value;
+            if (table.TrimStart().StartsWith("||", StringComparison.Ordinal))
+                continue;
+
+            var convertedRows = ConvertMarkdownRows(table);
+            if (convertedRows.Length == 0)
+                continue;
+
+            description = description.Replace(table,
+                "<table style=\"min-width: 165px\"><tbody>" + convertedRows + "</tbody></table>");
+        }
+
+        return description;
+    }
+
+    private static string ConvertMarkdownRows(string table)
+    {
+        var rows = new StringBuilder();
+
+        foreach (var line in table.Split('\n', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var cells = SplitMarkdownCells(line);
+            if (cells.Count == 0 || cells.All(c => _MarkdownSeparatorRegex.IsMatch(c)))
+                continue;
+
+            rows.Append("<tr>");
+            foreach (var cell in cells)
+            {
+                rows.Append(
+                    $"<td colspan=\"1\" rowspan=\"1\"><p class=\"tiptap-text\" style=\"text-align: left\">{cell}</p></td>");
+            }
+            rows.Append("</tr>");
+        }
+
+        return rows.ToString();
+    }
+
+    private static List<string> SplitMarkdownCells(string line)
+    {
+        var parts = line.Trim().Split('|');
+        if (parts.Length == 0)
+            return [];
+
+        var start = parts[0].Length == 0 ? 1 : 0;
+        var end = parts.Length - (parts[^1].Length == 0 ? 1 : 0);
+        if (end <= start)
+            return [];
+
+        var cells = new List<string>(end - start);
+        for (var i = start; i < end; i++)
+            cells.Add(parts[i].Trim());
+
+        return cells;
+    }
+
+    public static string EscapeUnknownXml(string description)
+    {
+        if (string.IsNullOrEmpty(description) || !description.Contains('<'))
+            return description;
+
+        var result = new StringBuilder(description.Length);
+        for (var i = 0; i < description.Length; i++)
+        {
+            if (description[i] != '<')
+            {
+                result.Append(description[i]);
+                continue;
+            }
+
+            if (i + 2 < description.Length && description[i + 1] == '<' && description[i + 2] == '<')
+            {
+                var end = description.IndexOf(">>>", i + 3, StringComparison.Ordinal);
+                if (end >= 0)
+                {
+                    result.Append(description, i, end + 3 - i);
+                    i = end + 2;
+                    continue;
+                }
+            }
+
+            var j = i + 1;
+            if (j < description.Length && description[j] == '/')
+                j++;
+
+            var nameStart = j;
+            while (j < description.Length && IsTagNameChar(description[j]))
+                j++;
+
+            var name = description[nameStart..j];
+            if (name.Length > 0 && AllowedHtmlTags.Contains(name))
+            {
+                result.Append('<');
+                continue;
+            }
+
+            result.Append("&lt;");
+        }
+
+        return result.ToString();
+    }
+
+    private static bool IsTagNameChar(char ch) =>
+        char.IsLetterOrDigit(ch) || ch is '-' or '_' or ':';
 }
