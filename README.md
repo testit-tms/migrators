@@ -21,6 +21,7 @@ We support the following systems:
 - [SpiraTest](https://github.com/testit-tms/migrators/blob/main/Migrators/SpiraTestExporter/Readme.md)
 - [HPALM](https://github.com/testit-tms/migrators/blob/main/Migrators/HPALMExporter/Readme.md)
 - [Qase](https://github.com/testit-tms/migrators/blob/main/Migrators/QaseExporter/Readme.md)
+- [DOQA](https://github.com/testit-tms/migrators/blob/main/Migrators/DoqaExporter/Readme.md)
 
 We are constantly working on new migrators. If you need a migrator for a system that is not listed here, please contact us at [support@yoonion.ru](mailto:support@yoonion.ru).
 

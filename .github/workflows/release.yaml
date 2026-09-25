@@ -21,6 +21,7 @@ env:
   SPIRA_DIR: ./Migrators/SpiraTestExporter
   HPALM_DIR: ./Migrators/HPALMExporter
   QASE_DIR: ./Migrators/QaseExporter
+  DOQA_DIR: ./Migrators/DoqaExporter
 
 jobs:
           
@@ -812,6 +813,57 @@ jobs:
           --self-contained true \
           --output ./publish \
           --no-restore ${{ env.QASE_DIR }} \
+          -p:Version=${{ github.event.release.tag_name }}
+        
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: publish/${{ matrix.artifact_name }}
+          asset_name: ${{ matrix.asset_name }}
+          tag: ${{ github.ref }}
+          overwrite: true  
+
+  doqa_build:
+    needs: qase_build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - os: win-x64
+            artifact_name: DoqaExporter.exe
+            asset_name: DoqaExporter-win-x64-${{ github.event.release.tag_name }}.exe
+          - os: linux-x64
+            artifact_name: DoqaExporter
+            asset_name: DoqaExporter-linux-x64-${{ github.event.release.tag_name }}
+          - os: osx-x64
+            artifact_name: DoqaExporter
+            asset_name: DoqaExporter-osx-x64-${{ github.event.release.tag_name }}
+          - os: osx-arm64
+            artifact_name: DoqaExporter
+            asset_name: DoqaExporter-osx-arm64-${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8
+        
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.DOQA_DIR }}
+        
+      - name: Publish project
+        run: |
+          dotnet publish \
+          -r ${{ matrix.os }} \
+          --configuration Release \
+          --self-contained true \
+          --output ./publish \
+          --no-restore ${{ env.DOQA_DIR }} \
           -p:Version=${{ github.event.release.tag_name }}
         
       - name: Upload binaries to release
