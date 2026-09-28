@@ -1,0 +1,9 @@
+{
+  "resultPath": "/Users/user01/Documents/importer",
+  "doqa": {
+    "url": "https://your-workspace.doqa.app",
+    "email": "user@example.com",
+    "password": "your_password",
+    "spaceId": 1
+  }
+}
