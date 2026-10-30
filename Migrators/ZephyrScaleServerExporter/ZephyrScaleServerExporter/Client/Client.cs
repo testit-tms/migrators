@@ -69,6 +69,8 @@ public class Client : IClient
         }
         _httpClient.DefaultRequestHeaders
             .Add("Authorization", header);
+        _httpClient.DefaultRequestHeaders
+            .TryAddWithoutValidation("Accept", "application/json, text/plain, */*");
     }
 
     private void InitConfluenceHttpClient()
