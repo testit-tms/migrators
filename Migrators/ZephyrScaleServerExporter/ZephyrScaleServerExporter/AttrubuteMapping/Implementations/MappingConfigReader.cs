@@ -19,10 +19,15 @@ internal class MappingConfigReader: IMappingConfigReader
             return;
         }
         _isInit = true;
-        
-        var config = ReadConfig(configFilePath);
-        
         _reverseMappings = new(StringComparer.OrdinalIgnoreCase);
+
+        // mapping.json is optional — skip silently when absent
+        if (!File.Exists(configFilePath))
+        {
+            return;
+        }
+
+        var config = ReadConfig(configFilePath);
 
         foreach (var mappingBlock in config.Mappings)
         {
@@ -45,7 +50,7 @@ internal class MappingConfigReader: IMappingConfigReader
         {
             throw new FileLoadException("Could not load configuration file: " + configFilePath, e);
         }
-        
+
         var config = JsonSerializer.Deserialize<MappingConfig>(json)
                      ?? throw new InvalidOperationException("Config file is empty or invalid.");
 

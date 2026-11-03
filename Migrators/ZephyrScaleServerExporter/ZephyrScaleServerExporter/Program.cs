@@ -22,21 +22,9 @@ namespace ZephyrScaleServerExporter
     {
         static void Main(string[] args)
         {
-            try
-            {
-                MappingConfigReader mappingConfigReader = new MappingConfigReader();
-                mappingConfigReader.InitOnce("mapping.json", "");
-            }
-            // allowed to not have "mapping.json"
-            // disallowed to have mapping json with incorrect configuration
-            catch (FileLoadException ex)
-            {
-                Console.WriteLine("File not found: mapping.json file" + ex.Message);
-            }
-           
             using var host = CreateHostBuilder(args).Build();
             using var scope = host.Services.CreateScope();
-            
+
             var services = scope.ServiceProvider;
 
             try
