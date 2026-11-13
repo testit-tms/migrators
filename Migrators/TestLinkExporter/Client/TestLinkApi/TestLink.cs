@@ -404,6 +404,17 @@ namespace TestLinkExporter.Client.TestLinkApi
             if (handleErrorMessage(o, 7008))
                 return Result; // empty list
             var response = o as XmlRpcStruct;
+            if (response == null)
+                return Result;
+
+            // Single child: TestLink returns the suite struct itself (keys: id, name, ...).
+            // Multiple children: map keyed by suite id, values are suite structs.
+            if (response.ContainsKey("id"))
+            {
+                Result.Add(TestLinkData.ToTestSuite(response));
+                return Result;
+            }
+
             foreach (var data in response.Values)
                 if (data is XmlRpcStruct d)
                     Result.Add(TestLinkData.ToTestSuite(d));

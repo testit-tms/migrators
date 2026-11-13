@@ -130,4 +130,22 @@ public class SectionServiceTests
         Assert.That(result.Sections[0].Sections[0].Name, Is.EqualTo(_sectionData.Sections[0].Sections[0].Name));
         Assert.That(result.Sections[0].Sections[1].Name, Is.EqualTo(_sectionData.Sections[0].Sections[1].Name));
     }
+
+    [Test]
+    public void ConvertSection_ThreeLevels_MapsAllSuites()
+    {
+        var level3 = new TestLinkSuite { Id = 4, Name = "Level3", Suites = new List<TestLinkSuite>() };
+        var level2 = new TestLinkSuite { Id = 2, Name = "Level2", Suites = new List<TestLinkSuite> { level3 } };
+        var level1 = new TestLinkSuite { Id = 1, Name = "Level1", Suites = new List<TestLinkSuite> { level2 } };
+
+        _client.GetSuitesByProjectId(ProjectId).Returns(new List<TestLinkSuite> { level1 });
+        _client.GetSharedSuitesBySuiteId(1).Returns(new List<TestLinkSuite> { level2 });
+        _client.GetSharedSuitesBySuiteId(2).Returns(new List<TestLinkSuite> { level3 });
+        _client.GetSharedSuitesBySuiteId(4).Returns(new List<TestLinkSuite>());
+
+        var result = new SectionService(_logger, _client).ConvertSections(ProjectId);
+
+        Assert.That(result.SectionMap.Keys, Is.EquivalentTo(new[] { 1, 2, 4 }));
+        Assert.That(result.Sections[0].Sections[0].Sections[0].Name, Is.EqualTo("Level3"));
+    }
 }
