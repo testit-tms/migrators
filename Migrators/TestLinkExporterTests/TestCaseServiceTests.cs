@@ -191,4 +191,39 @@ public class TestCaseServiceTests
         Assert.That(testcases[0].SectionId, Is.EqualTo(_sectionMap[1]));
         Assert.IsEmpty(testcases[0].Links);
     }
+
+    [TestCase(null, "")]
+    [TestCase("", "")]
+    [TestCase("Test description", "Test description")]
+    [TestCase("<p>Hello</p><p>World</p>", "Hello\nWorld")]
+    [TestCase("<b>Bold</b> &amp; <i>italic</i>", "Bold & italic")]
+    [TestCase("<a href=\"https://x\">link</a>", "link")]
+    [TestCase("<p>Шаг&nbsp;1</p>", "Шаг 1")]
+    [TestCase("Line1<br/>Line2", "Line1\nLine2")]
+    public void StripHtmlToPlainText_ReturnsExpectedPlainText(string? html, string expected)
+    {
+        Assert.That(TestCaseService.StripHtmlToPlainText(html), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public async Task ConvertTestCases_StripsHtmlFromDescription()
+    {
+        _testCases[0].Summary = "<p>Hello</p><p>World &amp; <b>more</b></p>";
+        _client.GetTestCaseIdsBySuiteId(SuiteId)
+            .Returns(new List<int> { _testCases[0].Id });
+        _client.GetTestCaseById(_testCases[0].Id)
+            .Returns(_testCases[0]);
+        _client.GetKeywordsByTestCaseById(_testCases[0].Id).Returns(_keywords);
+        _attachmentService.DownloadAttachments(Arg.Any<int>(), Arg.Any<Guid>())
+            .Returns(new List<string>());
+        _stepService.ConvertSteps(_testCases[0].Steps).Returns(new List<Step>());
+
+        var service = new TestCaseService(_logger, _client, _stepService, _attachmentService);
+
+        var testcases = await service.ConvertTestCases(
+            new Dictionary<int, Guid> { { 1, _sectionMap[1] } },
+            _customAttributes);
+
+        Assert.That(testcases[0].Description, Is.EqualTo("Hello\nWorld & more"));
+    }
 }
