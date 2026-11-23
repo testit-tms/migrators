@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Models;
+using System.Net;
 using System.Text.RegularExpressions;
 using TestLinkExporter.Client;
 using TestLinkExporter.Models.TestCase;
@@ -17,6 +18,13 @@ public class TestCaseService : ITestCaseService
     private readonly IAttachmentService _attachmentService;
     public const int _duration = 10000;
     private static readonly Regex _hyperLinkRegex = new Regex(@"\<a\shref=\""(?<url>[^""\s]+)\""\>(?<title>.*?)\<\/a\>");
+    private static readonly Regex _paragraphBoundaryRegex = new Regex(@"</p>\s*<p>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex _brRegex = new Regex(@"<br\s*/?>", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex _blockTagRegex = new Regex(
+        @"</?(?:p|div|li|ul|ol|h[1-6]|tr)\s*/?>",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    private static readonly Regex _htmlTagRegex = new Regex(@"<[^>]+>", RegexOptions.Compiled);
+    private static readonly Regex _excessNewlinesRegex = new Regex(@"\n{3,}", RegexOptions.Compiled);
 
     public TestCaseService(ILogger<TestCaseService> logger, IClient client, IStepService stepService,
         IAttachmentService attachmentService)
@@ -69,7 +77,7 @@ public class TestCaseService : ITestCaseService
         return new TestCase
         {
             Id = testCaseId,
-            Description = testCase.Summary,
+            Description = StripHtmlToPlainText(testCase.Summary),
             State = StateType.NotReady,
             Priority = ConvertPriority(testCase.Importance),
             Steps = _stepService.ConvertSteps(testCase.Steps),
@@ -110,6 +118,22 @@ public class TestCaseService : ITestCaseService
                 TestDataAttachments = new List<string>()
             }
         };
+    }
+
+    public static string StripHtmlToPlainText(string? html)
+    {
+        if (string.IsNullOrEmpty(html))
+            return string.Empty;
+
+        var text = html;
+        text = _paragraphBoundaryRegex.Replace(text, "\n");
+        text = _brRegex.Replace(text, "\n");
+        text = _blockTagRegex.Replace(text, "\n");
+        text = _htmlTagRegex.Replace(text, string.Empty);
+        text = WebUtility.HtmlDecode(text);
+        text = text.Replace('\u00A0', ' ');
+        text = _excessNewlinesRegex.Replace(text, "\n\n");
+        return text.Trim();
     }
 
     public static List<Link> GettingHyperlinks(string description)
